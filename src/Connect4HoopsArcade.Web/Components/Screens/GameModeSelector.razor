@@ -1,6 +1,5 @@
 @using Connect4HoopsArcade.Core.Primitives
 @inject GameSession Session
-@inject Connect4HoopsArcade.Web.Services.Abstractions.IAudioService Audio
 
 <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;z-index:5;animation:slideUp .4s ease;">
   <div class="font-display" style="font-weight:700;font-size:clamp(26px,4.6vw,52px);color:#fff;text-shadow:0 4px 0 rgba(0,0,0,.4);margin-bottom:34px;text-align:center;">ELIGE MODO DE JUEGO</div>
@@ -27,10 +26,3 @@
   </div>
   <button @onclick="Session.GoSplash" class="pill-btn" style="position:absolute;top:22px;left:22px;">‹ Inicio</button>
 </div>
-
-@code {
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender) await Audio.PlayVoiceAsync(Connect4HoopsArcade.Web.Services.AudioKeys.SelectGameMode);
-    }
-}

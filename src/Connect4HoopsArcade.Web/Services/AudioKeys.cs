@@ -12,8 +12,11 @@ public static class AudioKeys
     public const string AlmostWin   = "game/almost-win.mp3";
     public const string ColumnFull  = "game/column-full.mp3";
     public const string VictorySfx  = "victory/connect-four.mp3";
-    public const string WinSfx      = "victory/win.mp3";
     public const string DrawSfx     = "victory/draw.mp3";
+
+    // Win cheers — picked at random so it isn't the same every time. (.m4a holds AAC/MP4 audio,
+    // which the browser plays like an mp4; add more variants here to grow the pool.)
+    public static readonly string[] WinSfx = { "victory/win-01.mp3", "victory/win-02.m4a" };
 
     // Music
     public const string AttractLoop = "music/attract-loop.mp3";

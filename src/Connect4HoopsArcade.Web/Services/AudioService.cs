@@ -24,6 +24,12 @@ public sealed class AudioService : IAudioService
 
     public Task PlaySfxAfterVoiceAsync(string key) => Safe("ArcadeAudio.playSfxAfterVoice", key);
 
+    public Task PlayRandomSfxAfterVoiceAsync(IReadOnlyList<string> keys)
+    {
+        if (keys.Count == 0) return Task.CompletedTask;
+        return PlaySfxAfterVoiceAsync(keys[Rng.Next(keys.Count)]);
+    }
+
     public Task PlayVoiceAsync(string key, bool interrupt = false) =>
         VoicesEnabled ? Safe("ArcadeAudio.playVoice", key, interrupt) : Task.CompletedTask;
 

@@ -52,6 +52,17 @@ window.ArcadeAudio = (function () {
     afterVoiceSfx = null;
   }
 
+  // Universal UI click feedback: any menu/setup/settings/sensor button plays the click sound.
+  // In-game board controls (drop arrows, top bar) are excluded via .game-screen — they have their
+  // own game sounds (chip-drop, etc.). The splash "toca para comenzar" plays its click in C#.
+  document.addEventListener('click', (e) => {
+    if (muted) return;
+    const t = e.target;
+    const btn = t && t.closest ? t.closest('button') : null;
+    if (!btn || btn.closest('.game-screen')) return;
+    sfxNow('ui/button-click.mp3');
+  });
+
   return {
     init() { /* called after first user gesture; audio context unlocks via subsequent plays */ },
     preload(keys) { (keys || []).forEach(load); },

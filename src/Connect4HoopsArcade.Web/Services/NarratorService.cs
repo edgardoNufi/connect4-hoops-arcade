@@ -51,17 +51,15 @@ public sealed class NarratorService : IDisposable
 
     private async void OnThreat()
     {
-        await _audio.PlaySfxAsync(AudioKeys.AlmostWin, cooldownMs: 800);
+        // Danger SFX removed — the "almost win" voice variants carry the warning.
         await _audio.PlayRandomVoiceAsync(AudioKeys.AlmostWinV);
     }
 
     private async void OnWon(int winner)
     {
-        // Talk first (interrupt any stale turn line): "¡Conecta 4!" then a victory line, queued.
-        await _audio.PlayVoiceAsync(AudioKeys.ConnectFourV, interrupt: true);
-        await _audio.PlayRandomVoiceAsync(AudioKeys.VictoryV);
-        // The win cheer fires only AFTER the voices finish — no overlap with the talking.
-        await _audio.PlaySfxAfterVoiceAsync(AudioKeys.WinSfx);
+        // One victory/winner line (no "¡Conecta 4!" voice), then a random win cheer once it finishes.
+        await _audio.PlayRandomVoiceAsync(AudioKeys.VictoryV, interrupt: true);
+        await _audio.PlayRandomSfxAfterVoiceAsync(AudioKeys.WinSfx);
     }
 
     private async void OnDrew()

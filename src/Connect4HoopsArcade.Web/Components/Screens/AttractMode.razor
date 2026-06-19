@@ -29,19 +29,11 @@
 </div>
 
 @code {
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender) await Audio.PlayMusicAsync(Connect4HoopsArcade.Web.Services.AudioKeys.AttractLoop);
-    }
-
     private async Task Start()
     {
         await Audio.InitAsync();
-        // Click first for crisp button feedback. (Welcome voice removed for now.)
+        // Click feedback. (Background music removed for now; welcome voice removed earlier.)
         await Audio.PlaySfxAsync(Connect4HoopsArcade.Web.Services.AudioKeys.ButtonClick);
-        // Autoplay blocks music before this first gesture; (re)start the loop now that audio is
-        // unlocked. It keeps looping across Mode/Setup and into the game.
-        await Audio.PlayMusicAsync(Connect4HoopsArcade.Web.Services.AudioKeys.AttractLoop);
         Session.GoMode();
     }
 }
