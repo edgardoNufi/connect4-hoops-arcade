@@ -58,8 +58,12 @@
         if (firstRender) await Keyboard.RegisterAsync();
     }
 
-    private async void OnSensorColumn(int col) =>
-        await Router.Route(col, Connect4HoopsArcade.Web.Input.MoveOrigin.Sensor);
+    private async void OnSensorColumn(int col)
+    {
+        // async void event handler: swallow so a sensor-path exception can't crash the render loop.
+        try { await Router.Route(col, Connect4HoopsArcade.Web.Input.MoveOrigin.Sensor); }
+        catch { /* ignore: TryDrop is guarded; sensor input must never fault the UI */ }
+    }
 
     private void OnSensorConn(bool connected) => Session.SetSensorConnected(connected);
 

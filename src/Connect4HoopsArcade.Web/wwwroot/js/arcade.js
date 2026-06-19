@@ -54,13 +54,22 @@ window.ArcadeStore = {
 // Keyboard 1-7 → .NET. Wired to a DotNetObjectReference in Phase 5.
 window.ArcadeKeyboard = {
   _ref: null,
+  _handler: null,
   register(dotNetRef) {
+    // Idempotent: drop any prior listener so re-registration can't stack handlers.
+    if (this._handler) window.removeEventListener('keydown', this._handler);
     this._ref = dotNetRef;
-    window.addEventListener('keydown', (e) => {
+    this._handler = (e) => {
       if (e.key >= '1' && e.key <= '7' && this._ref) {
         this._ref.invokeMethodAsync('OnColumnKey', parseInt(e.key, 10) - 1);
       }
-    });
+    };
+    window.addEventListener('keydown', this._handler);
+  },
+  unregister() {
+    if (this._handler) window.removeEventListener('keydown', this._handler);
+    this._handler = null;
+    this._ref = null;
   },
 };
 

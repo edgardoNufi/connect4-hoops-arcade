@@ -30,10 +30,11 @@ public sealed class KeyboardInputService : IAsyncDisposable
         await _router.Route(col, MoveOrigin.Keyboard);
     }
 
-    public ValueTask DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
+        try { await _js.InvokeVoidAsync("ArcadeKeyboard.unregister"); }
+        catch { /* runtime may be tearing down */ }
         _ref?.Dispose();
-        return ValueTask.CompletedTask;
     }
 }
 
