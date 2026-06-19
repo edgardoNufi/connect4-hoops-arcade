@@ -14,13 +14,16 @@ public static class WinDetector
     /// </summary>
     public static IReadOnlyList<BoardPosition>? FindWinningLine(GameBoard board, int col, int row, Cell cell)
     {
+        // Precondition: the placed cell must actually occupy (col,row).
+        if (board[col, row] != cell) return null;
+
         foreach (var (dc, dr) in Directions)
         {
             var line = BuildLine(board, col, row, dc, dr, cell);
             if (line.Count >= 4)
             {
                 int idx = line.FindIndex(p => p.Col == col && p.Row == row);
-                int start = Math.Max(0, Math.Min(idx - 0, line.Count - 4));
+                int start = Math.Max(0, Math.Min(idx, line.Count - 4));
                 return line.GetRange(start, 4);
             }
         }

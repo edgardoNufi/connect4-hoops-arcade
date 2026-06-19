@@ -23,7 +23,7 @@ Connect4HoopsArcade.sln
 │   │   ├── Primitives/Cell.cs, GameMode.cs, CpuDifficulty.cs, FaceId.cs, AccessoryId.cs, AnimationSpeed.cs
 │   │   ├── Catalog/TokenColor.cs, ColorCatalog.cs, FaceCatalog.cs, AccessoryCatalog.cs
 │   │   ├── Players/PlayerConfig.cs
-│   │   ├── Board/Board.cs, BoardPosition.cs
+│   │   ├── Board/GameBoard.cs, BoardPosition.cs
 │   │   ├── Rules/WinDetector.cs, ThreatScanner.cs, PlayValidator.cs, ColorWarning.cs
 │   │   └── Ai/CpuStrategy.cs
 │   └── Connect4HoopsArcade.Web/
@@ -518,7 +518,7 @@ git commit -m "feat(core): add PlayerConfig and BoardPosition"
 ### Task 1.4: Board (grid + drop mechanics) — TDD
 
 **Files:**
-- Create: `src/Connect4HoopsArcade.Core/Board/Board.cs`
+- Create: `src/Connect4HoopsArcade.Core/Board/GameBoard.cs`
 - Test: `tests/Connect4HoopsArcade.Core.Tests/BoardTests.cs`
 
 - [ ] **Step 1: Write the failing tests**
@@ -604,7 +604,7 @@ Expected: FAIL — `GameBoard` does not exist.
 
 - [ ] **Step 3: Implement Board**
 
-Create `src/Connect4HoopsArcade.Core/Board/Board.cs`:
+Create `src/Connect4HoopsArcade.Core/Board/GameBoard.cs`:
 ```csharp
 using Connect4HoopsArcade.Core.Primitives;
 
@@ -663,7 +663,7 @@ Expected: PASS (6 tests).
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/Connect4HoopsArcade.Core/Board/Board.cs tests/Connect4HoopsArcade.Core.Tests/BoardTests.cs
+git add src/Connect4HoopsArcade.Core/Board/GameBoard.cs tests/Connect4HoopsArcade.Core.Tests/BoardTests.cs
 git commit -m "feat(core): add Board with drop/full/clone mechanics"
 ```
 

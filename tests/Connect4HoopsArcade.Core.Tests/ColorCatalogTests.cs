@@ -20,6 +20,12 @@ public class ColorCatalogTests
         Assert.Equal("#ffd23f", ColorCatalog.ById("yellow").Hex);
     }
 
+    [Fact]
+    public void ById_falls_back_to_last_color_for_unknown_id()
+    {
+        Assert.Equal(ColorCatalog.All[^1], ColorCatalog.ById("does-not-exist"));
+    }
+
     [Theory]
     [InlineData(0, 0, 0)]      // identical
     [InlineData(340, 0, 20)]   // pink vs red wraps to 20

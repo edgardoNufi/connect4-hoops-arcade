@@ -31,6 +31,31 @@ public class WinDetectorTests
     }
 
     [Fact]
+    public void Returns_the_exact_winning_positions()
+    {
+        // Build a horizontal four on the bottom row, columns 0-3.
+        var (b, col, row) = Play(
+            (0, Cell.Player1), (1, Cell.Player1), (2, Cell.Player1), (3, Cell.Player1));
+        var line = WinDetector.FindWinningLine(b, col, row, Cell.Player1);
+        Assert.NotNull(line);
+        var positions = line!.OrderBy(p => p.Col).ToArray();
+        Assert.Equal(new[]
+        {
+            new BoardPosition(0, 0), new BoardPosition(1, 0),
+            new BoardPosition(2, 0), new BoardPosition(3, 0),
+        }, positions);
+    }
+
+    [Fact]
+    public void Returns_null_when_placed_cell_does_not_match()
+    {
+        // Guard: asking about a coordinate the cell does not occupy yields no win.
+        var b = new GameBoard();
+        b.Drop(0, Cell.Player1);
+        Assert.Null(WinDetector.FindWinningLine(b, 0, 0, Cell.Player2));
+    }
+
+    [Fact]
     public void Detects_vertical_four()
     {
         var (b, col, row) = Play(
