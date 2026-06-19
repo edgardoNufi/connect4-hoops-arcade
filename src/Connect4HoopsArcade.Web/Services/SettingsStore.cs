@@ -19,6 +19,24 @@ public sealed class SettingsStore : ISettingsStore
     public SettingsStore(IJSRuntime js, GameSession session, IAudioService audio)
     {
         _js = js; _session = session; _audio = audio;
+        // Keep the persisted mode in sync with runtime changes from ANY source (manual toggle OR
+        // sensor autodetect), so Current.Mode is the single source of truth and a later ApplyAsync
+        // (e.g. from a volume change) can't revert an autodetected mode. Singleton lifetime ⇒ no unsubscribe.
+        _session.ModeChanged += OnModeChanged;
+    }
+
+    private void OnModeChanged()
+    {
+        if (Current.Mode == _session.Mode2) return;   // already in sync (e.g. ApplyAsync drove it)
+        Current.Mode = _session.Mode2;
+        _ = PersistAsync();                            // persist only; do NOT re-Apply (avoids a loop)
+        Changed?.Invoke();
+    }
+
+    private async Task PersistAsync()
+    {
+        try { await _js.InvokeVoidAsync("ArcadeStore.set", Key, JsonSerializer.Serialize(Current)); }
+        catch { /* storage may be unavailable; ignore */ }
     }
 
     public async Task LoadAsync()
@@ -36,12 +54,7 @@ public sealed class SettingsStore : ISettingsStore
 
     public async Task SaveAsync()
     {
-        try
-        {
-            var json = JsonSerializer.Serialize(Current);
-            await _js.InvokeVoidAsync("ArcadeStore.set", Key, json);
-        }
-        catch { /* storage may be unavailable; ignore */ }
+        await PersistAsync();
         await ApplyAsync();
         Changed?.Invoke();
     }

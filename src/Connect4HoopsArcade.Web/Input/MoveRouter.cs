@@ -16,6 +16,9 @@ public sealed class MoveRouter
     public async Task Route(int col, MoveOrigin origin)
     {
         if (col < 0 || col > 6) return;
+        // Only the game board accepts moves. Otherwise a sensor pulse / keyboard press on the
+        // Sensor-Test or Settings screen would silently drop a chip on the live board behind them.
+        if (_session.Screen != AppScreen.Game) return;
         if (!OriginAllowed(origin)) return;
 
         var now = DateTime.UtcNow;
