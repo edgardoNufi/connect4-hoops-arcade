@@ -1,0 +1,39 @@
+@using Connect4HoopsArcade.Web.State
+@using Connect4HoopsArcade.Web.Components.Screens
+@implements IDisposable
+@inject GameSession Session
+
+<div class="arc-root">
+  <GlowBackdrop />
+  @switch (Session.Screen)
+  {
+    case AppScreen.Splash:
+      <AttractMode />
+      break;
+    case AppScreen.Mode:
+      <GameModeSelector />
+      break;
+    case AppScreen.Setup:
+      <PlayerSetup />
+      break;
+    case AppScreen.Game:
+      <GameView />
+      break;
+    case AppScreen.Sensors:
+      <SensorTestPanel />
+      break;
+    case AppScreen.Settings:
+      <SettingsPanel />
+      break;
+    default:
+      <AttractMode />
+      break;
+  }
+  @* Victory/Draw render as overlays on top of GameView in Phase 4. *@
+</div>
+
+@code {
+    protected override void OnInitialized() => Session.StateChanged += OnChanged;
+    public void Dispose() => Session.StateChanged -= OnChanged;
+    private void OnChanged() => InvokeAsync(StateHasChanged);
+}
