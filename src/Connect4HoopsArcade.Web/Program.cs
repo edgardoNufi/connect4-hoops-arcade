@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 using Connect4HoopsArcade.Web;
 using Connect4HoopsArcade.Web.State;
 
@@ -17,6 +18,9 @@ builder.Services.AddSingleton<Connect4HoopsArcade.Web.Services.ISensorConnection
 builder.Services.AddScoped<Connect4HoopsArcade.Web.Services.KeyboardInputService>();
 builder.Services.AddSingleton<Connect4HoopsArcade.Web.Services.Abstractions.IAudioService,
                               Connect4HoopsArcade.Web.Services.AudioService>();
+builder.Services.AddSingleton<Connect4HoopsArcade.Web.Services.NarratorService>();
 // Interop services registered in later phases.
 
-await builder.Build().RunAsync();
+var host = builder.Build();
+host.Services.GetRequiredService<Connect4HoopsArcade.Web.Services.NarratorService>(); // eager: wire event subscriptions
+await host.RunAsync();
