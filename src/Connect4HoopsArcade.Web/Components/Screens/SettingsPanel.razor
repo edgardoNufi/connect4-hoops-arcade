@@ -1,4 +1,64 @@
-<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
-  <div class="font-display" style="font-size:32px;color:#22d3ee;">@Title</div>
+@using Connect4HoopsArcade.Core.Primitives
+@using Connect4HoopsArcade.Web.Models
+@inject GameSession Session
+@inject Connect4HoopsArcade.Web.Services.Abstractions.ISettingsStore Store
+@inject Connect4HoopsArcade.Web.Services.Abstractions.IAudioService Audio
+
+<div style="position:absolute;inset:0;z-index:6;display:flex;flex-direction:column;padding:20px 24px;animation:slideUp .4s ease;">
+  <div style="flex:none;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+    <button @onclick="Session.CloseSettings" class="pill-btn">‹ Volver</button>
+    <div class="font-display" style="font-weight:700;font-size:clamp(20px,3vw,32px);display:flex;align-items:center;gap:10px;">⚙ CONFIGURACIÓN</div>
+    <div style="width:84px;"></div>
+  </div>
+  <div style="flex:1;min-height:0;overflow:auto;display:flex;justify-content:center;">
+    <div style="width:100%;max-width:620px;display:flex;flex-direction:column;gap:14px;">
+
+      <div class="set-row"><span class="set-ico">🎵</span><span class="set-name">Música</span>
+        <input type="range" min="0" max="100" value="@S.MusicVolume" @oninput="@(e => SetVol(v => v.MusicVolume = ParseInt(e)))" style="flex:1;accent-color:#ff2d6f;height:6px;" />
+        <span class="set-val">@S.MusicVolume</span></div>
+
+      <div class="set-row"><span class="set-ico">🔊</span><span class="set-name">Efectos</span>
+        <input type="range" min="0" max="100" value="@S.SfxVolume" @oninput="@(e => SetVol(v => v.SfxVolume = ParseInt(e)))" style="flex:1;accent-color:#ff2d6f;height:6px;" />
+        <span class="set-val">@S.SfxVolume</span></div>
+
+      <div class="set-row"><span class="set-ico">🎙️</span><span class="set-name">Narrador</span>
+        <input type="range" min="0" max="100" value="@S.NarratorVolume" @oninput="@(e => SetVol(v => v.NarratorVolume = ParseInt(e)))" style="flex:1;accent-color:#ff2d6f;height:6px;" />
+        <span class="set-val">@S.NarratorVolume</span></div>
+
+      <div class="set-row"><span class="set-ico">🗣️</span><span style="flex:1;font-weight:800;font-size:16px;">Voces del narrador</span>
+        <button @onclick="ToggleVoices" style="cursor:pointer;width:64px;height:34px;border-radius:999px;border:none;background:@(S.VoicesEnabled ? "#2ee86e" : "rgba(255,255,255,.18)");position:relative;transition:background .2s;">
+          <span style="position:absolute;top:3px;left:@(S.VoicesEnabled ? "33px" : "3px");width:28px;height:28px;border-radius:50%;background:#fff;transition:left .2s;"></span>
+        </button></div>
+
+      <div class="set-row"><span class="set-ico">⚡</span><span style="flex:1;font-weight:800;font-size:16px;">Velocidad de animación</span>
+        <div style="display:flex;gap:8px;">
+          <button @onclick="@(() => SetSpeed(AnimationSpeed.Normal))" class="seg-btn @(S.Speed == AnimationSpeed.Normal ? "seg-btn--on" : "")">Normal</button>
+          <button @onclick="@(() => SetSpeed(AnimationSpeed.Fast))" class="seg-btn @(S.Speed == AnimationSpeed.Fast ? "seg-btn--on" : "")">Rápida</button>
+        </div></div>
+
+      <div class="set-row"><span class="set-ico">🎮</span><span style="flex:1;font-weight:800;font-size:16px;">Modo de juego</span>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span style="width:9px;height:9px;border-radius:50%;background:@(Session.SensorConnected ? "#2ee86e" : "#ff3b3b");"></span>
+          <button @onclick="@(() => SetMode(PlayMode.Digital))" class="seg-btn @(S.Mode == PlayMode.Digital ? "seg-btn--on" : "")">Digital</button>
+          <button @onclick="@(() => SetMode(PlayMode.Physical))" class="seg-btn @(S.Mode == PlayMode.Physical ? "seg-btn--on" : "")">Físico</button>
+        </div></div>
+
+      <div style="display:flex;gap:12px;margin-top:8px;flex-wrap:wrap;">
+        <button @onclick="TestSound" class="square-btn">🔈 Probar sonido</button>
+        <button @onclick="Session.OpenSensors" class="square-btn">⚡ Prueba de sensores →</button>
+      </div>
+    </div>
+  </div>
 </div>
-@code { private const string Title = "AJUSTES"; }
+
+@code {
+    private GameSettings S => Store.Current;
+
+    private static int ParseInt(ChangeEventArgs e) => int.TryParse(e.Value?.ToString(), out var v) ? v : 0;
+
+    private async Task SetVol(Action<GameSettings> mutate) { mutate(S); await Store.SaveAsync(); }
+    private async Task ToggleVoices() { S.VoicesEnabled = !S.VoicesEnabled; await Store.SaveAsync(); }
+    private async Task SetSpeed(AnimationSpeed sp) { S.Speed = sp; await Store.SaveAsync(); }
+    private async Task SetMode(PlayMode m) { S.Mode = m; await Store.SaveAsync(); }
+    private async Task TestSound() => await Audio.PlaySfxAsync(Connect4HoopsArcade.Web.Services.AudioKeys.ChipDrop);
+}

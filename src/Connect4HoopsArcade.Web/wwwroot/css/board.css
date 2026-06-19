@@ -11,3 +11,9 @@
 .top-btn--yellow { border:1.5px solid rgba(255,210,63,.5); background:rgba(255,210,63,.12); color:#ffd23f; }
 .square-btn { cursor:pointer; padding:11px 20px; border-radius:12px; border:1.5px solid rgba(255,255,255,.2); background:rgba(255,255,255,.05); color:#fff; font-weight:800; font-size:14px; }
 .square-btn:hover { background:rgba(255,255,255,.1); }
+.set-row { display:flex; align-items:center; gap:16px; padding:16px 20px; border-radius:18px; background:rgba(255,255,255,.05); border:1.5px solid rgba(255,255,255,.1); }
+.set-ico { font-size:26px; width:32px; text-align:center; }
+.set-name { flex:none; width:140px; font-weight:800; font-size:16px; }
+.set-val { flex:none; width:48px; text-align:right; font-family:'Fredoka',sans-serif; font-weight:700; font-size:20px; color:#ffd23f; }
+.seg-btn { cursor:pointer; padding:9px 18px; border-radius:12px; border:2px solid rgba(255,255,255,.15); background:rgba(255,255,255,.03); color:#fff; font-weight:800; font-size:14px; }
+.seg-btn--on { border-color:#ffd23f; background:rgba(255,210,63,.18); color:#ffd23f; }
