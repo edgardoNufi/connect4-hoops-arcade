@@ -1,5 +1,5 @@
 @using Connect4HoopsArcade.Core.Catalog
-@inject GameSession Session
+@inherits SessionComponentBase
 
 <div style="flex:1 1 0;min-width:0;max-width:320px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(8px,1.4vh,16px);padding:22px 16px;border-radius:26px;border:2.5px solid @Hex;background:@PanelBg;box-shadow:@PanelGlow;opacity:@PanelOpacity;--tc:@Hex;@PanelAnim;transition:opacity .3s;">
   <div style="width:clamp(76px,9vw,128px);height:clamp(76px,9vw,128px);">

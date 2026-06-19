@@ -1,6 +1,6 @@
 @using Connect4HoopsArcade.Core.Board
 @using Connect4HoopsArcade.Core.Players
-@inject GameSession Session
+@inherits SessionComponentBase
 
 <div @onclick="Drop"
      style="display:flex;flex-direction:column;gap:clamp(5px,1.1vw,14px);border-radius:14px;padding:2px;cursor:@Cursor;background:@ColBg;box-shadow:@ColGlow;@ShakeStyle">

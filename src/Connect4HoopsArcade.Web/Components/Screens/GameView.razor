@@ -1,5 +1,5 @@
 @using Connect4HoopsArcade.Web.Components.Game
-@inject GameSession Session
+@inherits SessionComponentBase
 
 <div class="game-screen" style="position:absolute;inset:0;z-index:5;">
   <div class="rotate-hint" style="position:absolute;inset:0;flex-direction:column;align-items:center;justify-content:center;gap:18px;text-align:center;padding:30px;background:#0c0922;">
@@ -10,9 +10,9 @@
 
   <div class="board-wrap" style="position:absolute;inset:0;display:flex;align-items:stretch;gap:clamp(12px,2vw,28px);padding:clamp(58px,8vh,84px) clamp(16px,2.4vw,38px) clamp(14px,2.2vh,26px);">
     <div style="position:absolute;top:14px;left:50%;transform:translateX(-50%);z-index:3;display:flex;gap:10px;align-items:center;">
-      <button @onclick="Session.OpenSettings" class="top-btn">⚙ Ajustes</button>
-      <button @onclick="Session.ResetBoard" class="top-btn top-btn--yellow">🔄 Reiniciar</button>
-      <button @onclick="Session.Resign" class="top-btn">🏳️ Rendirse</button>
+      <button @onclick="Session.OpenSettings" disabled="@Session.IsBusy" class="top-btn">⚙ Ajustes</button>
+      <button @onclick="Session.ResetBoard" disabled="@Session.IsBusy" class="top-btn top-btn--yellow">🔄 Reiniciar</button>
+      <button @onclick="Session.Resign" disabled="@Session.IsBusy" class="top-btn">🏳️ Rendirse</button>
     </div>
 
     <PlayerPanel Index="0" />

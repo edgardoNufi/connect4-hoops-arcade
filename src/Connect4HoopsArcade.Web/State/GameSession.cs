@@ -73,6 +73,8 @@ public sealed class GameSession
     public void SetPlayer(int index, PlayerConfig config) { Players[index] = config; Notify(); }
 
     // ---- game lifecycle ----
+    // Note: only BeginGame raises GameStarted (the "get ready" audio cue). Rematch/ResetBoard
+    // intentionally stay quieter — they don't replay the intro voice line.
     public void BeginGame()
     {
         ResetState($"¡Comienza el duelo! Turno de {Players[0].Name}", resetScores: true);
@@ -121,7 +123,7 @@ public sealed class GameSession
         int w = loser == 0 ? 1 : 0;
         Scores[w]++;
         Winner = w; WinBy = "resign"; WinningCells = new();
-        IsIdle = false; IsThinking = false;
+        IsBusy = true; IsIdle = false; IsThinking = false;
         Narrator = $"🏳️ {Players[loser].Name} se rindió. ¡Gana {Players[w].Name}!";
         Notify();
         Won?.Invoke(w);
@@ -200,6 +202,13 @@ public sealed class GameSession
         {
             IsThinking = true; IsBusy = true; Notify();
             await Task.Delay(750);
+            // Bail if the player reset/resigned/navigated during the think delay, so this
+            // stale continuation can't drop a CPU chip onto a fresh or abandoned board.
+            if (Winner != null || Screen != AppScreen.Game)
+            {
+                IsThinking = false; IsBusy = false; Notify();
+                return;
+            }
             int cpuCol = CpuStrategy.ChooseColumn(Board, CpuLevel);
             IsThinking = false; IsBusy = false;
             if (cpuCol >= 0) await Place(cpuCol);
@@ -248,7 +257,7 @@ public sealed class GameSession
         {
             try { await Task.Delay(9000, token); } catch { return; }
             if (token.IsCancellationRequested) return;
-            if (Screen != AppScreen.Game || Winner != null || CpuTurn) return;
+            if (Screen != AppScreen.Game || Winner != null || CpuTurn || IsBusy) return;
             IsIdle = true;
             Narrator = $"¿Sigues ahí, {Players[Current].Name}? ¡Es tu turno! 🏀";
             Notify();

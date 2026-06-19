@@ -1,5 +1,5 @@
 @using Connect4HoopsArcade.Core.Catalog
-@inject GameSession Session
+@inherits SessionComponentBase
 
 <div style="display:flex;gap:clamp(5px,1.1vw,14px);">
   @for (int col = 0; col < 7; col++)

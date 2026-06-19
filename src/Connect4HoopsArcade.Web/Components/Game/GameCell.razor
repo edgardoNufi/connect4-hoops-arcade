@@ -11,6 +11,10 @@
           <AvatarSvg ColorId="@Occupant.ColorId" Face="Occupant.Face" Accessory="Occupant.Accessory" />
         </div>
       </div>
+      @if (PlaysDrop)
+      {
+          <div style="position:absolute;inset:-4%;border-radius:50%;border:3px solid @hex;pointer-events:none;opacity:0;animation:land @LandSeconds ease-out @LandDelay;"></div>
+      }
   }
 </div>
 
@@ -22,7 +26,10 @@
     [Parameter] public double DropSeconds { get; set; } = 0.6;
 
     private string Dim => DimmedByWin ? "0.22" : "1";
-    private string DropStyle => (JustDropped && !DimmedByWin && !IsWinning)
-        ? $"animation:drop {DropSeconds:0.##}s;"
-        : "";
+    private bool PlaysDrop => JustDropped && !DimmedByWin && !IsWinning;
+    private string DropStyle => PlaysDrop ? $"animation:drop {DropSeconds:0.##}s;" : "";
+
+    // Impact flash ring, timed to coincide with the chip landing (≈ halfway through the drop).
+    private string LandSeconds => $"{DropSeconds * 0.7:0.##}s";
+    private string LandDelay => $"{DropSeconds * 0.5:0.##}s";
 }

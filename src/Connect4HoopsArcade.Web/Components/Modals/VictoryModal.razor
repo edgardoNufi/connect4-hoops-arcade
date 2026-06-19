@@ -1,5 +1,5 @@
 @using Connect4HoopsArcade.Core.Catalog
-@inject GameSession Session
+@inherits SessionComponentBase
 
 <div style="position:absolute;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;background:radial-gradient(110% 90% at 50% 30%, @(WinnerHex)44 0%, rgba(8,6,15,.92) 70%);">
   <div style="position:absolute;inset:0;overflow:hidden;pointer-events:none;">

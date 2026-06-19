@@ -1,5 +1,5 @@
 @using Connect4HoopsArcade.Core.Catalog
-@inject GameSession Session
+@inherits SessionComponentBase
 
 <div @key="Session.Narrator" style="margin-top:clamp(14px,3.4vh,40px);display:flex;align-items:center;gap:12px;max-width:100%;padding:11px 22px;border-radius:18px;background:rgba(255,255,255,.07);border:2px solid @Hex;box-shadow:0 0 22px @(Hex)66;animation:pop .35s ease;">
   <span style="font-size:24px;">🎙️</span>
