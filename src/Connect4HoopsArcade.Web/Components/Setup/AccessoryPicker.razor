@@ -1,0 +1,24 @@
+@using Connect4HoopsArcade.Core.Primitives
+@using Connect4HoopsArcade.Core.Catalog
+
+<div>
+  <div class="setup-label">ACCESORIO</div>
+  <div style="display:flex;flex-wrap:wrap;gap:8px;">
+    @foreach (var a in AccessoryCatalog.All)
+    {
+        var border = a.Id == SelectedId ? Hex : "transparent";
+        <button title="@a.Label" @onclick="() => OnPick.InvokeAsync(a.Id)"
+                style="cursor:pointer;width:52px;height:52px;padding:4px;border-radius:14px;border:2px solid @border;background:rgba(0,0,0,.2);">
+          <AvatarSvg ColorId="@ColorId" Face="Face" Accessory="a.Id" />
+        </button>
+    }
+  </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public string ColorId { get; set; } = "red";
+    [Parameter] public FaceId Face { get; set; }
+    [Parameter] public AccessoryId SelectedId { get; set; }
+    [Parameter] public EventCallback<AccessoryId> OnPick { get; set; }
+    private string Hex => ColorCatalog.HexOf(ColorId);
+}
