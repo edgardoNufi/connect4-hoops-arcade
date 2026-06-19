@@ -1,0 +1,11 @@
+@using Connect4HoopsArcade.Core.Catalog
+@inject GameSession Session
+
+<div @key="Session.Narrator" style="margin-top:clamp(14px,3.4vh,40px);display:flex;align-items:center;gap:12px;max-width:100%;padding:11px 22px;border-radius:18px;background:rgba(255,255,255,.07);border:2px solid @Hex;box-shadow:0 0 22px @(Hex)66;animation:pop .35s ease;">
+  <span style="font-size:24px;">🎙️</span>
+  <span class="font-display" style="font-weight:600;font-size:clamp(16px,2vw,26px);color:#fff;white-space:nowrap;">@Session.Narrator</span>
+</div>
+
+@code {
+    private string Hex => ColorCatalog.HexOf(Session.Players[Session.Current].ColorId);
+}
