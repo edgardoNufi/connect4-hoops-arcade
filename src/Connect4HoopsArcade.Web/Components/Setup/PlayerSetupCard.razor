@@ -34,7 +34,7 @@
     private Task OnNameChange(ChangeEventArgs e)
     {
         var name = e.Value?.ToString();
-        if (string.IsNullOrWhiteSpace(name)) name = $"Jugador {Index + 1}";
+        name = string.IsNullOrWhiteSpace(name) ? $"Jugador {Index + 1}" : name.Trim();
         return OnChange.InvokeAsync(Player with { Name = name });
     }
 }
