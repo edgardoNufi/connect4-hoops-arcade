@@ -1,0 +1,40 @@
+@using Connect4HoopsArcade.Core.Primitives
+@using Connect4HoopsArcade.Core.Catalog
+@using Connect4HoopsArcade.Core.Players
+
+<div style="flex:1 1 340px;max-width:440px;min-width:300px;border-radius:24px;border:3px solid @Hex;background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.01));box-shadow:0 0 26px @(Hex)55;padding:18px;display:flex;flex-direction:column;gap:14px;">
+  <div style="display:flex;align-items:center;gap:14px;">
+    <div style="width:92px;height:92px;flex:none;">
+      <AvatarSvg ColorId="@Player.ColorId" Face="Player.Face" Accessory="Player.Accessory" Glow="true" />
+    </div>
+    <div style="flex:1;min-width:0;">
+      <div style="font-size:13px;font-weight:900;color:@Hex;letter-spacing:1px;">@Tag</div>
+      <input value="@Player.Name" @onchange="OnNameChange" disabled="@Player.IsCpu" maxlength="12" placeholder="Nombre"
+             class="font-display"
+             style="width:100%;margin-top:4px;background:rgba(0,0,0,.25);border:2px solid rgba(255,255,255,.12);border-radius:12px;padding:10px 12px;color:#fff;font-weight:600;font-size:22px;outline:none;opacity:@(Player.IsCpu ? "0.6" : "1");" />
+    </div>
+  </div>
+  <ColorPicker SelectedId="@Player.ColorId" TakenColorId="@TakenColorId" OnPick="PickColor" />
+  <FacePicker ColorId="@Player.ColorId" SelectedId="Player.Face" OnPick="PickFace" />
+  <AccessoryPicker ColorId="@Player.ColorId" Face="Player.Face" SelectedId="Player.Accessory" OnPick="PickAccessory" />
+</div>
+
+@code {
+    [Parameter, EditorRequired] public PlayerConfig Player { get; set; } = default!;
+    [Parameter] public int Index { get; set; }
+    [Parameter] public string? TakenColorId { get; set; }
+    [Parameter] public EventCallback<PlayerConfig> OnChange { get; set; }
+
+    private string Hex => ColorCatalog.HexOf(Player.ColorId);
+    private string Tag => Player.IsCpu ? "CPU" : $"JUGADOR {Index + 1}";
+
+    private Task PickColor(string id) => OnChange.InvokeAsync(Player with { ColorId = id });
+    private Task PickFace(FaceId f) => OnChange.InvokeAsync(Player with { Face = f });
+    private Task PickAccessory(AccessoryId a) => OnChange.InvokeAsync(Player with { Accessory = a });
+    private Task OnNameChange(ChangeEventArgs e)
+    {
+        var name = e.Value?.ToString();
+        if (string.IsNullOrWhiteSpace(name)) name = $"Jugador {Index + 1}";
+        return OnChange.InvokeAsync(Player with { Name = name });
+    }
+}

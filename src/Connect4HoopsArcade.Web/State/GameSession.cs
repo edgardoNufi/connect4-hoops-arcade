@@ -48,5 +48,16 @@ public sealed class GameSession
         Notify();
     }
 
+    // ---- game lifecycle ----
+    public void BeginGame()
+    {
+        Board = new GameBoard();
+        Current = 0;
+        Scores = new[] { 0, 0 };
+        Narrator = $"¡Comienza el duelo! Turno de {Players[0].Name}";
+        Screen = AppScreen.Game;
+        Notify();
+    }
+
     // Move flow (TryDrop, CPU, win/draw) is implemented in Phase 4.
 }
