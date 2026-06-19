@@ -28,6 +28,27 @@ public sealed class GameSession
     public CpuDifficulty CpuLevel { get; set; } = CpuDifficulty.Sharp;
     public AnimationSpeed Speed { get; set; } = AnimationSpeed.Normal;
 
+    public Connect4HoopsArcade.Web.Models.PlayMode Mode2 { get; private set; } = Connect4HoopsArcade.Web.Models.PlayMode.Digital;
+    public bool SensorConnected { get; private set; }
+    public event Action? ModeChanged;
+
+    public void SetPlayMode(Connect4HoopsArcade.Web.Models.PlayMode mode)
+    {
+        if (Mode2 == mode) return;
+        Mode2 = mode;
+        ModeChanged?.Invoke();
+        Notify();
+    }
+
+    /// <summary>Reports sensor link state; autodetection promotes Digital→Physical and falls back on loss.</summary>
+    public void SetSensorConnected(bool connected, bool autoSwitch = true)
+    {
+        SensorConnected = connected;
+        if (autoSwitch) SetPlayMode(connected ? Connect4HoopsArcade.Web.Models.PlayMode.Physical
+                                              : Connect4HoopsArcade.Web.Models.PlayMode.Digital);
+        else Notify();
+    }
+
     public PlayerConfig[] Players { get; private set; } =
         { PlayerConfig.DefaultP1, PlayerConfig.DefaultP2 };
     public GameBoard Board { get; private set; } = new();
