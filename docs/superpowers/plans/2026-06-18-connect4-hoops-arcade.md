@@ -2896,6 +2896,16 @@ git commit -m "feat(web): victory and draw modals with confetti"
 > (future) sensors share one code path. Physical mode disables on-screen clicks; keyboard 1–7 always works
 > as a sensor simulator. Mode is persisted + autodetected from sensor connection.
 
+> **IMPORTANT (added during Phase 4):** the gameplay components (`GameView`, `GameColumn`, `ColumnArrows`,
+> `BoardGrid`, `PlayerPanel`, `NarratorBubble`, `VictoryModal`, `DrawModal`) now use
+> `@inherits SessionComponentBase` instead of `@inject GameSession Session`. The base
+> (`Components/SessionComponentBase.cs`) injects `Session` (as a `protected` property) AND subscribes to
+> `StateChanged` so each component re-renders on every state change (AppShell's cascade alone left siblings
+> stale). When Phase 5 says "add `@inject MoveRouter Router` to GameColumn/ColumnArrows", ADD that line
+> alongside the existing `@inherits SessionComponentBase` (do not remove `@inherits`, and do not re-add
+> `@inject GameSession Session` — `Session` already comes from the base). GameView's `@code` replacement
+> (computed `InteractionEnabled`) stays as-is under `@inherits`.
+
 ### Task 5.1: PlayMode in GameSession + MoveRouter
 
 **Files:**
