@@ -1,0 +1,32 @@
+@using Connect4HoopsArcade.Core.Primitives
+@inject GameSession Session
+
+<div @onclick="Start" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;padding:24px;z-index:5;">
+  <div style="position:absolute;top:7%;left:14%;width:62px;height:62px;opacity:.9;animation:floatY 5s ease-in-out infinite;">
+    <AvatarSvg ColorId="pink" Face="FaceId.Happy" Accessory="AccessoryId.None" Glow="true" />
+  </div>
+  <div style="position:absolute;top:16%;right:13%;width:54px;height:54px;opacity:.9;animation:floatY 6.4s ease-in-out infinite .6s;">
+    <AvatarSvg ColorId="cyan" Face="FaceId.Confident" Accessory="AccessoryId.None" Glow="true" />
+  </div>
+  <div style="position:absolute;bottom:16%;left:9%;width:48px;height:48px;opacity:.85;animation:floatY 7s ease-in-out infinite 1.1s;">
+    <AvatarSvg ColorId="yellow" Face="FaceId.Surprised" Accessory="AccessoryId.None" Glow="true" />
+  </div>
+
+  <div style="display:flex;align-items:center;gap:18px;margin-bottom:6px;">
+    <div style="width:84px;height:84px;animation:ballBounce 1.9s cubic-bezier(.5,0,.5,1) infinite;">
+      <BasketballSvg />
+    </div>
+  </div>
+  <div class="font-display" style="font-weight:700;letter-spacing:1px;text-align:center;line-height:.94;">
+    <div style="font-size:clamp(40px,9vw,118px);color:#ffd23f;text-shadow:0 6px 0 #c98800,0 0 34px rgba(255,210,63,.55);-webkit-text-stroke:3px #1a1030;">CONNECT&nbsp;4</div>
+    <div style="font-size:clamp(34px,7.6vw,96px);color:#ff2d6f;text-shadow:0 5px 0 #a3134a,0 0 32px rgba(255,45,111,.55);-webkit-text-stroke:3px #1a1030;margin-top:-4px;">HOOPS</div>
+  </div>
+  <div style="margin-top:30px;display:flex;align-items:center;gap:14px;padding:16px 34px;border-radius:999px;background:rgba(255,255,255,.06);border:2px solid rgba(34,211,238,.55);box-shadow:0 0 26px rgba(34,211,238,.35);animation:blink 1.6s ease-in-out infinite;">
+    <span class="font-display" style="font-weight:600;font-size:clamp(18px,2.6vw,28px);color:#22d3ee;letter-spacing:.5px;">TOCA PARA COMENZAR</span>
+  </div>
+  <div style="position:absolute;bottom:22px;font-size:13px;color:rgba(255,255,255,.4);letter-spacing:2px;font-weight:700;">ARCADE&nbsp;EDITION · 7×6 · 2 JUGADORES</div>
+</div>
+
+@code {
+    private void Start() => Session.GoMode();
+}
