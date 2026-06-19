@@ -536,9 +536,9 @@ public class BoardTests
     [Fact]
     public void New_board_is_empty_7x6()
     {
-        var b = new Board();
-        Assert.Equal(7, Board.Columns);
-        Assert.Equal(6, Board.Rows);
+        var b = new GameBoard();
+        Assert.Equal(7, GameBoard.Columns);
+        Assert.Equal(6, GameBoard.Rows);
         for (int c = 0; c < 7; c++)
             for (int r = 0; r < 6; r++)
                 Assert.Equal(Cell.Empty, b[c, r]);
@@ -547,14 +547,14 @@ public class BoardTests
     [Fact]
     public void LowestRow_is_zero_on_empty_column()
     {
-        var b = new Board();
+        var b = new GameBoard();
         Assert.Equal(0, b.LowestRow(3));
     }
 
     [Fact]
     public void Drop_stacks_from_the_bottom_up()
     {
-        var b = new Board();
+        var b = new GameBoard();
         Assert.Equal(0, b.Drop(2, Cell.Player1));
         Assert.Equal(1, b.Drop(2, Cell.Player2));
         Assert.Equal(Cell.Player1, b[2, 0]);
@@ -564,7 +564,7 @@ public class BoardTests
     [Fact]
     public void Drop_returns_minus_one_when_column_full()
     {
-        var b = new Board();
+        var b = new GameBoard();
         for (int i = 0; i < 6; i++) b.Drop(0, Cell.Player1);
         Assert.True(b.IsColumnFull(0));
         Assert.Equal(-1, b.LowestRow(0));
@@ -574,7 +574,7 @@ public class BoardTests
     [Fact]
     public void IsBoardFull_true_only_when_every_top_cell_filled()
     {
-        var b = new Board();
+        var b = new GameBoard();
         Assert.False(b.IsBoardFull());
         for (int c = 0; c < 7; c++)
             for (int r = 0; r < 6; r++)
@@ -585,7 +585,7 @@ public class BoardTests
     [Fact]
     public void Clone_is_independent()
     {
-        var b = new Board();
+        var b = new GameBoard();
         b.Drop(1, Cell.Player1);
         var c = b.Clone();
         c.Drop(1, Cell.Player2);
@@ -600,7 +600,7 @@ public class BoardTests
 ```bash
 dotnet test --filter BoardTests
 ```
-Expected: FAIL — `Board` does not exist.
+Expected: FAIL — `GameBoard` does not exist.
 
 - [ ] **Step 3: Implement Board**
 
@@ -611,15 +611,15 @@ using Connect4HoopsArcade.Core.Primitives;
 namespace Connect4HoopsArcade.Core.Board;
 
 /// <summary>7×6 Connect-4 grid. Indexed [col, row] with row 0 = bottom.</summary>
-public sealed class Board
+public sealed class GameBoard
 {
     public const int Columns = 7;
     public const int Rows = 6;
 
     private readonly Cell[,] _cells;
 
-    public Board() => _cells = new Cell[Columns, Rows];
-    private Board(Cell[,] cells) => _cells = cells;
+    public GameBoard() => _cells = new Cell[Columns, Rows];
+    private GameBoard(Cell[,] cells) => _cells = cells;
 
     public Cell this[int col, int row] => _cells[col, row];
 
@@ -649,7 +649,7 @@ public sealed class Board
         return r;
     }
 
-    public Board Clone() => new((Cell[,])_cells.Clone());
+    public GameBoard Clone() => new((Cell[,])_cells.Clone());
 }
 ```
 
@@ -687,9 +687,9 @@ namespace Connect4HoopsArcade.Core.Tests;
 public class WinDetectorTests
 {
     // Drops a cell and returns (board, col, row) of the last move.
-    private static (Board b, int col, int row) Play(params (int col, Cell cell)[] moves)
+    private static (GameBoard b, int col, int row) Play(params (int col, Cell cell)[] moves)
     {
-        var b = new Board();
+        var b = new GameBoard();
         int lastCol = 0, lastRow = 0;
         foreach (var (col, cell) in moves)
         {
@@ -723,7 +723,7 @@ public class WinDetectorTests
     public void Detects_diagonal_up_right()
     {
         // Build a / diagonal for Player1 at columns 0..3.
-        var b = new Board();
+        var b = new GameBoard();
         b.Drop(0, Cell.Player1);
         b.Drop(1, Cell.Player2); b.Drop(1, Cell.Player1);
         b.Drop(2, Cell.Player2); b.Drop(2, Cell.Player2); b.Drop(2, Cell.Player1);
@@ -738,7 +738,7 @@ public class WinDetectorTests
     public void Detects_diagonal_down_right()
     {
         // Build a \ diagonal for Player1 at columns 0..3.
-        var b = new Board();
+        var b = new GameBoard();
         b.Drop(0, Cell.Player2); b.Drop(0, Cell.Player2); b.Drop(0, Cell.Player2);
         int r0 = b.Drop(0, Cell.Player1);
         b.Drop(1, Cell.Player2); b.Drop(1, Cell.Player2); b.Drop(1, Cell.Player1);
@@ -785,7 +785,7 @@ public static class WinDetector
     /// If placing <paramref name="cell"/> at (col,row) completes 4+ in a row, returns exactly the 4
     /// winning positions (containing the placed cell); otherwise null.
     /// </summary>
-    public static IReadOnlyList<BoardPosition>? FindWinningLine(Board board, int col, int row, Cell cell)
+    public static IReadOnlyList<BoardPosition>? FindWinningLine(GameBoard board, int col, int row, Cell cell)
     {
         foreach (var (dc, dr) in Directions)
         {
@@ -800,7 +800,7 @@ public static class WinDetector
         return null;
     }
 
-    private static List<BoardPosition> BuildLine(Board board, int col, int row, int dc, int dr, Cell cell)
+    private static List<BoardPosition> BuildLine(GameBoard board, int col, int row, int dc, int dr, Cell cell)
     {
         var line = new List<BoardPosition> { new(col, row) };
         Extend(board, col, row, dc, dr, cell, line, append: true);
@@ -808,11 +808,11 @@ public static class WinDetector
         return line;
     }
 
-    private static void Extend(Board board, int col, int row, int dc, int dr, Cell cell,
+    private static void Extend(GameBoard board, int col, int row, int dc, int dr, Cell cell,
         List<BoardPosition> line, bool append)
     {
         int c = col + dc, r = row + dr;
-        while (c >= 0 && c < Board.Columns && r >= 0 && r < Board.Rows && board[c, r] == cell)
+        while (c >= 0 && c < GameBoard.Columns && r >= 0 && r < GameBoard.Rows && board[c, r] == cell)
         {
             if (append) line.Add(new(c, r));
             else line.Insert(0, new(c, r));
@@ -858,7 +858,7 @@ public class ThreatScannerTests
     [Fact]
     public void Detects_immediate_winning_threat()
     {
-        var b = new Board();
+        var b = new GameBoard();
         b.Drop(0, Cell.Player1);
         b.Drop(1, Cell.Player1);
         b.Drop(2, Cell.Player1); // three in a row; col 3 (or -1 left) would win
@@ -868,7 +868,7 @@ public class ThreatScannerTests
     [Fact]
     public void No_threat_on_empty_board()
     {
-        Assert.False(ThreatScanner.HasImmediateThreat(new Board(), Cell.Player1));
+        Assert.False(ThreatScanner.HasImmediateThreat(new GameBoard(), Cell.Player1));
     }
 }
 ```
@@ -892,9 +892,9 @@ namespace Connect4HoopsArcade.Core.Rules;
 public static class ThreatScanner
 {
     /// <summary>True if <paramref name="cell"/> has a move that immediately wins.</summary>
-    public static bool HasImmediateThreat(Board board, Cell cell)
+    public static bool HasImmediateThreat(GameBoard board, Cell cell)
     {
-        for (int c = 0; c < Board.Columns; c++)
+        for (int c = 0; c < GameBoard.Columns; c++)
         {
             int r = board.LowestRow(c);
             if (r < 0) continue;
@@ -1042,7 +1042,7 @@ public class CpuStrategyTests
     [Fact]
     public void Takes_winning_move_when_available()
     {
-        var b = new Board();
+        var b = new GameBoard();
         b.Drop(0, Cell.Player2);
         b.Drop(1, Cell.Player2);
         b.Drop(2, Cell.Player2); // CPU (Player2) can win at col 3
@@ -1053,7 +1053,7 @@ public class CpuStrategyTests
     [Fact]
     public void Blocks_opponent_win_when_not_chill()
     {
-        var b = new Board();
+        var b = new GameBoard();
         b.Drop(0, Cell.Player1);
         b.Drop(1, Cell.Player1);
         b.Drop(2, Cell.Player1); // opponent threatens col 3
@@ -1064,14 +1064,14 @@ public class CpuStrategyTests
     [Fact]
     public void Prefers_center_on_empty_board_when_sharp()
     {
-        int col = CpuStrategy.ChooseColumn(new Board(), CpuDifficulty.Sharp);
+        int col = CpuStrategy.ChooseColumn(new GameBoard(), CpuDifficulty.Sharp);
         Assert.Equal(3, col);
     }
 
     [Fact]
     public void Returns_a_playable_column()
     {
-        var b = new Board();
+        var b = new GameBoard();
         int col = CpuStrategy.ChooseColumn(b, CpuDifficulty.Normal);
         Assert.InRange(col, 0, 6);
         Assert.False(b.IsColumnFull(col));
@@ -1102,7 +1102,7 @@ public static class CpuStrategy
     private static readonly int[] SharpOrder  = { 3, 2, 4, 1, 5, 0, 6 };
     private static readonly int[] NormalOrder = { 3, 4, 2, 5, 1, 6, 0 };
 
-    public static int ChooseColumn(Board board, CpuDifficulty difficulty, Random? rng = null)
+    public static int ChooseColumn(GameBoard board, CpuDifficulty difficulty, Random? rng = null)
     {
         // 1) Win if possible.
         int win = WinningColumnFor(board, Cell.Player2);
@@ -1128,9 +1128,9 @@ public static class CpuStrategy
         return available[0];
     }
 
-    private static int WinningColumnFor(Board board, Cell cell)
+    private static int WinningColumnFor(GameBoard board, Cell cell)
     {
-        for (int c = 0; c < Board.Columns; c++)
+        for (int c = 0; c < GameBoard.Columns; c++)
         {
             int r = board.LowestRow(c);
             if (r < 0) continue;
@@ -1602,7 +1602,7 @@ public sealed class GameSession
     public GameMode Mode { get; private set; } = GameMode.TwoPlayer;
     public PlayerConfig[] Players { get; private set; } =
         { PlayerConfig.DefaultP1, PlayerConfig.DefaultP2 };
-    public Board Board { get; private set; } = new();
+    public GameBoard Board { get; private set; } = new();
     public int Current { get; private set; }
     public int[] Scores { get; private set; } = { 0, 0 };
     public string Narrator { get; set; } = "";
@@ -2122,7 +2122,7 @@ Add to `src/Connect4HoopsArcade.Web/State/GameSession.cs` (inside the class):
 ```csharp
 public void BeginGame()
 {
-    Board = new Board();
+    Board = new GameBoard();
     Current = 0;
     Scores = new[] { 0, 0 };
     Narrator = $"¡Comienza el duelo! Turno de {Players[0].Name}";
@@ -2195,7 +2195,7 @@ public sealed class GameSession
 
     public PlayerConfig[] Players { get; private set; } =
         { PlayerConfig.DefaultP1, PlayerConfig.DefaultP2 };
-    public Board Board { get; private set; } = new();
+    public GameBoard Board { get; private set; } = new();
     public int Current { get; private set; }
     public int[] Scores { get; private set; } = { 0, 0 };
     public string Narrator { get; private set; } = "";
@@ -2267,7 +2267,7 @@ public sealed class GameSession
     private void ResetState(string narrator, bool resetScores)
     {
         CancelIdle();
-        Board = new Board();
+        Board = new GameBoard();
         Current = 0;
         Winner = null; WinBy = "";
         WinningCells = new();
