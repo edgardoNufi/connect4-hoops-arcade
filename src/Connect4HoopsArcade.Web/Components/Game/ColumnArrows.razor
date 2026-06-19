@@ -1,0 +1,22 @@
+@using Connect4HoopsArcade.Core.Catalog
+@inject GameSession Session
+
+<div style="display:flex;gap:clamp(5px,1.1vw,14px);">
+  @for (int col = 0; col < 7; col++)
+  {
+      var c = col;
+      var full = Session.Board.IsColumnFull(c);
+      var op = full ? "0.15" : (Session.Winner == null && !Session.CpuTurn ? "0.9" : "0.25");
+      <button @onclick="() => Drop(c)"
+              style="cursor:@(Playable(c) ? "pointer" : "not-allowed");width:clamp(46px,9.4vh,104px);height:34px;border:none;background:none;color:@CurrentHex;font-size:28px;line-height:1;opacity:@op;@ArrowAnim;transition:transform .15s;">▼</button>
+  }
+</div>
+
+@code {
+    [Parameter] public bool InteractionEnabled { get; set; } = true;
+    private string CurrentHex => ColorCatalog.HexOf(Session.Players[Session.Current].ColorId);
+    private string ArrowAnim => (Session.IsIdle && Session.Winner == null && !Session.CpuTurn)
+        ? "animation:arrowBounce .8s ease-in-out infinite;" : "";
+    private bool Playable(int c) => InteractionEnabled && Session.Winner == null && !Session.CpuTurn && !Session.Board.IsColumnFull(c);
+    private async Task Drop(int c) { if (Playable(c)) await Session.TryDrop(c); }
+}

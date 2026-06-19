@@ -1,0 +1,45 @@
+@using Connect4HoopsArcade.Core.Board
+@using Connect4HoopsArcade.Core.Players
+@inject GameSession Session
+
+<div @onclick="Drop"
+     style="display:flex;flex-direction:column;gap:clamp(5px,1.1vw,14px);border-radius:14px;padding:2px;cursor:@Cursor;background:@ColBg;box-shadow:@ColGlow;@ShakeStyle">
+  @for (int row = 5; row >= 0; row--)
+  {
+      var r = row;
+      var occ = OccupantAt(r);
+      <GameCell Occupant="occ"
+                IsWinning="Session.WinningCells.Contains(new BoardPosition(Col, r))"
+                DimmedByWin="@(Session.Winner != null && !Session.WinningCells.Contains(new BoardPosition(Col, r)))"
+                JustDropped="@(Session.LastDrop is { } d && d.Col == Col && d.Row == r && Session.Winner == null)"
+                DropSeconds="Session.DropSeconds" />
+  }
+</div>
+
+@code {
+    [Parameter] public int Col { get; set; }
+    [Parameter] public bool InteractionEnabled { get; set; } = true;
+
+    private bool Full => Session.Board.IsColumnFull(Col);
+    private bool Playable => InteractionEnabled && Session.Winner == null && !Session.CpuTurn && !Full;
+    private bool Error => Session.ErrorCol == Col;
+
+    private string Cursor => Playable ? "pointer" : "not-allowed";
+    private string ColBg => Error ? "rgba(255,45,111,.22)" : "transparent";
+    private string ColGlow => Error ? "0 0 18px rgba(255,45,111,.7), inset 0 0 14px rgba(255,45,111,.4)" : "none";
+    private string ShakeStyle => Error ? "animation:shake .42s ease;" : "";
+
+    private PlayerConfig? OccupantAt(int row)
+    {
+        var cell = Session.Board[Col, row];
+        return cell == Connect4HoopsArcade.Core.Primitives.Cell.Empty
+            ? null
+            : Session.Players[(int)cell - 1];
+    }
+
+    private async Task Drop()
+    {
+        if (!Playable) return;
+        await Session.TryDrop(Col);
+    }
+}

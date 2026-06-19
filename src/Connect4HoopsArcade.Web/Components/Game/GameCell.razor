@@ -1,0 +1,28 @@
+@using Connect4HoopsArcade.Core.Primitives
+@using Connect4HoopsArcade.Core.Players
+@using Connect4HoopsArcade.Core.Catalog
+
+<div style="position:relative;width:clamp(46px,9.4vh,104px);height:clamp(46px,9.4vh,104px);border-radius:50%;background:var(--cell);box-shadow:inset 0 4px 10px rgba(0,0,0,.85), inset 0 -2px 4px rgba(255,255,255,.05);">
+  @if (Occupant is not null)
+  {
+      var hex = ColorCatalog.HexOf(Occupant.ColorId);
+      <div style="position:absolute;inset:6%;opacity:@Dim;transition:opacity .3s;@DropStyle">
+        <div style="width:100%;height:100%;border-radius:50%;--wg:@hex;@(IsWinning ? "animation:winPulse .85s ease-in-out infinite;" : "")">
+          <AvatarSvg ColorId="@Occupant.ColorId" Face="Occupant.Face" Accessory="Occupant.Accessory" />
+        </div>
+      </div>
+  }
+</div>
+
+@code {
+    [Parameter] public PlayerConfig? Occupant { get; set; }
+    [Parameter] public bool IsWinning { get; set; }
+    [Parameter] public bool DimmedByWin { get; set; }   // true when a win exists and this cell is not part of it
+    [Parameter] public bool JustDropped { get; set; }
+    [Parameter] public double DropSeconds { get; set; } = 0.6;
+
+    private string Dim => DimmedByWin ? "0.22" : "1";
+    private string DropStyle => (JustDropped && !DimmedByWin && !IsWinning)
+        ? $"animation:drop {DropSeconds:0.##}s;"
+        : "";
+}
