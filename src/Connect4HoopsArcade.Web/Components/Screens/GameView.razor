@@ -1,4 +1,34 @@
-<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
-  <div class="font-display" style="font-size:32px;color:#22d3ee;">@Title</div>
+@using Connect4HoopsArcade.Web.Components.Game
+@inject GameSession Session
+
+<div class="game-screen" style="position:absolute;inset:0;z-index:5;">
+  <div class="rotate-hint" style="position:absolute;inset:0;flex-direction:column;align-items:center;justify-content:center;gap:18px;text-align:center;padding:30px;background:#0c0922;">
+    <div style="font-size:64px;animation:spin 3s linear infinite;">📱</div>
+    <div class="font-display" style="font-weight:700;font-size:26px;color:#22d3ee;">Gira tu dispositivo</div>
+    <div style="font-weight:700;color:rgba(255,255,255,.6);max-width:300px;">El tablero se ve mejor en horizontal. Pon tu teléfono de lado para jugar.</div>
+  </div>
+
+  <div class="board-wrap" style="position:absolute;inset:0;display:flex;align-items:stretch;gap:clamp(12px,2vw,28px);padding:clamp(58px,8vh,84px) clamp(16px,2.4vw,38px) clamp(14px,2.2vh,26px);">
+    <div style="position:absolute;top:14px;left:50%;transform:translateX(-50%);z-index:3;display:flex;gap:10px;align-items:center;">
+      <button @onclick="Session.OpenSettings" class="top-btn">⚙ Ajustes</button>
+      <button @onclick="Session.ResetBoard" class="top-btn top-btn--yellow">🔄 Reiniciar</button>
+      <button @onclick="Session.Resign" class="top-btn">🏳️ Rendirse</button>
+    </div>
+
+    <PlayerPanel Index="0" />
+
+    <div style="flex:0 1 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(8px,1.4vh,16px);min-width:0;">
+      <ColumnArrows InteractionEnabled="InteractionEnabled" />
+      <BoardGrid InteractionEnabled="InteractionEnabled" />
+      <NarratorBubble />
+    </div>
+
+    <PlayerPanel Index="1" />
+  </div>
 </div>
-@code { private const string Title = "JUEGO"; }
+
+@code {
+    // In Physical mode, on-screen clicks are disabled (board is the only input). Wired in Phase 5;
+    // defaults to enabled (Digital) for now.
+    [CascadingParameter] public bool InteractionEnabled { get; set; } = true;
+}
