@@ -57,13 +57,11 @@ public sealed class NarratorService : IDisposable
 
     private async void OnWon(int winner)
     {
-        // Stinger now; interrupt any in-flight turn line so the fanfare is clean.
-        await _audio.PlaySfxAsync(AudioKeys.VictorySfx);
+        // Talk first (interrupt any stale turn line): "¡Conecta 4!" then a victory line, queued.
         await _audio.PlayVoiceAsync(AudioKeys.ConnectFourV, interrupt: true);
-        await _audio.PlayRandomVoiceAsync(AudioKeys.VictoryV);     // queued after connect-four line
-        // Celebratory "win" cheer, offset so it follows the stinger instead of overlapping it.
-        await Task.Delay(600);
-        await _audio.PlaySfxAsync(AudioKeys.WinSfx);
+        await _audio.PlayRandomVoiceAsync(AudioKeys.VictoryV);
+        // The win cheer fires only AFTER the voices finish — no overlap with the talking.
+        await _audio.PlaySfxAfterVoiceAsync(AudioKeys.WinSfx);
     }
 
     private async void OnDrew()

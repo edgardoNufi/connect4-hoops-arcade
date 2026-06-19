@@ -37,11 +37,11 @@
     private async Task Start()
     {
         await Audio.InitAsync();
-        // Autoplay blocks music before this first gesture, so (re)start the loop now that audio is
-        // unlocked. It keeps playing across Mode/Setup until PlayerSetup stops it.
-        await Audio.PlayMusicAsync(Connect4HoopsArcade.Web.Services.AudioKeys.AttractLoop);
-        await Audio.PlayVoiceAsync(Connect4HoopsArcade.Web.Services.AudioKeys.Welcome);
+        // Click first for crisp button feedback. (Welcome voice removed for now.)
         await Audio.PlaySfxAsync(Connect4HoopsArcade.Web.Services.AudioKeys.ButtonClick);
+        // Autoplay blocks music before this first gesture; (re)start the loop now that audio is
+        // unlocked. It keeps looping across Mode/Setup and into the game.
+        await Audio.PlayMusicAsync(Connect4HoopsArcade.Web.Services.AudioKeys.AttractLoop);
         Session.GoMode();
     }
 }

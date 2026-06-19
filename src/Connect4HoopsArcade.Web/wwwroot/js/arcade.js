@@ -11,9 +11,15 @@ window.ArcadeAudio = (function () {
   // instead of piling up a backlog that would play stale.
   let voiceEl = null;
   let nextVoice = null;
+  let afterVoiceSfx = null;   // an SFX to fire once the voice queue fully drains (e.g. win cheer)
 
   // `key` is the path under wwwroot/audio/, INCLUDING subdir, e.g. "game/chip-drop.mp3".
   function url(key) { return 'audio/' + key; }
+
+  function sfxNow(key) {
+    try { const a = load(key).cloneNode(); a.volume = sfxVol; a.play().catch(() => {}); }
+    catch (e) { console.warn('[ArcadeAudio] sfx failed', key, e); }
+  }
 
   function load(key) {
     if (!cache[key]) {
@@ -28,7 +34,12 @@ window.ArcadeAudio = (function () {
     try {
       voiceEl = load(key).cloneNode();
       voiceEl.volume = voiceVol;
-      const advance = () => { voiceEl = null; const n = nextVoice; nextVoice = null; if (n) startVoice(n); };
+      const advance = () => {
+        voiceEl = null;
+        const n = nextVoice; nextVoice = null;
+        if (n) { startVoice(n); }
+        else if (afterVoiceSfx) { const k = afterVoiceSfx; afterVoiceSfx = null; sfxNow(k); }
+      };
       voiceEl.addEventListener('ended', advance);
       voiceEl.addEventListener('error', advance);
       voiceEl.play().catch(advance);
@@ -38,6 +49,7 @@ window.ArcadeAudio = (function () {
   function stopVoice() {
     if (voiceEl) { try { voiceEl.pause(); } catch {} voiceEl = null; }
     nextVoice = null;
+    afterVoiceSfx = null;
   }
 
   return {
@@ -48,8 +60,13 @@ window.ArcadeAudio = (function () {
       const now = Date.now();
       if (cooldownMs && lastPlayed[key] && now - lastPlayed[key] < cooldownMs) return;
       lastPlayed[key] = now;
-      try { const a = load(key).cloneNode(); a.volume = sfxVol; a.play().catch(() => {}); }
-      catch (e) { console.warn('[ArcadeAudio] sfx failed', key, e); }
+      sfxNow(key);
+    },
+    // Defer an SFX until the voice queue is empty (so a win cheer doesn't talk over the lines).
+    playSfxAfterVoice(key) {
+      if (muted) return;
+      if (voiceEl || nextVoice) afterVoiceSfx = key;
+      else sfxNow(key);
     },
     // interrupt=true stops the current voice and clears the pending one, then plays `key` now
     // (used for big moments like victory so a lingering turn line can't talk over the fanfare).

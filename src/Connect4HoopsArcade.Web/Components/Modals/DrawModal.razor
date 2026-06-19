@@ -1,17 +1,28 @@
 @inherits SessionComponentBase
 
-<div style="position:absolute;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(8,6,15,.85);">
-  <div style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:40px 44px;border-radius:28px;border:3px solid #22d3ee;background:linear-gradient(180deg,#15294a,#0d1830);box-shadow:0 0 40px rgba(34,211,238,.35);animation:pop .45s ease;max-width:480px;">
-    <div style="display:flex;margin-bottom:8px;">
-      <div style="width:88px;height:88px;"><AvatarSvg ColorId="@Session.Players[0].ColorId" Face="Session.Players[0].Face" Accessory="Session.Players[0].Accessory" /></div>
-      <div style="width:88px;height:88px;margin-left:-14px;"><AvatarSvg ColorId="@Session.Players[1].ColorId" Face="Session.Players[1].Face" Accessory="Session.Players[1].Accessory" /></div>
+<div style="position:absolute;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;background:radial-gradient(110% 90% at 50% 30%, rgba(34,211,238,.27) 0%, rgba(8,6,15,.92) 70%);">
+  <div style="position:relative;display:flex;flex-direction:column;align-items:center;animation:pop .5s ease;">
+    <div class="font-display" style="font-weight:700;font-size:clamp(36px,8vw,96px);color:#22d3ee;text-shadow:0 6px 0 #0e7490,0 0 40px rgba(34,211,238,.6);-webkit-text-stroke:3px #1a1030;letter-spacing:1px;">¡EMPATE!</div>
+    <div style="display:flex;align-items:center;justify-content:center;margin:14px 0;">
+      <div style="width:clamp(120px,20vw,180px);height:clamp(120px,20vw,180px);filter:drop-shadow(0 0 30px @Hex0);">
+        <AvatarSvg ColorId="@Session.Players[0].ColorId" Face="Session.Players[0].Face" Accessory="Session.Players[0].Accessory" Glow="true" />
+      </div>
+      <div class="font-display" style="font-size:clamp(28px,5vw,52px);font-weight:700;color:rgba(255,255,255,.5);margin:0 clamp(4px,2vw,18px);">VS</div>
+      <div style="width:clamp(120px,20vw,180px);height:clamp(120px,20vw,180px);filter:drop-shadow(0 0 30px @Hex1);">
+        <AvatarSvg ColorId="@Session.Players[1].ColorId" Face="Session.Players[1].Face" Accessory="Session.Players[1].Accessory" Glow="true" />
+      </div>
     </div>
-    <div class="font-display" style="font-weight:700;font-size:clamp(30px,6vw,56px);color:#22d3ee;text-shadow:0 4px 0 rgba(0,0,0,.4);">¡EMPATE!</div>
-    <div style="font-weight:800;font-size:18px;color:rgba(255,255,255,.75);margin:10px 0 4px;">Tablero lleno. ¡Nadie cede! 🏀</div>
-    <div style="font-weight:700;font-size:15px;color:rgba(255,255,255,.5);">Buen duelo. ¿La revancha define todo?</div>
-    <div style="display:flex;gap:12px;margin-top:26px;flex-wrap:wrap;justify-content:center;">
-      <button @onclick="Session.Rematch" class="font-display" style="cursor:pointer;padding:14px 32px;border-radius:999px;border:none;background:linear-gradient(180deg,#ffd23f,#f5a700);color:#1a1030;font-weight:700;font-size:21px;box-shadow:0 5px 0 #c98800;">🔄 Revancha</button>
-      <button @onclick="Session.GoSplash" class="font-display" style="cursor:pointer;padding:14px 28px;border-radius:999px;border:2px solid rgba(255,255,255,.3);background:rgba(255,255,255,.06);color:#fff;font-weight:600;font-size:21px;">🏠 Inicio</button>
+    <div class="font-display" style="font-weight:700;font-size:clamp(24px,5vw,48px);color:#fff;text-shadow:0 4px 0 rgba(0,0,0,.4);">¡Nadie cede! 🏀</div>
+    <div style="font-weight:800;font-size:18px;color:rgba(255,255,255,.65);margin-top:6px;">Tablero lleno · Marcador @Session.Scores[0] — @Session.Scores[1]</div>
+    <div style="display:flex;gap:14px;margin-top:30px;flex-wrap:wrap;justify-content:center;">
+      <button @onclick="Session.Rematch" class="font-display" style="cursor:pointer;padding:15px 34px;border-radius:999px;border:none;background:linear-gradient(180deg,#ffd23f,#f5a700);color:#1a1030;font-weight:700;font-size:22px;box-shadow:0 6px 0 #c98800;">🔄 Revancha</button>
+      <button @onclick="Session.ChangePlayers" class="font-display" style="cursor:pointer;padding:15px 30px;border-radius:999px;border:2px solid rgba(255,255,255,.3);background:rgba(255,255,255,.06);color:#fff;font-weight:600;font-size:22px;">👥 Cambiar jugadores</button>
+      <button @onclick="Session.GoSplash" class="font-display" style="cursor:pointer;padding:15px 30px;border-radius:999px;border:2px solid rgba(255,255,255,.3);background:rgba(255,255,255,.06);color:#fff;font-weight:600;font-size:22px;">🏠 Inicio</button>
     </div>
   </div>
 </div>
+
+@code {
+    private string Hex0 => Connect4HoopsArcade.Core.Catalog.ColorCatalog.HexOf(Session.Players[0].ColorId);
+    private string Hex1 => Connect4HoopsArcade.Core.Catalog.ColorCatalog.HexOf(Session.Players[1].ColorId);
+}

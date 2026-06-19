@@ -22,6 +22,8 @@ public sealed class AudioService : IAudioService
 
     public Task PlaySfxAsync(string key, int cooldownMs = 0) => Safe("ArcadeAudio.playSfx", key, cooldownMs);
 
+    public Task PlaySfxAfterVoiceAsync(string key) => Safe("ArcadeAudio.playSfxAfterVoice", key);
+
     public Task PlayVoiceAsync(string key, bool interrupt = false) =>
         VoicesEnabled ? Safe("ArcadeAudio.playVoice", key, interrupt) : Task.CompletedTask;
 
