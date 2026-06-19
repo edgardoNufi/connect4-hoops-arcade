@@ -1,5 +1,6 @@
 @using Connect4HoopsArcade.Web.State
 @using Connect4HoopsArcade.Web.Components.Screens
+@using Connect4HoopsArcade.Web.Components.Modals
 @implements IDisposable
 @inject GameSession Session
 
@@ -18,6 +19,14 @@
       break;
     case AppScreen.Game:
       <GameView />
+      break;
+    case AppScreen.Victory:
+      <GameView />
+      <VictoryModal />
+      break;
+    case AppScreen.Draw:
+      <GameView />
+      <DrawModal />
       break;
     case AppScreen.Sensors:
       <SensorTestPanel />
