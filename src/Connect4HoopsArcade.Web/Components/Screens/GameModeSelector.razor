@@ -1,4 +1,28 @@
-<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
-  <div class="font-display" style="font-size:32px;color:#22d3ee;">@Title</div>
+@using Connect4HoopsArcade.Core.Primitives
+@inject GameSession Session
+
+<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;z-index:5;animation:slideUp .4s ease;">
+  <div class="font-display" style="font-weight:700;font-size:clamp(26px,4.6vw,52px);color:#fff;text-shadow:0 4px 0 rgba(0,0,0,.4);margin-bottom:34px;text-align:center;">ELIGE MODO DE JUEGO</div>
+  <div style="display:flex;gap:28px;flex-wrap:wrap;justify-content:center;max-width:880px;">
+    <button @onclick="Session.ChooseOnePlayer" class="mode-card mode-card--cyan">
+      <div style="width:96px;height:96px;margin:0 auto 16px;">
+        <AvatarSvg ColorId="cyan" Face="FaceId.Confident" Accessory="AccessoryId.Glasses" />
+      </div>
+      <div class="font-display" style="font-weight:700;font-size:34px;">1 JUGADOR</div>
+      <div style="font-size:16px;font-weight:700;color:rgba(255,255,255,.6);margin-top:4px;">vs. CPU</div>
+    </button>
+    <button @onclick="Session.ChooseTwoPlayer" class="mode-card mode-card--pink">
+      <div style="position:relative;width:96px;height:96px;margin:0 auto 16px;">
+        <div style="position:absolute;left:0;top:8%;width:62%;height:62%;"><AvatarSvg ColorId="pink" Face="FaceId.Happy" Accessory="AccessoryId.Cap" /></div>
+        <div style="position:absolute;right:0;bottom:4%;width:62%;height:62%;"><AvatarSvg ColorId="yellow" Face="FaceId.Confident" Accessory="AccessoryId.Crown" /></div>
+      </div>
+      <div class="font-display" style="font-weight:700;font-size:34px;">2 JUGADORES</div>
+      <div style="font-size:16px;font-weight:700;color:rgba(255,255,255,.6);margin-top:4px;">Local · 1 vs 1</div>
+    </button>
+  </div>
+  <div style="display:flex;gap:16px;margin-top:40px;">
+    <button @onclick="Session.OpenSensors" class="pill-btn">⚡ Prueba de sensores</button>
+    <button @onclick="Session.OpenSettings" class="pill-btn">⚙ Configuración</button>
+  </div>
+  <button @onclick="Session.GoSplash" class="pill-btn" style="position:absolute;top:22px;left:22px;">‹ Inicio</button>
 </div>
-@code { private const string Title = "MODO"; }
