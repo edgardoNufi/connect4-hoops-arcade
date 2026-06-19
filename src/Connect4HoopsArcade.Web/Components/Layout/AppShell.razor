@@ -3,6 +3,9 @@
 @using Connect4HoopsArcade.Web.Components.Modals
 @implements IDisposable
 @inject GameSession Session
+@inject Connect4HoopsArcade.Web.Services.KeyboardInputService Keyboard
+@inject Connect4HoopsArcade.Web.Services.SensorConnectionService Sensor
+@inject Connect4HoopsArcade.Web.Input.MoveRouter Router
 
 <div class="arc-root">
   <GlowBackdrop />
@@ -42,7 +45,31 @@
 </div>
 
 @code {
-    protected override void OnInitialized() => Session.StateChanged += OnChanged;
-    public void Dispose() => Session.StateChanged -= OnChanged;
+    protected override void OnInitialized()
+    {
+        Session.StateChanged += OnChanged;
+        Session.ModeChanged += OnChanged;
+        Sensor.ConnectionChanged += OnSensorConn;
+        Sensor.ColumnTriggered += OnSensorColumn;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender) await Keyboard.RegisterAsync();
+    }
+
+    private async void OnSensorColumn(int col) =>
+        await Router.Route(col, Connect4HoopsArcade.Web.Input.MoveOrigin.Sensor);
+
+    private void OnSensorConn(bool connected) => Session.SetSensorConnected(connected);
+
+    public void Dispose()
+    {
+        Session.StateChanged -= OnChanged;
+        Session.ModeChanged -= OnChanged;
+        Sensor.ConnectionChanged -= OnSensorConn;
+        Sensor.ColumnTriggered -= OnSensorColumn;
+    }
+
     private void OnChanged() => InvokeAsync(StateHasChanged);
 }
