@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Connect4HoopsArcade.Core/Connect4HoopsArcade.Core.csproj" />
+    <Project Path="src/Connect4HoopsArcade.Web/Connect4HoopsArcade.Web.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Connect4HoopsArcade.Core.Tests/Connect4HoopsArcade.Core.Tests.csproj" />
+  </Folder>
+</Solution>
