@@ -57,6 +57,32 @@ public class CpuStrategyTests
     }
 
     [Fact]
+    public void Sharp_blocks_a_developing_horizontal_threat()
+    {
+        // Player1 (human) has three on the bottom row at cols 2-4; the left end (col 1) is blocked,
+        // the right end (col 5) is open and immediately playable → CPU MUST play col 5 to block.
+        var b = new GameBoard();
+        b.Drop(1, Cell.Player2);  // blocks the left end
+        b.Drop(2, Cell.Player1);
+        b.Drop(3, Cell.Player1);
+        b.Drop(4, Cell.Player1);
+        Assert.Equal(5, CpuStrategy.ChooseColumn(b, CpuDifficulty.Sharp));
+    }
+
+    [Fact]
+    public void Sharp_does_not_hand_the_opponent_an_immediate_win()
+    {
+        // A strong CPU must never choose a move that lets the opponent win on their next turn,
+        // when a safe alternative exists.
+        var b = new GameBoard();
+        b.Drop(0, Cell.Player1);
+        b.Drop(1, Cell.Player1);
+        b.Drop(2, Cell.Player1);  // P1 threatens col 3 (immediate win)
+        int chosen = CpuStrategy.ChooseColumn(b, CpuDifficulty.Sharp);
+        Assert.Equal(3, chosen);  // the only safe move is to block at col 3
+    }
+
+    [Fact]
     public void Returns_minus_one_when_board_full()
     {
         var b = new GameBoard();
