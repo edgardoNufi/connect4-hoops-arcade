@@ -7,6 +7,8 @@ obj/
 [Dd]ebug/
 [Rr]elease/
 publish/
+output/
+dotnet-install.sh
 # Rider/VS
 .idea/
 # OS
