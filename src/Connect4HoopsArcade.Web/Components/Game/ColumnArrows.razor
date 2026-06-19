@@ -1,5 +1,6 @@
 @using Connect4HoopsArcade.Core.Catalog
 @inherits SessionComponentBase
+@inject Connect4HoopsArcade.Web.Input.MoveRouter Router
 
 <div style="display:flex;gap:clamp(5px,1.1vw,14px);">
   @for (int col = 0; col < 7; col++)
@@ -18,5 +19,5 @@
     private string ArrowAnim => (Session.IsIdle && Session.Winner == null && !Session.CpuTurn)
         ? "animation:arrowBounce .8s ease-in-out infinite;" : "";
     private bool Playable(int c) => InteractionEnabled && Session.Winner == null && !Session.CpuTurn && !Session.Board.IsColumnFull(c);
-    private async Task Drop(int c) { if (Playable(c)) await Session.TryDrop(c); }
+    private async Task Drop(int c) { if (Playable(c)) await Router.Route(c, Connect4HoopsArcade.Web.Input.MoveOrigin.Screen); }
 }

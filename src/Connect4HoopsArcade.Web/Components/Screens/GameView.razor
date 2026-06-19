@@ -28,7 +28,5 @@
 </div>
 
 @code {
-    // In Physical mode, on-screen clicks are disabled (board is the only input). Wired in Phase 5;
-    // defaults to enabled (Digital) for now.
-    [CascadingParameter] public bool InteractionEnabled { get; set; } = true;
+    private bool InteractionEnabled => Session.Mode2 == Connect4HoopsArcade.Web.Models.PlayMode.Digital;
 }

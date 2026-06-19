@@ -1,6 +1,7 @@
 @using Connect4HoopsArcade.Core.Board
 @using Connect4HoopsArcade.Core.Players
 @inherits SessionComponentBase
+@inject Connect4HoopsArcade.Web.Input.MoveRouter Router
 
 <div @onclick="Drop"
      style="display:flex;flex-direction:column;gap:clamp(5px,1.1vw,14px);border-radius:14px;padding:2px;cursor:@Cursor;background:@ColBg;box-shadow:@ColGlow;@ShakeStyle">
@@ -40,6 +41,6 @@
     private async Task Drop()
     {
         if (!Playable) return;
-        await Session.TryDrop(Col);
+        await Router.Route(Col, Connect4HoopsArcade.Web.Input.MoveOrigin.Screen);
     }
 }
