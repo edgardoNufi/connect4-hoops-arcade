@@ -22,12 +22,13 @@ public sealed class AudioService : IAudioService
 
     public Task PlaySfxAsync(string key, int cooldownMs = 0) => Safe("ArcadeAudio.playSfx", key, cooldownMs);
 
-    public Task PlayVoiceAsync(string key) => VoicesEnabled ? Safe("ArcadeAudio.playVoice", key) : Task.CompletedTask;
+    public Task PlayVoiceAsync(string key, bool interrupt = false) =>
+        VoicesEnabled ? Safe("ArcadeAudio.playVoice", key, interrupt) : Task.CompletedTask;
 
-    public Task PlayRandomVoiceAsync(IReadOnlyList<string> keys)
+    public Task PlayRandomVoiceAsync(IReadOnlyList<string> keys, bool interrupt = false)
     {
         if (!VoicesEnabled || keys.Count == 0) return Task.CompletedTask;
-        return PlayVoiceAsync(keys[Rng.Next(keys.Count)]);
+        return PlayVoiceAsync(keys[Rng.Next(keys.Count)], interrupt);
     }
 
     public Task PlayMusicAsync(string key, bool loop = true) => Safe("ArcadeAudio.playMusic", key, loop);

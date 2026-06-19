@@ -67,6 +67,7 @@ public sealed class GameSession
     public List<ConfettiPiece> Confetti { get; private set; } = new();
 
     public double DropSeconds => Speed == AnimationSpeed.Fast ? 0.34 : 0.6;
+    private int DropMs => (int)(DropSeconds * 1000);   // pace the turn-pass to the drop animation
     public bool CpuTurn => Mode == GameMode.OnePlayer && Current == 1;
 
     private CancellationTokenSource? _idleCts;
@@ -210,10 +211,14 @@ public sealed class GameSession
             return;
         }
 
+        // Let the chip fall and settle before handing over the turn — keeps the pace fluid
+        // (IsBusy stays true, so no new move/keyboard/sensor input lands mid-fall).
+        await Task.Delay(DropMs);
+        if (Winner != null || Screen != AppScreen.Game) { IsBusy = false; return; }
+
         Current = Current == 0 ? 1 : 0;
         IsIdle = false;
         Narrator = TurnPhrase(Current);
-        IsBusy = false;
         Notify();
         TurnChanged?.Invoke(Current);
         if (ThreatScanner.HasImmediateThreat(Board, CellExtensions.ForPlayer(Current == 0 ? 1 : 0)))
@@ -221,7 +226,7 @@ public sealed class GameSession
 
         if (CpuTurn)
         {
-            IsThinking = true; IsBusy = true; Notify();
+            IsThinking = true; Notify();
             await Task.Delay(750);
             // Bail if the player reset/resigned/navigated during the think delay, so this
             // stale continuation can't drop a CPU chip onto a fresh or abandoned board.
@@ -236,6 +241,7 @@ public sealed class GameSession
         }
         else
         {
+            IsBusy = false; Notify();
             ArmIdle();
         }
     }

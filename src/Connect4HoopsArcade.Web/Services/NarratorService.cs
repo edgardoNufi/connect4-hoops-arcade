@@ -31,14 +31,16 @@ public sealed class NarratorService : IDisposable
     private async void OnChipDropped()
     {
         await _audio.PlaySfxAsync(AudioKeys.ChipDrop);
-        // Occasional praise (~1 in 6), never on every move.
-        if (Rng.Next(6) == 0) await _audio.PlayRandomVoiceAsync(AudioKeys.GreatMove);
+        // Occasional praise (~1 in 8). The voice queue serializes it after any current line.
+        if (Rng.Next(8) == 0) await _audio.PlayRandomVoiceAsync(AudioKeys.GreatMove);
     }
 
     private async void OnTurnChanged(int current)
     {
         await _audio.PlaySfxAsync(AudioKeys.TurnChange, cooldownMs: 300);
-        await _audio.PlayRandomVoiceAsync(current == 0 ? AudioKeys.PlayerOneTurn : AudioKeys.PlayerTwoTurn);
+        // Announce the turn only sometimes (~40%) so it doesn't narrate every single move.
+        if (Rng.Next(10) < 4)
+            await _audio.PlayRandomVoiceAsync(current == 0 ? AudioKeys.PlayerOneTurn : AudioKeys.PlayerTwoTurn);
     }
 
     private async void OnColumnFull()
@@ -55,15 +57,19 @@ public sealed class NarratorService : IDisposable
 
     private async void OnWon(int winner)
     {
+        // Stinger now; interrupt any in-flight turn line so the fanfare is clean.
         await _audio.PlaySfxAsync(AudioKeys.VictorySfx);
-        await _audio.PlayVoiceAsync(AudioKeys.ConnectFourV);
-        await _audio.PlayRandomVoiceAsync(AudioKeys.VictoryV);
+        await _audio.PlayVoiceAsync(AudioKeys.ConnectFourV, interrupt: true);
+        await _audio.PlayRandomVoiceAsync(AudioKeys.VictoryV);     // queued after connect-four line
+        // Celebratory "win" cheer, offset so it follows the stinger instead of overlapping it.
+        await Task.Delay(600);
+        await _audio.PlaySfxAsync(AudioKeys.WinSfx);
     }
 
     private async void OnDrew()
     {
         await _audio.PlaySfxAsync(AudioKeys.DrawSfx);
-        await _audio.PlayRandomVoiceAsync(AudioKeys.DrawV);
+        await _audio.PlayRandomVoiceAsync(AudioKeys.DrawV, interrupt: true);
     }
 
     public void Dispose()
