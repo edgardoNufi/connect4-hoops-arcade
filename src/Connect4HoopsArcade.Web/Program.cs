@@ -15,6 +15,8 @@ builder.Services.AddSingleton<Connect4HoopsArcade.Web.Services.Abstractions.ISen
 builder.Services.AddSingleton<Connect4HoopsArcade.Web.Services.ISensorConnectionProxy>(
     sp => sp.GetRequiredService<Connect4HoopsArcade.Web.Services.SensorConnectionService>());
 builder.Services.AddScoped<Connect4HoopsArcade.Web.Services.KeyboardInputService>();
+builder.Services.AddSingleton<Connect4HoopsArcade.Web.Services.Abstractions.IAudioService,
+                              Connect4HoopsArcade.Web.Services.AudioService>();
 // Interop services registered in later phases.
 
 await builder.Build().RunAsync();
