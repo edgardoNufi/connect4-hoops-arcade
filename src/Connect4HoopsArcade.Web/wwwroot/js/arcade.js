@@ -5,6 +5,7 @@ window.ArcadeAudio = (function () {
   let music = null;
   const lastPlayed = {};
 
+  // `key` is the path under wwwroot/audio/, INCLUDING subdir, e.g. "game/chip-drop.mp3".
   function url(key) { return 'audio/' + key; }
 
   function load(key) {

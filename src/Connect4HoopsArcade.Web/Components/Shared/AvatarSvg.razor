@@ -68,6 +68,8 @@
     });
 
     // Wraps path markup with the shared stroke style used for facial features.
+    // Precondition: `paths` must contain ONLY self-closing <path .../> elements (no other
+    // self-closing tags, no "/>" inside attribute values) — true for all call sites here.
     private static string Stroke(string paths)
     {
         // Inject stroke attributes into each <path .../> by replacing the self-closing tag.
