@@ -1,0 +1,76 @@
+@using Connect4HoopsArcade.Core.Primitives
+@using Connect4HoopsArcade.Core.Catalog
+
+<div style="width:100%;height:100%;@(Glow ? $"filter:drop-shadow(0 0 12px {Hex});" : "")">
+  <svg viewBox="0 0 110 120" style="width:100%;height:100%;display:block;overflow:visible;">
+    <circle cx="55" cy="62" r="50" fill="@Hex" stroke="rgba(0,0,0,.28)" stroke-width="4" />
+    <ellipse cx="40" cy="44" rx="22" ry="13" fill="rgba(255,255,255,.32)" />
+    <circle cx="55" cy="62" r="46" fill="none" stroke="rgba(255,255,255,.45)" stroke-width="2.5" />
+    @FaceMarkup
+    @AccessoryMarkup
+  </svg>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public string ColorId { get; set; } = "red";
+    [Parameter] public FaceId Face { get; set; } = FaceId.Happy;
+    [Parameter] public AccessoryId Accessory { get; set; } = AccessoryId.None;
+    [Parameter] public bool Glow { get; set; }
+    [Parameter] public bool DrawFace { get; set; } = true; // tokenStyle 'character'
+
+    private const string Ink = "#1a1030";
+    private string Hex => ColorCatalog.HexOf(ColorId);
+
+    private MarkupString FaceMarkup => new(DrawFace ? Face switch
+    {
+        FaceId.Happy =>
+            $"<circle cx='40' cy='56' r='5' fill='{Ink}'/><circle cx='70' cy='56' r='5' fill='{Ink}'/>" +
+            Stroke("<path d='M40 74 Q55 90 70 74'/>"),
+        FaceId.Confident =>
+            Stroke("<path d='M34 58 Q40 52 46 58'/><path d='M64 58 Q70 52 76 58'/><path d='M42 78 Q58 86 72 70'/>"),
+        FaceId.Serious =>
+            $"<circle cx='40' cy='56' r='4.5' fill='{Ink}'/><circle cx='70' cy='56' r='4.5' fill='{Ink}'/>" +
+            Stroke("<path d='M42 80 H68'/>"),
+        FaceId.Surprised =>
+            $"<circle cx='40' cy='55' r='7' fill='{Ink}'/><circle cx='70' cy='55' r='7' fill='{Ink}'/>" +
+            $"<ellipse cx='55' cy='80' rx='8' ry='10' fill='{Ink}'/>",
+        FaceId.Angry =>
+            Stroke("<path d='M30 46 L48 53'/><path d='M80 46 L62 53'/>") +
+            $"<circle cx='42' cy='60' r='4' fill='{Ink}'/><circle cx='68' cy='60' r='4' fill='{Ink}'/>" +
+            Stroke("<path d='M42 82 Q55 74 68 82'/>"),
+        _ => ""
+    } : "");
+
+    private MarkupString AccessoryMarkup => new(Accessory switch
+    {
+        AccessoryId.Glasses =>
+            $"<circle cx='40' cy='56' r='13' fill='rgba(255,255,255,.18)' stroke='{Ink}' stroke-width='4'/>" +
+            $"<circle cx='70' cy='56' r='13' fill='rgba(255,255,255,.18)' stroke='{Ink}' stroke-width='4'/>" +
+            $"<path d='M53 56 H57' stroke='{Ink}' stroke-width='4'/>",
+        AccessoryId.Cap =>
+            "<path d='M14 40 Q55 -6 96 40 Z' fill='#1f4fff'/>" +
+            "<ellipse cx='38' cy='41' rx='32' ry='8' fill='#143bd6'/>" +
+            "<circle cx='55' cy='14' r='4' fill='#0d2aa0'/>",
+        AccessoryId.Headband =>
+            "<path d='M10 44 Q55 30 100 44 L100 56 Q55 42 10 56 Z' fill='#ff2d6f'/>" +
+            "<path d='M10 50 Q55 38 100 50' stroke='rgba(255,255,255,.5)' stroke-width='2' fill='none'/>",
+        AccessoryId.Crown =>
+            "<path d='M28 36 L36 10 L48 28 L55 6 L62 28 L74 10 L82 36 Z' fill='#ffd23f' stroke='#d39a00' stroke-width='2' stroke-linejoin='round'/>" +
+            "<circle cx='55' cy='22' r='3.5' fill='#ff2d6f'/>",
+        AccessoryId.Bowtie =>
+            "<path d='M55 104 L38 96 L38 114 Z' fill='#ff2d6f'/>" +
+            "<path d='M55 104 L72 96 L72 114 Z' fill='#ff2d6f'/>" +
+            "<circle cx='55' cy='105' r='4' fill='#c01250'/>",
+        AccessoryId.Earrings =>
+            "<circle cx='8' cy='74' r='5' fill='#ffd23f' stroke='#d39a00' stroke-width='1.5'/>" +
+            "<circle cx='102' cy='74' r='5' fill='#ffd23f' stroke='#d39a00' stroke-width='1.5'/>",
+        _ => ""
+    });
+
+    // Wraps path markup with the shared stroke style used for facial features.
+    private static string Stroke(string paths)
+    {
+        // Inject stroke attributes into each <path .../> by replacing the self-closing tag.
+        return paths.Replace("/>", $" stroke='{Ink}' stroke-width='5' fill='none' stroke-linecap='round'/>");
+    }
+}
