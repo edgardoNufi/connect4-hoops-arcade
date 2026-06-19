@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style data-omelette-injected>html,body{background:transparent}</style><script data-omelette-injected>(()=>{var j=[];var x=false;var S=30000;var f=3000;document.addEventListener("DOMContentLoaded",()=>{const H=window.Babel;const G="om-src-id";if(H&&H.registerPlugin&&!(H.availablePlugins&&H.availablePlugins[G])){H.registerPlugin(G,({types:Y})=>({visitor:{JSXOpeningElement(U,Q){const J=U.node;if(J.name&&J.name.type==="JSXMemberExpression")return;for(let V=0;V<J.attributes.length;V++){const L=J.attributes[V];if(L.type==="JSXAttribute"&&L.name&&L.name.name==="data-om-id")return}const W=Q.file&&Q.file.opts&&Q.file.opts.filename||"?";const Z=J.loc&&J.loc.start;const z=`jsx:${W}:${J.start??0}:${Z?Z.line:0}:${Z?Z.column+1:0}`;J.attributes.push(Y.jsxAttribute(Y.jsxIdentifier("data-om-id"),Y.stringLiteral(z)))}}}))}const k="om-text-extract";let A=false;if(x&&H&&H.registerPlugin&&!(H.availablePlugins&&H.availablePlugins[k])){const Y=window.React;if(Y&&Y.useSyncExternalStore&&Y.createElement){A=true;const U={};const Q=new Set;let J=0;window.__omTextO=U;window.__omTextSet=(z)=>{for(const V in z){const L=z[V];if(L==null)delete U[V];else U[V]=L}J++;Q.forEach((V)=>V())};const W=(z)=>{Q.add(z);return()=>Q.delete(z)};const Z=()=>J;window.__OmT=function z(V){Y.useSyncExternalStore(W,Z,Z);return Y.createElement("span",{"data-om-text":V.i,className:"__om-t"},V.i in U?U[V.i]:V.children)};H.registerPlugin(k,({types:z})=>{const V={style:1,script:1,noscript:1,textarea:1,title:1,option:1,text:1,tspan:1,textPath:1};const L={placeholder:1,alt:1,title:1,label:1,"aria-label":1,"aria-description":1,"aria-placeholder":1};const _=($,C)=>z.logicalExpression("??",z.memberExpression(z.logicalExpression("||",z.memberExpression(z.identifier("window"),z.identifier("__omTextO")),z.objectExpression([])),z.stringLiteral($),true),C);const E=($)=>$.file&&$.file.opts&&$.file.opts.filename||"?";const B=($)=>$.file&&$.file.code||"";const b=($,C)=>{const X=(F)=>F&&F.start!=null&&F.end!=null&&(F.type==="StringLiteral"||F.type==="TemplateLiteral"&&F.expressions.length===0)?[F.start,F.end]:null;const N=X(C);if(N)return N;if(C&&C.type==="Identifier"){const F=$.scope.getBinding(C.name);if(F&&F.constant&&F.path.node.type==="VariableDeclarator"){return X(F.path.node.init)}}return null};const M=($,C,X)=>{const N=$.node;let F=false;const w=(K,q)=>{F=true;return z.jsxElement(z.jsxOpeningElement(z.jsxIdentifier("__OmT"),[z.jsxAttribute(z.jsxIdentifier("i"),z.stringLiteral(K))],false),z.jsxClosingElement(z.jsxIdentifier("__OmT")),[q],false)};const D=N.children.map((K)=>{if(K.type==="JSXText"){if(K.start==null||K.end==null)return K;const q=X.slice(K.start,K.end);const R=q.length-q.trimStart().length;const m=q.length-q.trimEnd().length;if(R+m>=q.length)return K;return w(`txt:${C}:${K.start+R}:${K.end-m}`,K)}if(K.type==="JSXExpressionContainer"){const q=b($,K.expression);if(q)return w(`str:${C}:${q[0]}:${q[1]}`,K)}return K});if(F)N.children=D};return{visitor:{JSXOpeningElement($,C){const X=$.node;const N=E(C);const F={};for(let w=0;w<X.attributes.length;w++){const D=X.attributes[w];if(D.type!=="JSXAttribute"||!D.name)continue;const K=D.name.name;if(!L[K])continue;if(!D.value||D.value.type!=="StringLiteral")continue;if(D.value.start==null||D.value.end==null)continue;const q=`txt:${N}:${D.value.start}:${D.value.end}`;F[K]=q;D.value=z.jsxExpressionContainer(_(q,z.stringLiteral(D.value.value)))}if(Object.keys(F).length){X.attributes.push(z.jsxAttribute(z.jsxIdentifier("data-om-text-attrs"),z.stringLiteral(JSON.stringify(F))))}},JSXElement($,C){const X=$.node.openingElement;const N=X&&X.name&&X.name.name;if(N==="__OmT")return;if(typeof N==="string"&&V[N])return;M($,E(C),B(C))},JSXFragment($,C){M($,E(C),B(C))}}}})}}const u=A?["transform-react-jsx-source",G,k]:["transform-react-jsx-source",G];document.querySelectorAll('script[type="text/babel"],script[type="text/jsx"]').forEach((Y,U)=>{const Q=Y.getAttribute("data-plugins")||"";const J=u.filter((W)=>Q.indexOf(W)<0);if(J.length){Y.setAttribute("data-plugins",Q?`${Q},${J.join(",")}`:J.join(","))}if(!Y.hasAttribute("data-filename")){Y.setAttribute("data-filename",Y.getAttribute("src")||`inline-${U}`)}})});var y=window.parent;if(y&&y!==window){const H=(Q,J)=>{try{y.postMessage({__omelette_log:true,type:Q,data:J},"*")}catch{}};["log","warn","error"].forEach((Q)=>{const J=console[Q];console[Q]=(...W)=>{const Z=W.map((z)=>{try{return typeof z==="object"?JSON.stringify(z):String(z)}catch{try{return String(z)}catch{return"[unstringifiable]"}}}).join(" ");H(Q,Z);J.apply(console,W)}});window.addEventListener("error",(Q)=>{const J=Q.target;if(J&&J!==window&&J.tagName){const W=J.src||J.href||"";H("resource_error",`${J.tagName} failed to load: ${W}`)}else{H("error",`${Q.message||"Unknown error"} at ${Q.filename||"?"}:${Q.lineno||0}:${Q.colno||0}`)}},true);window.addEventListener("unhandledrejection",(Q)=>{const J=Q.reason;const W=J instanceof Error?`${J.message} ${J.stack}`:String(J);H("error",`Unhandled rejection: ${W}`)});const G=()=>{try{y.postMessage({type:"omelette:height",height:document.documentElement.scrollHeight},"*")}catch{}};if(document.readyState==="complete")G();else window.addEventListener("load",G);if(window.ResizeObserver)new ResizeObserver(G).observe(document.documentElement);const k={};let A=0;window.claude={complete(Q){return new Promise((J,W)=>{if(!j.length){W(new Error("claude.complete: no parent origin"));return}const Z=`c${++A}`;const z=()=>setTimeout(()=>{delete k[Z];W(new Error(`claude.complete: no data for ${S/1000}s`))},S);const V=z();k[Z]={resolve:J,reject:W,text:"",t:V,arm:z};try{for(const L of j){y.postMessage({__om_api:true,id:Z,body:Q},L)}}catch(L){clearTimeout(V);delete k[Z];W(L)}})}};const u={};let Y=0;window.omelette={writeFile:(Q,J)=>new Promise((W,Z)=>{if(!j.length){W();return}const z=`f${++Y}`;const V=setTimeout(()=>{delete u[z];W()},f);u[z]={resolve:W,reject:Z,t:V};try{for(const L of j){y.postMessage({__om_file:true,id:z,op:"write",path:Q,content:J},L)}}catch{clearTimeout(V);delete u[z];W()}})};const U=(Q)=>{try{return JSON.stringify(Q)}catch{return JSON.stringify(String(Q))}};window.addEventListener("message",(Q)=>{if(j.indexOf(Q.origin)<0)return;if(Q.source!==y)return;const J=Q.data;if(!J)return;if(J.type==="omelette-preview-refresh"){if(typeof J.token!=="string"||!/^[0-9a-f.-]+(\.(rc|pr-[0-9]+))?(\.[0-9]+\.[0-9a-f]{16})?$/.test(J.token))return;const z=Math.max(1,Math.floor((J.expiresAt||0)-Date.now()/1000));document.cookie="__Host-omelette-preview="+J.token+"; Path=/; Secure; SameSite=None; Partitioned; Max-Age="+z;return}if(J.__om_file_r){const z=u[J.id];if(!z)return;clearTimeout(z.t);delete u[J.id];if(J.ok)z.resolve();else z.reject(new Error(J.error||"write failed"));return}if(J.__om_api_r){const z=k[J.id];if(!z)return;if(J.error!=null){clearTimeout(z.t);delete k[J.id];z.reject(new Error(J.error));return}if(J.chunk!=null){clearTimeout(z.t);z.t=z.arm();z.text+=J.chunk;return}if(J.done){clearTimeout(z.t);delete k[J.id];z.resolve(J.text!=null?J.text:z.text);return}return}if(!J.__om_eval)return;const W=J;const Z=(z)=>{Q.source.postMessage({...z,__om_eval_r:1,id:W.id},Q.origin)};try{const z=(0,eval)(W.code);if(z&&typeof z.then==="function"){z.then((V)=>Z({ok:1,v:U(V)}),(V)=>Z({ok:0,e:String(V)}))}else{Z({ok:1,v:U(z)})}}catch(z){Z({ok:0,e:String(z)})}})}})();
+</script>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  ::-webkit-scrollbar { width: 0; height: 0; }
+  @keyframes drop { 0% { transform: translateY(-580px) scaleY(1); animation-timing-function: cubic-bezier(.5,0,.85,.4); } 50% { transform: translateY(0) scaleY(1); animation-timing-function: cubic-bezier(.2,.7,.4,1); } 57% { transform: translateY(0) scale(1.16,.82); } 66% { transform: translateY(-46px) scale(.94,1.06); animation-timing-function: cubic-bezier(.5,0,.85,.4); } 80% { transform: translateY(0) scale(1.07,.93); } 90% { transform: translateY(-14px) scale(1,1); } 100% { transform: translateY(0) scale(1,1); } }
+  @keyframes land { 0% { transform: scale(.25); opacity: .85; } 100% { transform: scale(2); opacity: 0; } }
+  @keyframes connectBadge { 0% { transform: translate(-50%,-50%) scale(.3) rotate(-10deg); } 45% { transform: translate(-50%,-50%) scale(1.18) rotate(4deg); } 65% { transform: translate(-50%,-50%) scale(.94) rotate(-2deg); } 100% { transform: translate(-50%,-50%) scale(1) rotate(0); } }
+  @keyframes boardWin { 0%,100% { box-shadow: 0 0 0 4px #16259e, 0 16px 0 #0f1a78, 0 24px 44px rgba(0,0,0,.5), inset 0 0 30px rgba(255,255,255,.12); } 50% { box-shadow: 0 0 0 4px #16259e, 0 16px 0 #0f1a78, 0 0 70px 10px var(--wf), inset 0 0 30px rgba(255,255,255,.12); } }
+  @keyframes shake { 0%,100% { transform: translateX(0); } 20% { transform: translateX(-7px); } 40% { transform: translateX(7px); } 60% { transform: translateX(-5px); } 80% { transform: translateX(5px); } }
+  @keyframes floatY { 0%,100% { transform: translateY(0) rotate(-6deg); } 50% { transform: translateY(-28px) rotate(6deg); } }
+  @keyframes ballBounce { 0%,100% { transform: translateY(0) scale(1,1); } 45% { transform: translateY(-130px) scale(.94,1.06); } 50% { transform: translateY(-138px) scale(1.04,.96); } 90% { transform: translateY(0) scale(1.08,.92); } }
+  @keyframes glowPulse { 0%,100% { opacity: .55; transform: scale(1); } 50% { opacity: 1; transform: scale(1.06); } }
+  @keyframes winPulse { 0%,100% { box-shadow: 0 0 0 0 rgba(255,255,255,.95), 0 0 22px 6px var(--wg); transform: scale(1); } 50% { box-shadow: 0 0 0 5px rgba(255,255,255,1), 0 0 40px 14px var(--wg); transform: scale(1.07); } }
+  @keyframes confettiFall { 0% { transform: translateY(-30px) rotate(0); opacity: 1; } 100% { transform: translateY(105vh) rotate(720deg); opacity: 1; } }
+  @keyframes pop { 0% { transform: scale(.55); } 60% { transform: scale(1.12); } 100% { transform: scale(1); } }
+  @keyframes slideUp { 0% { transform: translateY(34px); } 100% { transform: translateY(0); } }
+  @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: .15; } }
+  @keyframes scan { 0% { background-position: 0 0; } 100% { background-position: 0 22px; } }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes turnGlow { 0%,100% { box-shadow: 0 0 0 2px var(--tc), 0 0 22px -2px var(--tc); } 50% { box-shadow: 0 0 0 4px var(--tc), 0 0 48px 2px var(--tc); } }
+  @keyframes arrowBounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(9px); } }
+  @keyframes badgePulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+  .arc-root { font-family: 'Nunito', system-ui, sans-serif; }
+  .rotate-hint { display: none; }
+  @media (orientation: portrait) and (max-width: 900px) {
+    .game-screen .board-wrap { display: none !important; }
+    .game-screen .rotate-hint { display: flex !important; }
+  }
+</style>
+</helmet>
+
+<div class="arc-root" style="position:relative; width:100%; min-height:100vh; height:100vh; overflow:hidden; background:radial-gradient(120% 90% at 50% 0%, #211a4d 0%, #120e2e 45%, #08060f 100%); color:#fff;">
+
+  <!-- decorative arcade backdrop -->
+  <div style="position:absolute; inset:0; pointer-events:none; overflow:hidden;">
+    <div style="position:absolute; top:-18%; left:-10%; width:55%; height:55%; border-radius:50%; background:radial-gradient(circle, rgba(255,45,111,.32), transparent 65%); filter:blur(8px); animation:glowPulse 6s ease-in-out infinite;"></div>
+    <div style="position:absolute; bottom:-22%; right:-8%; width:58%; height:58%; border-radius:50%; background:radial-gradient(circle, rgba(34,211,238,.28), transparent 65%); filter:blur(8px); animation:glowPulse 7.5s ease-in-out infinite;"></div>
+    <div style="position:absolute; top:40%; left:46%; width:30%; height:40%; border-radius:50%; background:radial-gradient(circle, rgba(255,210,63,.18), transparent 70%); filter:blur(10px); animation:glowPulse 9s ease-in-out infinite;"></div>
+    <!-- court arc -->
+    <div style="position:absolute; left:50%; bottom:-46%; width:130%; height:90%; transform:translateX(-50%); border-radius:50%; border:3px solid rgba(255,255,255,.06); border-bottom:none;"></div>
+    <div style="position:absolute; left:50%; bottom:-30%; width:62%; height:62%; transform:translateX(-50%); border-radius:50%; border:3px solid rgba(255,255,255,.05); border-bottom:none;"></div>
+    <div style="position:absolute; left:50%; top:0; bottom:0; width:3px; transform:translateX(-50%); background:rgba(255,255,255,.04);"></div>
+  </div>
+
+  <!-- ===================== SPLASH / ATTRACT ===================== -->
+  <sc-if value="{{ isSplash }}" hint-placeholder-val="{{ true }}">
+  <div onClick="{{ start }}" style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; padding:24px; z-index:5;">
+    <div style="position:absolute; top:7%; left:14%; width:62px; height:62px; opacity:.9; animation:floatY 5s ease-in-out infinite;">{{ tokA }}</div>
+    <div style="position:absolute; top:16%; right:13%; width:54px; height:54px; opacity:.9; animation:floatY 6.4s ease-in-out infinite .6s;">{{ tokB }}</div>
+    <div style="position:absolute; bottom:16%; left:9%; width:48px; height:48px; opacity:.85; animation:floatY 7s ease-in-out infinite 1.1s;">{{ tokC }}</div>
+
+    <div style="display:flex; align-items:center; gap:18px; margin-bottom:6px;">
+      <div style="width:84px; height:84px; animation:ballBounce 1.9s cubic-bezier(.5,0,.5,1) infinite;">{{ ball }}</div>
+    </div>
+    <div style="font-family:'Fredoka'; font-weight:700; letter-spacing:1px; text-align:center; line-height:.94;">
+      <div style="font-size:clamp(40px,9vw,118px); color:#ffd23f; text-shadow:0 6px 0 #c98800, 0 0 34px rgba(255,210,63,.55); -webkit-text-stroke:3px #1a1030;">CONNECT&nbsp;4</div>
+      <div style="font-size:clamp(34px,7.6vw,96px); color:#ff2d6f; text-shadow:0 5px 0 #a3134a, 0 0 32px rgba(255,45,111,.55); -webkit-text-stroke:3px #1a1030; margin-top:-4px;">HOOPS</div>
+    </div>
+    <div style="margin-top:30px; display:flex; align-items:center; gap:14px; padding:16px 34px; border-radius:999px; background:rgba(255,255,255,.06); border:2px solid rgba(34,211,238,.55); box-shadow:0 0 26px rgba(34,211,238,.35); animation:blink 1.6s ease-in-out infinite;">
+      <span style="font-family:'Fredoka'; font-weight:600; font-size:clamp(18px,2.6vw,28px); color:#22d3ee; letter-spacing:.5px;">TOCA PARA COMENZAR</span>
+    </div>
+    <div style="position:absolute; bottom:22px; font-size:13px; color:rgba(255,255,255,.4); letter-spacing:2px; font-weight:700;">ARCADE&nbsp;EDITION · 7×6 · 2 JUGADORES</div>
+  </div>
+  </sc-if>
+
+  <!-- ===================== MODE SELECT ===================== -->
+  <sc-if value="{{ isMode }}" hint-placeholder-val="{{ true }}">
+  <div style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px; z-index:5; animation:slideUp .4s ease;">
+    <div style="font-family:'Fredoka'; font-weight:700; font-size:clamp(26px,4.6vw,52px); color:#fff; text-shadow:0 4px 0 rgba(0,0,0,.4); margin-bottom:34px; text-align:center;">ELIGE MODO DE JUEGO</div>
+    <div style="display:flex; gap:28px; flex-wrap:wrap; justify-content:center; max-width:880px;">
+      <button onClick="{{ mode1 }}" style="cursor:pointer; width:330px; max-width:42vw; min-width:240px; padding:34px 24px; border-radius:28px; border:3px solid #22d3ee; background:linear-gradient(180deg, #15294a, #0d1830); box-shadow:0 0 30px rgba(34,211,238,.3), inset 0 2px 0 rgba(255,255,255,.08); color:#fff; transition:transform .15s, box-shadow .15s;" style-hover="transform:translateY(-6px); box-shadow:0 0 46px rgba(34,211,238,.6);">
+        <div style="width:96px; height:96px; margin:0 auto 16px;">{{ icon1p }}</div>
+        <div style="font-family:'Fredoka'; font-weight:700; font-size:34px;">1 JUGADOR</div>
+        <div style="font-size:16px; font-weight:700; color:rgba(255,255,255,.6); margin-top:4px;">vs. CPU</div>
+      </button>
+      <button onClick="{{ mode2 }}" style="cursor:pointer; width:330px; max-width:42vw; min-width:240px; padding:34px 24px; border-radius:28px; border:3px solid #ff2d6f; background:linear-gradient(180deg, #3a1330, #1f0a1c); box-shadow:0 0 30px rgba(255,45,111,.3), inset 0 2px 0 rgba(255,255,255,.08); color:#fff; transition:transform .15s, box-shadow .15s;" style-hover="transform:translateY(-6px); box-shadow:0 0 46px rgba(255,45,111,.6);">
+        <div style="width:96px; height:96px; margin:0 auto 16px;">{{ icon2p }}</div>
+        <div style="font-family:'Fredoka'; font-weight:700; font-size:34px;">2 JUGADORES</div>
+        <div style="font-size:16px; font-weight:700; color:rgba(255,255,255,.6); margin-top:4px;">Local · 1 vs 1</div>
+      </button>
+    </div>
+    <div style="display:flex; gap:16px; margin-top:40px;">
+      <button onClick="{{ openSensors }}" style="cursor:pointer; display:flex; align-items:center; gap:8px; padding:11px 20px; border-radius:999px; border:1.5px solid rgba(255,255,255,.2); background:rgba(255,255,255,.04); color:rgba(255,255,255,.75); font-weight:800; font-size:14px;">⚡ Prueba de sensores</button>
+      <button onClick="{{ openSettings }}" style="cursor:pointer; display:flex; align-items:center; gap:8px; padding:11px 20px; border-radius:999px; border:1.5px solid rgba(255,255,255,.2); background:rgba(255,255,255,.04); color:rgba(255,255,255,.75); font-weight:800; font-size:14px;">⚙ Configuración</button>
+    </div>
+    <button onClick="{{ goHome }}" style="cursor:pointer; position:absolute; top:22px; left:22px; padding:10px 18px; border-radius:999px; border:1.5px solid rgba(255,255,255,.18); background:rgba(255,255,255,.05); color:#fff; font-weight:800; font-size:14px;">‹ Inicio</button>
+  </div>
+  </sc-if>
+
+  <!-- ===================== PLAYER SETUP ===================== -->
+  <sc-if value="{{ isSetup }}" hint-placeholder-val="{{ true }}">
+  <div style="position:absolute; inset:0; display:flex; flex-direction:column; z-index:5; animation:slideUp .4s ease;">
+    <div style="flex:none; display:flex; align-items:center; justify-content:space-between; padding:18px 24px;">
+      <button onClick="{{ goMode }}" style="cursor:pointer; padding:10px 18px; border-radius:999px; border:1.5px solid rgba(255,255,255,.18); background:rgba(255,255,255,.05); color:#fff; font-weight:800; font-size:14px;">‹ Atrás</button>
+      <div style="font-family:'Fredoka'; font-weight:700; font-size:clamp(20px,3vw,34px);">PERSONALIZA TU FICHA</div>
+      <div style="width:84px;"></div>
+    </div>
+
+    <div style="flex:1; min-height:0; overflow:auto; display:flex; gap:20px; padding:6px 24px 18px; justify-content:center; align-items:stretch; flex-wrap:wrap;">
+      <!-- P1 card -->
+      <div style="flex:1 1 340px; max-width:440px; min-width:300px; border-radius:24px; border:3px solid {{ p1.colorHex }}; background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.01)); box-shadow:0 0 26px {{ p1.glowSoft }}; padding:18px; display:flex; flex-direction:column; gap:14px;">
+        <div style="display:flex; align-items:center; gap:14px;">
+          <div style="width:92px; height:92px; flex:none;">{{ p1.avatar }}</div>
+          <div style="flex:1; min-width:0;">
+            <div style="font-size:13px; font-weight:900; color:{{ p1.colorHex }}; letter-spacing:1px;">JUGADOR 1</div>
+            <input value="{{ p1.name }}" onChange="{{ p1.onName }}" maxlength="12" placeholder="Nombre" style="width:100%; margin-top:4px; background:rgba(0,0,0,.25); border:2px solid rgba(255,255,255,.12); border-radius:12px; padding:10px 12px; color:#fff; font-family:'Fredoka'; font-weight:600; font-size:22px; outline:none;" />
+          </div>
+        </div>
+        <div>
+          <div style="font-size:12px; font-weight:900; color:rgba(255,255,255,.5); letter-spacing:1.5px; margin-bottom:8px;">COLOR</div>
+          <div style="display:flex; flex-wrap:wrap; gap:9px;">
+            <sc-for list="{{ p1.colors }}" as="c" hint-placeholder-count="8">
+              <button onClick="{{ c.onPick }}" disabled="{{ c.taken }}" style="cursor:pointer; position:relative; width:42px; height:42px; border-radius:50%; border:none; background:{{ c.hex }}; box-shadow:{{ c.ring }}; opacity:{{ c.dim }}; transition:transform .12s;" style-hover="transform:scale(1.12);">
+                <span style="position:absolute; inset:0; display:{{ c.lockDisp }}; align-items:center; justify-content:center; font-size:18px;">🔒</span>
+              </button>
+            </sc-for>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:12px; font-weight:900; color:rgba(255,255,255,.5); letter-spacing:1.5px; margin-bottom:8px;">CARA</div>
+          <div style="display:flex; flex-wrap:wrap; gap:8px;">
+            <sc-for list="{{ p1.faces }}" as="f" hint-placeholder-count="5">
+              <button onClick="{{ f.onPick }}" title="{{ f.label }}" style="cursor:pointer; width:52px; height:52px; padding:4px; border-radius:14px; border:2px solid {{ f.bd }}; background:rgba(0,0,0,.2);">{{ f.preview }}</button>
+            </sc-for>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:12px; font-weight:900; color:rgba(255,255,255,.5); letter-spacing:1.5px; margin-bottom:8px;">ACCESORIO</div>
+          <div style="display:flex; flex-wrap:wrap; gap:8px;">
+            <sc-for list="{{ p1.accessories }}" as="a" hint-placeholder-count="7">
+              <button onClick="{{ a.onPick }}" title="{{ a.label }}" style="cursor:pointer; width:52px; height:52px; padding:4px; border-radius:14px; border:2px solid {{ a.bd }}; background:rgba(0,0,0,.2);">{{ a.preview }}</button>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+
+      <!-- P2 / CPU card -->
+      <div style="flex:1 1 340px; max-width:440px; min-width:300px; border-radius:24px; border:3px solid {{ p2.colorHex }}; background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.01)); box-shadow:0 0 26px {{ p2.glowSoft }}; padding:18px; display:flex; flex-direction:column; gap:14px;">
+        <div style="display:flex; align-items:center; gap:14px;">
+          <div style="width:92px; height:92px; flex:none;">{{ p2.avatar }}</div>
+          <div style="flex:1; min-width:0;">
+            <div style="font-size:13px; font-weight:900; color:{{ p2.colorHex }}; letter-spacing:1px;">{{ p2.tag }}</div>
+            <input value="{{ p2.name }}" onChange="{{ p2.onName }}" disabled="{{ p2.locked }}" maxlength="12" placeholder="Nombre" style="width:100%; margin-top:4px; background:rgba(0,0,0,.25); border:2px solid rgba(255,255,255,.12); border-radius:12px; padding:10px 12px; color:#fff; font-family:'Fredoka'; font-weight:600; font-size:22px; outline:none; opacity:{{ p2.inputDim }};" />
+          </div>
+        </div>
+        <div>
+          <div style="font-size:12px; font-weight:900; color:rgba(255,255,255,.5); letter-spacing:1.5px; margin-bottom:8px;">COLOR</div>
+          <div style="display:flex; flex-wrap:wrap; gap:9px;">
+            <sc-for list="{{ p2.colors }}" as="c" hint-placeholder-count="8">
+              <button onClick="{{ c.onPick }}" disabled="{{ c.taken }}" style="cursor:pointer; position:relative; width:42px; height:42px; border-radius:50%; border:none; background:{{ c.hex }}; box-shadow:{{ c.ring }}; opacity:{{ c.dim }}; transition:transform .12s;" style-hover="transform:scale(1.12);">
+                <span style="position:absolute; inset:0; display:{{ c.lockDisp }}; align-items:center; justify-content:center; font-size:18px;">🔒</span>
+              </button>
+            </sc-for>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:12px; font-weight:900; color:rgba(255,255,255,.5); letter-spacing:1.5px; margin-bottom:8px;">CARA</div>
+          <div style="display:flex; flex-wrap:wrap; gap:8px;">
+            <sc-for list="{{ p2.faces }}" as="f" hint-placeholder-count="5">
+              <button onClick="{{ f.onPick }}" title="{{ f.label }}" style="cursor:pointer; width:52px; height:52px; padding:4px; border-radius:14px; border:2px solid {{ f.bd }}; background:rgba(0,0,0,.2);">{{ f.preview }}</button>
+            </sc-for>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:12px; font-weight:900; color:rgba(255,255,255,.5); letter-spacing:1.5px; margin-bottom:8px;">ACCESORIO</div>
+          <div style="display:flex; flex-wrap:wrap; gap:8px;">
+            <sc-for list="{{ p2.accessories }}" as="a" hint-placeholder-count="7">
+              <button onClick="{{ a.onPick }}" title="{{ a.label }}" style="cursor:pointer; width:52px; height:52px; padding:4px; border-radius:14px; border:2px solid {{ a.bd }}; background:rgba(0,0,0,.2);">{{ a.preview }}</button>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="flex:none; display:flex; flex-direction:column; align-items:center; gap:10px; padding:6px 24px 22px;">
+      <sc-if value="{{ colorWarn }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex; align-items:center; gap:10px; padding:9px 18px; border-radius:999px; background:rgba(255,45,111,.16); border:1.5px solid #ff2d6f; color:#ffd0de; font-weight:800; font-size:14px;">⚠ {{ colorWarnMsg }}</div>
+      </sc-if>
+      <button onClick="{{ beginGame }}" disabled="{{ startDisabled }}" style="cursor:pointer; padding:16px 56px; border-radius:999px; border:none; background:{{ startBg }}; box-shadow:{{ startShadow }}; color:#1a1030; font-family:'Fredoka'; font-weight:700; font-size:26px; letter-spacing:1px; opacity:{{ startOpacity }}; transition:transform .15s;" style-hover="transform:scale(1.04);">¡JUGAR! ▶</button>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- ===================== GAME ===================== -->
+  <sc-if value="{{ isGame }}" hint-placeholder-val="{{ true }}">
+  <div class="game-screen" style="position:absolute; inset:0; z-index:5;">
+    <!-- rotate hint (portrait phones) -->
+    <div class="rotate-hint" style="position:absolute; inset:0; flex-direction:column; align-items:center; justify-content:center; gap:18px; text-align:center; padding:30px; background:#0c0922;">
+      <div style="font-size:64px; animation:spin 3s linear infinite;">📱</div>
+      <div style="font-family:'Fredoka'; font-weight:700; font-size:26px; color:#22d3ee;">Gira tu dispositivo</div>
+      <div style="font-weight:700; color:rgba(255,255,255,.6); max-width:300px;">El tablero se ve mejor en horizontal. Pon tu teléfono de lado para jugar.</div>
+    </div>
+
+    <div class="board-wrap" style="position:absolute; inset:0; display:flex; align-items:stretch; gap:clamp(12px,2vw,28px); padding:clamp(58px,8vh,84px) clamp(16px,2.4vw,38px) clamp(14px,2.2vh,26px);">
+      <!-- top control bar (centered, clear of side panels) -->
+      <div style="position:absolute; top:14px; left:50%; transform:translateX(-50%); z-index:3; display:flex; gap:10px; align-items:center;">
+        <button onClick="{{ openSettings }}" style="cursor:pointer; display:flex; align-items:center; gap:7px; height:42px; padding:0 18px; border-radius:999px; border:1.5px solid rgba(255,255,255,.16); background:rgba(255,255,255,.06); color:#fff; font-weight:800; font-size:14px;">⚙ Ajustes</button>
+        <button onClick="{{ resetBoard }}" style="cursor:pointer; display:flex; align-items:center; gap:7px; height:42px; padding:0 18px; border-radius:999px; border:1.5px solid rgba(255,210,63,.5); background:rgba(255,210,63,.12); color:#ffd23f; font-weight:800; font-size:14px;">🔄 Reiniciar</button>
+        <button onClick="{{ resign }}" style="cursor:pointer; display:flex; align-items:center; gap:7px; height:42px; padding:0 18px; border-radius:999px; border:1.5px solid rgba(255,255,255,.16); background:rgba(255,255,255,.06); color:#fff; font-weight:800; font-size:14px;">🏳️ Rendirse</button>
+      </div>
+
+      <!-- P1 panel (left) -->
+      <div style="flex:1 1 0; min-width:0; max-width:320px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:clamp(8px,1.4vh,16px); padding:22px 16px; border-radius:26px; border:2.5px solid {{ p1.colorHex }}; background:{{ p1.panelBg }}; box-shadow:{{ p1.panelGlow }}; opacity:{{ p1.panelOpacity }}; --tc:{{ p1.colorHex }}; animation:{{ p1.panelAnim }}; transition:opacity .3s;">
+        <div style="width:clamp(76px,9vw,128px); height:clamp(76px,9vw,128px);">{{ p1.avatar }}</div>
+        <div style="font-family:'Fredoka'; font-weight:600; font-size:clamp(22px,2.4vw,36px); line-height:1; text-align:center; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ p1.name }}</div>
+        <div style="font-size:clamp(13px,1.3vw,16px); font-weight:900; letter-spacing:1px; white-space:nowrap; padding:8px 20px; border-radius:999px; background:{{ p1.badgeBg }}; color:{{ p1.badgeColor }}; box-shadow:{{ p1.badgeShadow }}; animation:{{ p1.badgeAnim }};">{{ p1.turnBadgeText }}</div>
+        <div style="width:54%; height:2px; background:rgba(255,255,255,.12);"></div>
+        <div style="font-size:11px; font-weight:900; color:rgba(255,255,255,.4); letter-spacing:2px;">PUNTOS</div>
+        <div style="font-family:'Fredoka'; font-weight:700; font-size:clamp(50px,6.5vw,92px); line-height:.8; color:{{ p1.colorHex }};">{{ scores.0 }}</div>
+      </div>
+
+      <!-- center: arrows + board + narrator -->
+      <div style="flex:0 1 auto; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:clamp(8px,1.4vh,16px); min-width:0;">
+        <div style="display:flex; gap:clamp(5px,1.1vw,14px);">
+          <sc-for list="{{ columns }}" as="col" hint-placeholder-count="7">
+            <button onClick="{{ col.onDrop }}" style="cursor:{{ col.cursor }}; width:clamp(46px,9.4vh,104px); height:34px; border:none; background:none; color:{{ currentColorHex }}; font-size:28px; line-height:1; opacity:{{ col.arrowOp }}; animation:{{ arrowAnim }}; transition:transform .15s;" style-hover="transform:translateY(4px);">▼</button>
+          </sc-for>
+        </div>
+        <div style="position:relative; padding:clamp(10px,1.8vh,20px); border-radius:26px; background:linear-gradient(180deg,#2546ff,#1a30c4); --wf:{{ winFlashColor }}; box-shadow:0 0 0 4px #16259e, 0 16px 0 #0f1a78, 0 24px 44px rgba(0,0,0,.5), inset 0 0 30px rgba(255,255,255,.12); animation:{{ boardAnim }};">
+          <div style="display:flex; gap:clamp(5px,1.1vw,14px);">
+            <sc-for list="{{ columns }}" as="col" hint-placeholder-count="7">
+              <div onClick="{{ col.onDrop }}" style="display:flex; flex-direction:column; gap:clamp(5px,1.1vw,14px); border-radius:14px; padding:2px; cursor:{{ col.cursor }}; background:{{ col.colBg }}; box-shadow:{{ col.colGlow }}; animation:{{ col.anim }};">
+                <sc-for list="{{ col.cells }}" as="cell" hint-placeholder-count="6">
+                  <div style="position:relative; width:clamp(46px,9.4vh,104px); height:clamp(46px,9.4vh,104px); border-radius:50%; background:radial-gradient(circle at 38% 34%, #0a0820, #05040f); box-shadow:inset 0 4px 10px rgba(0,0,0,.85), inset 0 -2px 4px rgba(255,255,255,.05);">
+                    <div style="position:absolute; inset:6%; opacity:{{ cell.dim }}; transition:opacity .3s; animation:{{ cell.anim }};">{{ cell.token }}</div>
+                    <div style="position:absolute; inset:-4%; border-radius:50%; border:3px solid {{ cell.flashColor }}; pointer-events:none; opacity:0; animation:{{ cell.flash }};"></div>
+                  </div>
+                </sc-for>
+              </div>
+            </sc-for>
+          </div>
+          <sc-if value="{{ winFlash }}" hint-placeholder-val="{{ false }}">
+          <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; pointer-events:none; z-index:4;">
+            <div style="position:absolute; top:50%; left:50%; padding:14px 32px; border-radius:18px; background:rgba(10,8,20,.8); border:3px solid {{ winFlashColor }}; box-shadow:0 0 46px {{ winFlashColor }}; font-family:'Fredoka'; font-weight:700; font-size:clamp(30px,5vw,64px); color:#ffd23f; -webkit-text-stroke:2px #1a1030; white-space:nowrap; animation:connectBadge .6s cubic-bezier(.2,.8,.3,1.2) both;">{{ winBanner }}</div>
+          </div>
+          </sc-if>
+        </div>
+        <div style="margin-top:clamp(14px,3.4vh,40px); display:flex; align-items:center; gap:12px; max-width:100%; padding:11px 22px; border-radius:18px; background:rgba(255,255,255,.07); border:2px solid {{ narratorBd }}; box-shadow:0 0 22px {{ narratorGlow }}; animation:pop .35s ease;">
+          <span style="font-size:24px;">🎙️</span>
+          <span style="font-family:'Fredoka'; font-weight:600; font-size:clamp(16px,2vw,26px); color:#fff; white-space:nowrap;">{{ narrator }}</span>
+        </div>
+      </div>
+
+      <!-- P2 panel (right) -->
+      <div style="flex:1 1 0; min-width:0; max-width:320px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:clamp(8px,1.4vh,16px); padding:22px 16px; border-radius:26px; border:2.5px solid {{ p2.colorHex }}; background:{{ p2.panelBg }}; box-shadow:{{ p2.panelGlow }}; opacity:{{ p2.panelOpacity }}; --tc:{{ p2.colorHex }}; animation:{{ p2.panelAnim }}; transition:opacity .3s;">
+        <div style="width:clamp(76px,9vw,128px); height:clamp(76px,9vw,128px);">{{ p2.avatar }}</div>
+        <div style="font-family:'Fredoka'; font-weight:600; font-size:clamp(22px,2.4vw,36px); line-height:1; text-align:center; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ p2.name }}</div>
+        <div style="font-size:clamp(13px,1.3vw,16px); font-weight:900; letter-spacing:1px; white-space:nowrap; padding:8px 20px; border-radius:999px; background:{{ p2.badgeBg }}; color:{{ p2.badgeColor }}; box-shadow:{{ p2.badgeShadow }}; animation:{{ p2.badgeAnim }};">{{ p2.turnBadgeText }}</div>
+        <div style="width:54%; height:2px; background:rgba(255,255,255,.12);"></div>
+        <div style="font-size:11px; font-weight:900; color:rgba(255,255,255,.4); letter-spacing:2px;">PUNTOS</div>
+        <div style="font-family:'Fredoka'; font-weight:700; font-size:clamp(50px,6.5vw,92px); line-height:.8; color:{{ p2.colorHex }};">{{ scores.1 }}</div>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- ===================== VICTORY ===================== -->
+  <sc-if value="{{ isVictory }}" hint-placeholder-val="{{ false }}">
+  <div style="position:absolute; inset:0; z-index:20; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px; background:radial-gradient(110% 90% at 50% 30%, {{ winnerWash }} 0%, rgba(8,6,15,.92) 70%);">
+    <div style="position:absolute; inset:0; overflow:hidden; pointer-events:none;">
+      <sc-for list="{{ confetti }}" as="cf" hint-placeholder-count="0">
+        <div style="position:absolute; top:-30px; left:{{ cf.left }}; width:{{ cf.size }}; height:{{ cf.size }}; background:{{ cf.color }}; border-radius:{{ cf.radius }}; animation:confettiFall {{ cf.dur }} linear {{ cf.delay }} infinite;"></div>
+      </sc-for>
+    </div>
+    <div style="position:relative; display:flex; flex-direction:column; align-items:center; animation:pop .5s ease;">
+      <div style="font-family:'Fredoka'; font-weight:700; font-size:clamp(36px,8vw,96px); color:#ffd23f; text-shadow:0 6px 0 #c98800, 0 0 40px rgba(255,210,63,.6); -webkit-text-stroke:3px #1a1030; letter-spacing:1px;">{{ victoryTitle }}</div>
+      <div style="width:clamp(150px,26vw,230px); height:clamp(150px,26vw,230px); margin:14px 0; filter:drop-shadow(0 0 40px {{ winnerHex }});">{{ winnerAvatar }}</div>
+      <div style="font-family:'Fredoka'; font-weight:700; font-size:clamp(26px,5vw,52px); color:#fff; text-shadow:0 4px 0 rgba(0,0,0,.4);">¡Ganó {{ winnerName }}!</div>
+      <div style="font-weight:800; font-size:18px; color:rgba(255,255,255,.65); margin-top:6px;">Marcador {{ scores.0 }} — {{ scores.1 }}</div>
+      <div style="display:flex; gap:14px; margin-top:30px; flex-wrap:wrap; justify-content:center;">
+        <button onClick="{{ rematch }}" style="cursor:pointer; padding:15px 34px; border-radius:999px; border:none; background:linear-gradient(180deg,#ffd23f,#f5a700); color:#1a1030; font-family:'Fredoka'; font-weight:700; font-size:22px; box-shadow:0 6px 0 #c98800;">🔄 Revancha</button>
+        <button onClick="{{ changePlayers }}" style="cursor:pointer; padding:15px 30px; border-radius:999px; border:2px solid rgba(255,255,255,.3); background:rgba(255,255,255,.06); color:#fff; font-family:'Fredoka'; font-weight:600; font-size:22px;">👥 Cambiar jugadores</button>
+        <button onClick="{{ goHome }}" style="cursor:pointer; padding:15px 30px; border-radius:999px; border:2px solid rgba(255,255,255,.3); background:rgba(255,255,255,.06); color:#fff; font-family:'Fredoka'; font-weight:600; font-size:22px;">🏠 Inicio</button>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- ===================== DRAW ===================== -->
+  <sc-if value="{{ isDraw }}" hint-placeholder-val="{{ false }}">
+  <div style="position:absolute; inset:0; z-index:20; display:flex; align-items:center; justify-content:center; padding:24px; background:rgba(8,6,15,.85);">
+    <div style="display:flex; flex-direction:column; align-items:center; text-align:center; padding:40px 44px; border-radius:28px; border:3px solid #22d3ee; background:linear-gradient(180deg,#15294a,#0d1830); box-shadow:0 0 40px rgba(34,211,238,.35); animation:pop .45s ease; max-width:480px;">
+      <div style="display:flex; gap:-10px; margin-bottom:8px;">
+        <div style="width:88px; height:88px;">{{ p1.avatar }}</div>
+        <div style="width:88px; height:88px; margin-left:-14px;">{{ p2.avatar }}</div>
+      </div>
+      <div style="font-family:'Fredoka'; font-weight:700; font-size:clamp(30px,6vw,56px); color:#22d3ee; text-shadow:0 4px 0 rgba(0,0,0,.4);">¡EMPATE!</div>
+      <div style="font-weight:800; font-size:18px; color:rgba(255,255,255,.75); margin:10px 0 4px;">Tablero lleno. ¡Nadie cede! 🏀</div>
+      <div style="font-weight:700; font-size:15px; color:rgba(255,255,255,.5);">Buen duelo. ¿La revancha define todo?</div>
+      <div style="display:flex; gap:12px; margin-top:26px; flex-wrap:wrap; justify-content:center;">
+        <button onClick="{{ rematch }}" style="cursor:pointer; padding:14px 32px; border-radius:999px; border:none; background:linear-gradient(180deg,#ffd23f,#f5a700); color:#1a1030; font-family:'Fredoka'; font-weight:700; font-size:21px; box-shadow:0 5px 0 #c98800;">🔄 Revancha</button>
+        <button onClick="{{ goHome }}" style="cursor:pointer; padding:14px 28px; border-radius:999px; border:2px solid rgba(255,255,255,.3); background:rgba(255,255,255,.06); color:#fff; font-family:'Fredoka'; font-weight:600; font-size:21px;">🏠 Inicio</button>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- ===================== SENSOR TEST ===================== -->
+  <sc-if value="{{ isSensors }}" hint-placeholder-val="{{ false }}">
+  <div style="position:absolute; inset:0; z-index:6; display:flex; flex-direction:column; padding:20px 24px; animation:slideUp .4s ease;">
+    <div style="flex:none; display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
+      <button onClick="{{ goMode }}" style="cursor:pointer; padding:10px 18px; border-radius:999px; border:1.5px solid rgba(255,255,255,.18); background:rgba(255,255,255,.05); color:#fff; font-weight:800; font-size:14px;">‹ Atrás</button>
+      <div style="font-family:'Fredoka'; font-weight:700; font-size:clamp(20px,3vw,32px); display:flex; align-items:center; gap:10px;">⚡ PRUEBA DE SENSORES</div>
+      <div style="display:flex; align-items:center; gap:8px; padding:8px 16px; border-radius:999px; border:1.5px solid {{ connBd }}; background:rgba(0,0,0,.25);">
+        <span style="width:11px; height:11px; border-radius:50%; background:{{ connDot }}; box-shadow:0 0 10px {{ connDot }};"></span>
+        <span style="font-weight:900; font-size:13px; color:{{ connDot }}; letter-spacing:.5px;">{{ connLabel }}</span>
+      </div>
+    </div>
+
+    <div style="flex:1; min-height:0; border-radius:22px; border:2px solid rgba(34,211,238,.3); background:repeating-linear-gradient(0deg, rgba(34,211,238,.04) 0 1px, transparent 1px 22px), linear-gradient(180deg,#0c1430,#080a1c); box-shadow:inset 0 0 40px rgba(34,211,238,.08); padding:22px; display:flex; flex-direction:column;">
+      <div style="font-size:13px; font-weight:900; letter-spacing:2px; color:rgba(34,211,238,.7); margin-bottom:6px;">COLUMNAS 1–7 · TOCA PARA SIMULAR SEÑAL</div>
+      <div style="flex:1; display:flex; gap:14px; align-items:stretch;">
+        <sc-for list="{{ sensors }}" as="s" hint-placeholder-count="7">
+          <button onClick="{{ s.onPulse }}" style="cursor:pointer; flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; gap:10px; padding:14px 6px; border-radius:16px; border:2px solid {{ s.bd }}; background:{{ s.bg }}; box-shadow:{{ s.glow }}; transition:all .12s;">
+            <div style="flex:1; width:100%; border-radius:10px; background:{{ s.barBg }}; box-shadow:{{ s.barGlow }};"></div>
+            <span style="font-family:'Fredoka'; font-weight:700; font-size:28px; color:{{ s.numColor }};">{{ s.label }}</span>
+          </button>
+        </sc-for>
+      </div>
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-top:18px; gap:14px; flex-wrap:wrap;">
+        <div style="font-weight:800; font-size:16px; color:rgba(255,255,255,.8);">Último sensor detectado: <span style="font-family:'Fredoka'; font-weight:700; font-size:24px; color:#ffd23f;">{{ lastSensor }}</span></div>
+        <div style="display:flex; gap:10px;">
+          <button onClick="{{ toggleConn }}" style="cursor:pointer; padding:11px 20px; border-radius:12px; border:1.5px solid rgba(255,255,255,.2); background:rgba(255,255,255,.05); color:#fff; font-weight:800; font-size:14px;">{{ connToggleLabel }}</button>
+          <button onClick="{{ clearSensors }}" style="cursor:pointer; padding:11px 20px; border-radius:12px; border:1.5px solid rgba(255,255,255,.2); background:rgba(255,255,255,.05); color:#fff; font-weight:800; font-size:14px;">Reiniciar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- ===================== SETTINGS ===================== -->
+  <sc-if value="{{ isSettings }}" hint-placeholder-val="{{ false }}">
+  <div style="position:absolute; inset:0; z-index:6; display:flex; flex-direction:column; padding:20px 24px; animation:slideUp .4s ease;">
+    <div style="flex:none; display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
+      <button onClick="{{ closeSettings }}" style="cursor:pointer; padding:10px 18px; border-radius:999px; border:1.5px solid rgba(255,255,255,.18); background:rgba(255,255,255,.05); color:#fff; font-weight:800; font-size:14px;">‹ Volver</button>
+      <div style="font-family:'Fredoka'; font-weight:700; font-size:clamp(20px,3vw,32px); display:flex; align-items:center; gap:10px;">⚙ CONFIGURACIÓN</div>
+      <div style="width:84px;"></div>
+    </div>
+    <div style="flex:1; min-height:0; overflow:auto; display:flex; justify-content:center;">
+      <div style="width:100%; max-width:620px; display:flex; flex-direction:column; gap:14px;">
+        <!-- volume sliders -->
+        <sc-for list="{{ volumeControls }}" as="v" hint-placeholder-count="3">
+          <div style="display:flex; align-items:center; gap:16px; padding:16px 20px; border-radius:18px; background:rgba(255,255,255,.05); border:1.5px solid rgba(255,255,255,.1);">
+            <span style="font-size:26px; width:32px; text-align:center;">{{ v.icon }}</span>
+            <span style="flex:none; width:140px; font-weight:800; font-size:16px;">{{ v.label }}</span>
+            <input type="range" min="0" max="100" value="{{ v.value }}" onInput="{{ v.onChange }}" style="flex:1; accent-color:#ff2d6f; height:6px;" />
+            <span style="flex:none; width:48px; text-align:right; font-family:'Fredoka'; font-weight:700; font-size:20px; color:#ffd23f;">{{ v.value }}</span>
+          </div>
+        </sc-for>
+        <!-- toggle voices -->
+        <div style="display:flex; align-items:center; gap:16px; padding:16px 20px; border-radius:18px; background:rgba(255,255,255,.05); border:1.5px solid rgba(255,255,255,.1);">
+          <span style="font-size:26px; width:32px; text-align:center;">🗣️</span>
+          <span style="flex:1; font-weight:800; font-size:16px;">Voces del narrador</span>
+          <button onClick="{{ toggleVoices }}" style="cursor:pointer; width:64px; height:34px; border-radius:999px; border:none; background:{{ voicesBg }}; position:relative; transition:background .2s;">
+            <span style="position:absolute; top:3px; left:{{ voicesKnob }}; width:28px; height:28px; border-radius:50%; background:#fff; transition:left .2s;"></span>
+          </button>
+        </div>
+        <!-- animation speed -->
+        <div style="display:flex; align-items:center; gap:16px; padding:16px 20px; border-radius:18px; background:rgba(255,255,255,.05); border:1.5px solid rgba(255,255,255,.1);">
+          <span style="font-size:26px; width:32px; text-align:center;">⚡</span>
+          <span style="flex:1; font-weight:800; font-size:16px;">Velocidad de animación</span>
+          <div style="display:flex; gap:8px;">
+            <sc-for list="{{ speedOptions }}" as="o" hint-placeholder-count="2">
+              <button onClick="{{ o.onPick }}" style="cursor:pointer; padding:9px 18px; border-radius:12px; border:2px solid {{ o.bd }}; background:{{ o.bg }}; color:{{ o.fg }}; font-weight:800; font-size:14px;">{{ o.label }}</button>
+            </sc-for>
+          </div>
+        </div>
+        <!-- theme -->
+        <div style="padding:16px 20px; border-radius:18px; background:rgba(255,255,255,.05); border:1.5px solid rgba(255,255,255,.1);">
+          <div style="display:flex; align-items:center; gap:16px; margin-bottom:12px;">
+            <span style="font-size:26px; width:32px; text-align:center;">🎨</span>
+            <span style="flex:1; font-weight:800; font-size:16px;">Tema visual</span>
+          </div>
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <sc-for list="{{ themeOptions }}" as="t" hint-placeholder-count="3">
+              <button onClick="{{ t.onPick }}" style="cursor:pointer; flex:1; min-width:120px; padding:14px; border-radius:14px; border:2px solid {{ t.bd }}; background:{{ t.swatch }}; color:#fff; font-family:'Fredoka'; font-weight:600; font-size:16px; text-shadow:0 1px 3px rgba(0,0,0,.6); box-shadow:{{ t.glow }};">{{ t.label }}</button>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:800},&quot;glow&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;},&quot;tokenStyle&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;character&quot;,&quot;classic&quot;],&quot;default&quot;:&quot;character&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;cpuDifficulty&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;chill&quot;,&quot;normal&quot;,&quot;sharp&quot;],&quot;default&quot;:&quot;sharp&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    const COLORS = [
+      { id: 'pink',   hex: '#ff2d6f', name: 'Rosa',     hue: 340 },
+      { id: 'cyan',   hex: '#22d3ee', name: 'Cian',     hue: 190 },
+      { id: 'yellow', hex: '#ffd23f', name: 'Amarillo', hue: 48  },
+      { id: 'green',  hex: '#2ee86e', name: 'Verde',    hue: 140 },
+      { id: 'orange', hex: '#ff8a00', name: 'Naranja',  hue: 32  },
+      { id: 'purple', hex: '#b14bff', name: 'Morado',   hue: 275 },
+      { id: 'blue',   hex: '#3b82f6', name: 'Azul',     hue: 217 },
+      { id: 'red',    hex: '#ff3b3b', name: 'Rojo',     hue: 0   },
+    ];
+    this.COLORS = COLORS;
+    this.FACES = [
+      { id: 'happy',     label: 'Feliz' },
+      { id: 'confident', label: 'Confiado' },
+      { id: 'serious',   label: 'Serio' },
+      { id: 'surprised', label: 'Sorprendido' },
+      { id: 'angry',     label: 'Enojado' },
+    ];
+    this.ACCESSORIES = [
+      { id: 'none',     label: 'Ninguno' },
+      { id: 'glasses',  label: 'Lentes' },
+      { id: 'cap',      label: 'Gorra' },
+      { id: 'headband', label: 'Banda' },
+      { id: 'crown',    label: 'Corona' },
+      { id: 'bowtie',   label: 'Moño' },
+      { id: 'earrings', label: 'Aretes' },
+    ];
+    this.state = {
+      screen: 'splash',
+      mode: 2,
+      prevScreen: 'mode',
+      players: [
+        { name: 'Edgar', color: 'red',    face: 'happy',     accessory: 'cap' },
+        { name: 'Sofía', color: 'yellow', face: 'confident', accessory: 'crown' },
+      ],
+      grid: this.emptyGrid(),
+      current: 0,
+      winner: null,
+      winning: {},
+      scores: [0, 0],
+      narrator: '',
+      errorCol: -1,
+      lastDrop: null,
+      thinking: false,
+      confetti: [],
+      sensors: [false, false, false, false, false, false, false],
+      lastSensor: '—',
+      sensorConnected: true,
+      idle: false,
+      settings: { music: 70, sfx: 80, narrator: 60, voices: true, speed: 'normal', theme: 'classic' },
+    };
+    this._timers = [];
+    this._idleTimer = null;
+  }
+
+  emptyGrid() { return Array.from({ length: 7 }, () => Array(6).fill(null)); }
+  hexOf(id) { const c = this.COLORS.find(c => c.id === id); return c ? c.hex : '#888'; }
+  hueOf(id) { const c = this.COLORS.find(c => c.id === id); return c ? c.hue : 0; }
+  hueDist(a, b) { const d = Math.abs(a - b) % 360; return Math.min(d, 360 - d); }
+  glow() { return this.props.glow !== false; }
+  dropDur() { return this.state.settings.speed === 'fast' ? 0.34 : 0.6; }
+
+  componentWillUnmount() { this._timers.forEach(clearTimeout); clearTimeout(this._idleTimer); }
+  later(fn, ms) { const t = setTimeout(fn, ms); this._timers.push(t); return t; }
+
+  // ---------- navigation ----------
+  start = () => this.setState({ screen: 'mode' });
+  goHome = () => this.setState({ screen: 'splash' });
+  goMode = () => this.setState({ screen: 'mode' });
+  mode1 = () => {
+    this.setState({ mode: 1, screen: 'setup', players: [
+      { ...this.state.players[0] },
+      { name: 'CPU', color: 'yellow', face: 'serious', accessory: 'none' },
+    ]});
+  };
+  mode2 = () => {
+    this.setState({ mode: 2, screen: 'setup', players: [
+      { name: 'Edgar', color: 'red', face: 'happy', accessory: 'cap' },
+      { name: 'Sofía', color: 'yellow', face: 'confident', accessory: 'crown' },
+    ]});
+  };
+  openSettings = () => this.setState({ prevScreen: this.state.screen, screen: 'settings' });
+  closeSettings = () => this.setState({ screen: this.state.prevScreen || 'mode' });
+  openSensors = () => this.setState({ screen: 'sensors' });
+
+  // ---------- setup ----------
+  setPlayer(i, patch) {
+    const players = this.state.players.map((p, idx) => idx === i ? { ...p, ...patch } : p);
+    this.setState({ players });
+  }
+  colorWarnState() {
+    if (this.state.mode !== 2) return null;
+    const a = this.state.players[0].color, b = this.state.players[1].color;
+    if (a === b) return 'Mismo color: elige uno distinto para cada jugador.';
+    if (this.hueDist(this.hueOf(a), this.hueOf(b)) < 30) return 'Colores muy parecidos: podrían confundirse en el tablero.';
+    return null;
+  }
+  beginGame = () => {
+    if (this.colorWarnState()) return;
+    this.setState({
+      screen: 'game', grid: this.emptyGrid(), current: 0, winner: null,
+      winning: {}, scores: [0, 0], errorCol: -1, lastDrop: null, thinking: false, confetti: [], idle: false,
+      narrator: '¡Comienza el duelo! Turno de ' + this.state.players[0].name,
+    });
+    this.armIdle();
+  };
+
+  armIdle() {
+    clearTimeout(this._idleTimer);
+    const s = this.state;
+    if (s.screen !== 'game' || s.winner != null) return;
+    if (s.mode === 1 && s.current === 1) return;
+    this._idleTimer = setTimeout(() => {
+      const st = this.state;
+      if (st.screen !== 'game' || st.winner != null) return;
+      if (st.mode === 1 && st.current === 1) return;
+      const nm = st.players[st.current].name;
+      this.setState({ idle: true, narrator: '¿Sigues ahí, ' + nm + '? ¡Es tu turno! 🏀' });
+    }, 9000);
+  }
+  clearIdle() { clearTimeout(this._idleTimer); if (this.state.idle) this.setState({ idle: false }); }
+
+  // ---------- game ----------
+  lowestRow(grid, c) { for (let r = 0; r < 6; r++) if (grid[c][r] == null) return r; return -1; }
+  getLine(grid, c, r, dc, dr, p) {
+    const cells = [[c, r]];
+    let cc = c + dc, rr = r + dr;
+    while (cc >= 0 && cc < 7 && rr >= 0 && rr < 6 && grid[cc][rr] === p) { cells.push([cc, rr]); cc += dc; rr += dr; }
+    cc = c - dc; rr = r - dr;
+    while (cc >= 0 && cc < 7 && rr >= 0 && rr < 6 && grid[cc][rr] === p) { cells.unshift([cc, rr]); cc -= dc; rr -= dr; }
+    return cells;
+  }
+  winLine(grid, c, r, p) {
+    const dirs = [[1, 0], [0, 1], [1, 1], [1, -1]];
+    for (const [dc, dr] of dirs) {
+      const line = this.getLine(grid, c, r, dc, dr, p);
+      if (line.length >= 4) {
+        const start = line.findIndex((_, i) => line[i][0] === c && line[i][1] === r);
+        let s = Math.max(0, Math.min(start - 0, line.length - 4));
+        return line.slice(s, s + 4);
+      }
+    }
+    return null;
+  }
+  isFull(grid) { return grid.every(col => col[5] != null); }
+
+  drop = (col) => {
+    if (this.state.winner != null || this.state.thinking) return;
+    if (this.state.mode === 1 && this.state.current === 1) return;
+    clearTimeout(this._idleTimer);
+    this.place(col);
+  };
+
+  place(col) {
+    const { grid, current, players } = this.state;
+    const r = this.lowestRow(grid, col);
+    if (r < 0) {
+      this.setState({ errorCol: col, narrator: '¡Columna llena! Prueba otra. 🚫' });
+      this.later(() => this.setState({ errorCol: -1 }), 700);
+      return;
+    }
+    const ng = grid.map(c => c.slice());
+    ng[col][r] = current;
+    const line = this.winLine(ng, col, r, current);
+    const name = players[current].name;
+
+    if (line) {
+      const winning = {}; line.forEach(([c, rr]) => { winning[c + '-' + rr] = true; });
+      const scores = this.state.scores.slice(); scores[current] += 1;
+      this.setState({ grid: ng, winning, winner: current, winBy: 'connect', scores, lastDrop: { col, row: r }, idle: false, narrator: '¡CONECTA 4! ¡Gana ' + name + '! 🎉' });
+      this.later(() => this.setState({ confetti: this.makeConfetti() }), 700);
+      this.later(() => this.setState({ screen: 'victory' }), 2700);
+      return;
+    }
+    if (this.isFull(ng)) {
+      this.setState({ grid: ng, lastDrop: { col, row: r }, narrator: '¡Tablero lleno! Es un empate. 🤝' });
+      this.later(() => this.setState({ screen: 'draw' }), 850);
+      return;
+    }
+    const next = current === 0 ? 1 : 0;
+    this.setState({ grid: ng, current: next, lastDrop: { col, row: r }, idle: false, narrator: this.turnPhrase(next, ng) });
+    if (this.state.mode === 1 && next === 1) {
+      this.setState({ thinking: true });
+      this.later(() => this.cpuMove(), 750);
+    } else {
+      this.armIdle();
+    }
+  }
+
+  turnPhrase(p, grid) {
+    const name = this.state.players[p].name;
+    const opp = this.state.players[p === 0 ? 1 : 0].name;
+    const phrases = [
+      'Turno de ' + name,
+      '¡Buena jugada! Ahora va ' + name,
+      'Vamos ' + name + ', tú puedes 🏀',
+      'Cuidado ' + name + ', ' + opp + ' va fuerte',
+    ];
+    if (this.threatExists(grid, p === 0 ? 1 : 0)) return '¡Cuidado ' + name + ', hay tres en línea! 😱';
+    return phrases[Math.floor(Math.random() * phrases.length)];
+  }
+  threatExists(grid, p) {
+    for (let c = 0; c < 7; c++) {
+      const r = this.lowestRow(grid, c);
+      if (r < 0) continue;
+      const ng = grid.map(x => x.slice()); ng[c][r] = p;
+      if (this.winLine(ng, c, r, p)) return true;
+    }
+    return false;
+  }
+  cpuMove() {
+    const { grid } = this.state;
+    if (this.state.winner != null) { this.setState({ thinking: false }); return; }
+    const diff = this.props.cpuDifficulty || 'normal';
+    const tryWin = (p) => { for (let c = 0; c < 7; c++) { const r = this.lowestRow(grid, c); if (r < 0) continue; const ng = grid.map(x => x.slice()); ng[c][r] = p; if (this.winLine(ng, c, r, p)) return c; } return -1; };
+    let col = tryWin(1);
+    if (col < 0 && diff !== 'chill') col = tryWin(0);
+    if (col < 0) {
+      const order = diff === 'sharp' ? [3, 2, 4, 1, 5, 0, 6] : [3, 4, 2, 5, 1, 6, 0];
+      const avail = order.filter(c => this.lowestRow(grid, c) >= 0);
+      if (diff === 'chill') col = avail[Math.floor(Math.random() * avail.length)];
+      else col = avail[0];
+    }
+    this.setState({ thinking: false }, () => this.place(col));
+  }
+
+  rematch = () => {
+    this.setState({ screen: 'game', grid: this.emptyGrid(), current: 0, winner: null, winBy: null, winning: {}, errorCol: -1, lastDrop: null, thinking: false, confetti: [], idle: false, narrator: '¡Revancha! Turno de ' + this.state.players[0].name });
+    this.armIdle();
+  };
+  resetBoard = () => {
+    clearTimeout(this._idleTimer);
+    this.setState({ grid: this.emptyGrid(), current: 0, winner: null, winBy: null, winning: {}, errorCol: -1, lastDrop: null, thinking: false, confetti: [], idle: false, narrator: 'Tablero reiniciado. Turno de ' + this.state.players[0].name });
+    this.armIdle();
+  };
+  resign = () => {
+    if (this.state.winner != null) return;
+    clearTimeout(this._idleTimer);
+    const loser = this.state.current;
+    const w = loser === 0 ? 1 : 0;
+    const scores = this.state.scores.slice(); scores[w] += 1;
+    this.setState({ winner: w, winBy: 'resign', winning: {}, scores, idle: false, thinking: false, narrator: '🏳️ ' + this.state.players[loser].name + ' se rindió. ¡Gana ' + this.state.players[w].name + '!' });
+    this.later(() => this.setState({ confetti: this.makeConfetti(), screen: 'victory' }), 700);
+  };
+  changePlayers = () => this.setState({ screen: 'setup', winner: null });
+
+  makeConfetti() {
+    const cols = ['#ff2d6f', '#22d3ee', '#ffd23f', '#2ee86e', '#b14bff', '#ff8a00', '#ffffff'];
+    return Array.from({ length: 70 }, (_, i) => ({
+      left: (Math.random() * 100).toFixed(1) + '%',
+      size: (7 + Math.random() * 11).toFixed(0) + 'px',
+      color: cols[i % cols.length],
+      radius: Math.random() > 0.5 ? '50%' : '2px',
+      dur: (2 + Math.random() * 2.4).toFixed(2) + 's',
+      delay: (Math.random() * 1.5).toFixed(2) + 's',
+    }));
+  }
+
+  // ---------- sensors ----------
+  pulseSensor(i) {
+    const sensors = this.state.sensors.slice(); sensors[i] = true;
+    this.setState({ sensors, lastSensor: 'Columna ' + (i + 1) });
+    this.later(() => { const s = this.state.sensors.slice(); s[i] = false; this.setState({ sensors: s }); }, 650);
+  }
+  toggleConn = () => this.setState({ sensorConnected: !this.state.sensorConnected });
+  clearSensors = () => this.setState({ sensors: [false, false, false, false, false, false, false], lastSensor: '—' });
+
+  // ---------- settings ----------
+  setSetting(k, v) { this.setState({ settings: { ...this.state.settings, [k]: v } }); }
+  toggleVoices = () => this.setSetting('voices', !this.state.settings.voices);
+
+  // ---------- avatar drawing ----------
+  avatar(opts) {
+    const e = React.createElement;
+    const tokenStyle = this.props.tokenStyle || 'character';
+    const ink = '#1a1030';
+    const hex = opts.colorHex;
+    const face = opts.face, acc = opts.accessory;
+    const kids = [];
+    // disc
+    kids.push(e('circle', { key: 'disc', cx: 55, cy: 62, r: 50, fill: hex, stroke: 'rgba(0,0,0,.28)', strokeWidth: 4 }));
+    kids.push(e('ellipse', { key: 'hl', cx: 40, cy: 44, rx: 22, ry: 13, fill: 'rgba(255,255,255,.32)' }));
+    kids.push(e('circle', { key: 'rim', cx: 55, cy: 62, r: 46, fill: 'none', stroke: 'rgba(255,255,255,.45)', strokeWidth: 2.5 }));
+
+    if (tokenStyle !== 'classic') {
+      // face
+      const sp = { stroke: ink, strokeWidth: 5, fill: 'none', strokeLinecap: 'round' };
+      if (face === 'happy') {
+        kids.push(e('circle', { key: 'e1', cx: 40, cy: 56, r: 5, fill: ink }));
+        kids.push(e('circle', { key: 'e2', cx: 70, cy: 56, r: 5, fill: ink }));
+        kids.push(e('path', { key: 'm', d: 'M40 74 Q55 90 70 74', ...sp }));
+      } else if (face === 'confident') {
+        kids.push(e('path', { key: 'e1', d: 'M34 58 Q40 52 46 58', ...sp }));
+        kids.push(e('path', { key: 'e2', d: 'M64 58 Q70 52 76 58', ...sp }));
+        kids.push(e('path', { key: 'm', d: 'M42 78 Q58 86 72 70', ...sp }));
+      } else if (face === 'serious') {
+        kids.push(e('circle', { key: 'e1', cx: 40, cy: 56, r: 4.5, fill: ink }));
+        kids.push(e('circle', { key: 'e2', cx: 70, cy: 56, r: 4.5, fill: ink }));
+        kids.push(e('path', { key: 'm', d: 'M42 80 H68', ...sp }));
+      } else if (face === 'surprised') {
+        kids.push(e('circle', { key: 'e1', cx: 40, cy: 55, r: 7, fill: ink }));
+        kids.push(e('circle', { key: 'e2', cx: 70, cy: 55, r: 7, fill: ink }));
+        kids.push(e('ellipse', { key: 'm', cx: 55, cy: 80, rx: 8, ry: 10, fill: ink }));
+      } else if (face === 'angry') {
+        kids.push(e('path', { key: 'b1', d: 'M30 46 L48 53', ...sp }));
+        kids.push(e('path', { key: 'b2', d: 'M80 46 L62 53', ...sp }));
+        kids.push(e('circle', { key: 'e1', cx: 42, cy: 60, r: 4, fill: ink }));
+        kids.push(e('circle', { key: 'e2', cx: 68, cy: 60, r: 4, fill: ink }));
+        kids.push(e('path', { key: 'm', d: 'M42 82 Q55 74 68 82', ...sp }));
+      }
+    }
+    // accessories
+    if (acc === 'glasses') {
+      kids.push(e('circle', { key: 'g1', cx: 40, cy: 56, r: 13, fill: 'rgba(255,255,255,.18)', stroke: ink, strokeWidth: 4 }));
+      kids.push(e('circle', { key: 'g2', cx: 70, cy: 56, r: 13, fill: 'rgba(255,255,255,.18)', stroke: ink, strokeWidth: 4 }));
+      kids.push(e('path', { key: 'gb', d: 'M53 56 H57', stroke: ink, strokeWidth: 4 }));
+    } else if (acc === 'cap') {
+      kids.push(e('path', { key: 'cap', d: 'M14 40 Q55 -6 96 40 Z', fill: '#1f4fff' }));
+      kids.push(e('ellipse', { key: 'brim', cx: 38, cy: 41, rx: 32, ry: 8, fill: '#143bd6' }));
+      kids.push(e('circle', { key: 'btn', cx: 55, cy: 14, r: 4, fill: '#0d2aa0' }));
+    } else if (acc === 'headband') {
+      kids.push(e('path', { key: 'hb', d: 'M10 44 Q55 30 100 44 L100 56 Q55 42 10 56 Z', fill: '#ff2d6f' }));
+      kids.push(e('path', { key: 'hb2', d: 'M10 50 Q55 38 100 50', stroke: 'rgba(255,255,255,.5)', strokeWidth: 2, fill: 'none' }));
+    } else if (acc === 'crown') {
+      kids.push(e('path', { key: 'cr', d: 'M28 36 L36 10 L48 28 L55 6 L62 28 L74 10 L82 36 Z', fill: '#ffd23f', stroke: '#d39a00', strokeWidth: 2, strokeLinejoin: 'round' }));
+      kids.push(e('circle', { key: 'gem', cx: 55, cy: 22, r: 3.5, fill: '#ff2d6f' }));
+    } else if (acc === 'bowtie') {
+      kids.push(e('path', { key: 'b1', d: 'M55 104 L38 96 L38 114 Z', fill: '#ff2d6f' }));
+      kids.push(e('path', { key: 'b2', d: 'M55 104 L72 96 L72 114 Z', fill: '#ff2d6f' }));
+      kids.push(e('circle', { key: 'bc', cx: 55, cy: 105, r: 4, fill: '#c01250' }));
+    } else if (acc === 'earrings') {
+      kids.push(e('circle', { key: 'ea1', cx: 8, cy: 74, r: 5, fill: '#ffd23f', stroke: '#d39a00', strokeWidth: 1.5 }));
+      kids.push(e('circle', { key: 'ea2', cx: 102, cy: 74, r: 5, fill: '#ffd23f', stroke: '#d39a00', strokeWidth: 1.5 }));
+    }
+
+    const svg = e('svg', { viewBox: '0 0 110 120', style: { width: '100%', height: '100%', display: 'block', overflow: 'visible' } }, kids);
+    const wrapStyle = { width: '100%', height: '100%', filter: opts.glow ? ('drop-shadow(0 0 12px ' + hex + ')') : 'none' };
+    return e('div', { style: wrapStyle }, svg);
+  }
+
+  // ---------- build a setup-player view model ----------
+  buildPlayer(i) {
+    const p = this.state.players[i];
+    const other = this.state.players[i === 0 ? 1 : 0];
+    const isCpu = this.state.mode === 1 && i === 1;
+    const colorHex = this.hexOf(p.color);
+    const colors = this.COLORS.map(c => {
+      const taken = this.state.mode === 2 && c.id === other.color;
+      const sel = c.id === p.color;
+      return {
+        hex: c.hex,
+        taken,
+        dim: taken ? 0.4 : 1,
+        lockDisp: taken ? 'flex' : 'none',
+        ring: sel ? ('0 0 0 4px #fff, 0 0 16px ' + c.hex) : (taken ? 'none' : '0 0 0 2px rgba(255,255,255,.25)'),
+        onPick: () => { if (!taken) this.setPlayer(i, { color: c.id }); },
+      };
+    });
+    const faces = this.FACES.map(f => ({
+      label: f.label,
+      bd: f.id === p.face ? colorHex : 'transparent',
+      preview: this.avatar({ colorHex, face: f.id, accessory: 'none', glow: false }),
+      onPick: () => this.setPlayer(i, { face: f.id }),
+    }));
+    const accessories = this.ACCESSORIES.map(a => ({
+      label: a.label,
+      bd: a.id === p.accessory ? colorHex : 'transparent',
+      preview: this.avatar({ colorHex, face: p.face, accessory: a.id, glow: false }),
+      onPick: () => this.setPlayer(i, { accessory: a.id }),
+    }));
+    return {
+      name: p.name,
+      tag: isCpu ? 'CPU' : ('JUGADOR ' + (i + 1)),
+      colorHex,
+      glowSoft: colorHex + '55',
+      locked: isCpu,
+      inputDim: isCpu ? 0.6 : 1,
+      avatar: this.avatar({ colorHex, face: p.face, accessory: p.accessory, glow: this.glow() }),
+      colors, faces, accessories,
+      onName: (ev) => this.setPlayer(i, { name: ev.target.value || ('Jugador ' + (i + 1)) }),
+    };
+  }
+
+  // ---------- build game-panel view model ----------
+  panelVM(i) {
+    const p = this.state.players[i];
+    const colorHex = this.hexOf(p.color);
+    const active = this.state.current === i && this.state.winner == null;
+    const isCpu = this.state.mode === 1 && i === 1;
+    const thinking = active && isCpu;
+    const idle = active && this.state.idle && !isCpu;
+    let badgeText;
+    if (thinking) badgeText = '⏳ PENSANDO…';
+    else if (idle) badgeText = '👉 ¡TE TOCA!';
+    else if (active) badgeText = '● TU TURNO';
+    else badgeText = 'EN ESPERA';
+    return {
+      name: p.name,
+      colorHex,
+      avatar: this.avatar({ colorHex, face: p.face, accessory: p.accessory, glow: active && this.glow() }),
+      panelBg: active ? ('linear-gradient(180deg, ' + colorHex + '33, rgba(255,255,255,.02))') : 'rgba(255,255,255,.03)',
+      panelGlow: active ? ('0 0 0 3px ' + colorHex + ', 0 0 32px ' + colorHex + 'aa, inset 0 0 16px ' + colorHex + '44') : 'none',
+      panelOpacity: active ? 1 : 0.42,
+      panelAnim: (active && !thinking) ? 'turnGlow 1.6s ease-in-out infinite' : 'none',
+      turnBadgeText: badgeText,
+      badgeBg: active ? colorHex : 'rgba(255,255,255,.08)',
+      badgeColor: active ? '#1a1030' : 'rgba(255,255,255,.45)',
+      badgeShadow: active ? ('0 0 18px ' + colorHex + '99') : 'none',
+      badgeAnim: idle ? 'badgePulse .7s ease-in-out infinite' : 'none',
+    };
+  }
+
+  renderVals() {
+    const s = this.state;
+    const screen = s.screen;
+    const p1 = { ...this.panelVM(0), ...this.buildPlayer(0) }, p2 = { ...this.panelVM(1), ...this.buildPlayer(1) };
+    const warn = this.colorWarnState();
+
+    // columns view model
+    const dur = this.dropDur();
+    const hasWin = s.winner != null;
+    const columns = Array.from({ length: 7 }, (_, c) => {
+      const full = this.lowestRow(s.grid, c) < 0;
+      const err = s.errorCol === c;
+      const cells = [];
+      for (let r = 5; r >= 0; r--) {
+        const v = s.grid[c][r];
+        let token = null, anim = 'none', dim = 1, flash = 'none';
+        if (v != null) {
+          const p = s.players[v];
+          const win = !!s.winning[c + '-' + r];
+          const hex = this.hexOf(p.color);
+          token = React.createElement('div', {
+            style: { width: '100%', height: '100%', borderRadius: '50%', '--wg': hex,
+              animation: win ? 'winPulse .85s ease-in-out infinite' : 'none' },
+          }, this.avatar({ colorHex: hex, face: p.face, accessory: p.accessory, glow: false }));
+          if (hasWin) dim = win ? 1 : 0.22;
+          const justDropped = s.lastDrop && s.lastDrop.col === c && s.lastDrop.row === r;
+          if (justDropped && !hasWin) { anim = 'drop ' + dur + 's'; flash = 'land ' + (dur * 0.7).toFixed(2) + 's ease-out ' + (dur * 0.5).toFixed(2) + 's'; }
+        }
+        cells.push({ token, anim, dim, flash, flashColor: v != null ? this.hexOf(s.players[v].color) : '#fff' });
+      }
+      const playable = s.winner == null && !(s.mode === 1 && s.current === 1) && !full;
+      return {
+        cells,
+        onDrop: () => this.drop(c),
+        cursor: playable ? 'pointer' : 'not-allowed',
+        arrowOp: full ? 0.15 : (s.winner == null && !(s.mode === 1 && s.current === 1) ? 0.9 : 0.25),
+        colBg: err ? 'rgba(255,45,111,.22)' : 'transparent',
+        colGlow: err ? '0 0 18px rgba(255,45,111,.7), inset 0 0 14px rgba(255,45,111,.4)' : 'none',
+        anim: err ? 'shake .42s ease' : 'none',
+      };
+    });
+
+    const winnerIdx = s.winner;
+    const winnerHex = winnerIdx != null ? this.hexOf(s.players[winnerIdx].color) : '#ffd23f';
+
+    // sensors
+    const sensors = s.sensors.map((lit, i) => ({
+      label: String(i + 1),
+      onPulse: () => this.pulseSensor(i),
+      bd: lit ? '#22d3ee' : 'rgba(34,211,238,.25)',
+      bg: lit ? 'rgba(34,211,238,.2)' : 'rgba(255,255,255,.03)',
+      glow: lit ? '0 0 26px rgba(34,211,238,.8), inset 0 0 20px rgba(34,211,238,.5)' : 'none',
+      barBg: lit ? 'linear-gradient(180deg,#7df0ff,#22d3ee)' : 'rgba(255,255,255,.06)',
+      barGlow: lit ? '0 0 18px rgba(34,211,238,.9)' : 'none',
+      numColor: lit ? '#fff' : 'rgba(255,255,255,.5)',
+    }));
+
+    // settings
+    const st = s.settings;
+    const volumeControls = [
+      { icon: '🎵', label: 'Música',  key: 'music' },
+      { icon: '🔊', label: 'Efectos', key: 'sfx' },
+      { icon: '🎙️', label: 'Narrador', key: 'narrator' },
+    ].map(v => ({ ...v, value: st[v.key], onChange: (ev) => this.setSetting(v.key, parseInt(ev.target.value, 10)) }));
+    const speedOptions = [
+      { id: 'normal', label: 'Normal' },
+      { id: 'fast',   label: 'Rápida' },
+    ].map(o => ({ label: o.label, onPick: () => this.setSetting('speed', o.id),
+      bd: st.speed === o.id ? '#ffd23f' : 'rgba(255,255,255,.15)',
+      bg: st.speed === o.id ? 'rgba(255,210,63,.18)' : 'rgba(255,255,255,.03)',
+      fg: st.speed === o.id ? '#ffd23f' : '#fff' }));
+    const themeDefs = [
+      { id: 'classic', label: 'Arcade clásico', swatch: 'linear-gradient(135deg,#ff2d6f,#ffd23f)' },
+      { id: 'neon',    label: 'Neón',           swatch: 'linear-gradient(135deg,#b14bff,#22d3ee)' },
+      { id: 'court',   label: 'Cancha',         swatch: 'linear-gradient(135deg,#ff8a00,#2ee86e)' },
+    ];
+    const themeOptions = themeDefs.map(t => ({ label: t.label, swatch: t.swatch, onPick: () => this.setSetting('theme', t.id),
+      bd: st.theme === t.id ? '#fff' : 'transparent',
+      glow: st.theme === t.id ? '0 0 18px rgba(255,255,255,.4)' : 'none' }));
+
+    const curHex = this.hexOf(s.players[s.current].color);
+
+    return {
+      isSplash: screen === 'splash', isMode: screen === 'mode', isSetup: screen === 'setup',
+      isGame: screen === 'game', isVictory: screen === 'victory', isDraw: screen === 'draw',
+      isSensors: screen === 'sensors', isSettings: screen === 'settings',
+      start: this.start, goHome: this.goHome, goMode: this.goMode,
+      mode1: this.mode1, mode2: this.mode2,
+      openSettings: this.openSettings, closeSettings: this.closeSettings, openSensors: this.openSensors,
+      // splash decor
+      tokA: this.avatar({ colorHex: '#ff2d6f', face: 'happy', accessory: 'none', glow: this.glow() }),
+      tokB: this.avatar({ colorHex: '#22d3ee', face: 'confident', accessory: 'none', glow: this.glow() }),
+      tokC: this.avatar({ colorHex: '#ffd23f', face: 'surprised', accessory: 'none', glow: this.glow() }),
+      ball: React.createElement('svg', { viewBox: '0 0 100 100', style: { width: '100%', height: '100%' } }, [
+        React.createElement('circle', { key: 'b', cx: 50, cy: 50, r: 46, fill: '#ff8a00', stroke: '#1a1030', strokeWidth: 4 }),
+        React.createElement('path', { key: 'l1', d: 'M50 4 V96', stroke: '#1a1030', strokeWidth: 4, fill: 'none' }),
+        React.createElement('path', { key: 'l2', d: 'M4 50 H96', stroke: '#1a1030', strokeWidth: 4, fill: 'none' }),
+        React.createElement('path', { key: 'l3', d: 'M14 18 Q50 50 14 82', stroke: '#1a1030', strokeWidth: 4, fill: 'none' }),
+        React.createElement('path', { key: 'l4', d: 'M86 18 Q50 50 86 82', stroke: '#1a1030', strokeWidth: 4, fill: 'none' }),
+        React.createElement('ellipse', { key: 'h', cx: 38, cy: 34, rx: 14, ry: 9, fill: 'rgba(255,255,255,.35)' }),
+      ]),
+      icon1p: this.avatar({ colorHex: '#22d3ee', face: 'confident', accessory: 'glasses', glow: false }),
+      icon2p: React.createElement('div', { style: { position: 'relative', width: '100%', height: '100%' } }, [
+        React.createElement('div', { key: 'a', style: { position: 'absolute', left: 0, top: '8%', width: '62%', height: '62%' } }, this.avatar({ colorHex: '#ff2d6f', face: 'happy', accessory: 'cap', glow: false })),
+        React.createElement('div', { key: 'b', style: { position: 'absolute', right: 0, bottom: '4%', width: '62%', height: '62%' } }, this.avatar({ colorHex: '#ffd23f', face: 'confident', accessory: 'crown', glow: false })),
+      ]),
+      // setup
+      p1, p2,
+      colorWarn: !!warn, colorWarnMsg: warn || '',
+      startDisabled: !!warn,
+      startBg: warn ? 'rgba(255,255,255,.12)' : 'linear-gradient(180deg,#ffd23f,#f5a700)',
+      startShadow: warn ? 'none' : '0 7px 0 #c98800, 0 0 30px rgba(255,210,63,.5)',
+      startOpacity: warn ? 0.5 : 1,
+      beginGame: this.beginGame,
+      // game
+      columns, scores: s.scores, currentColorHex: curHex,
+      arrowAnim: (s.idle && s.winner == null && !(s.mode === 1 && s.current === 1)) ? 'arrowBounce .8s ease-in-out infinite' : 'none',
+      narrator: s.narrator,
+      narratorBd: curHex, narratorGlow: curHex + '66',
+      rematch: this.rematch, changePlayers: this.changePlayers,
+      resetBoard: this.resetBoard, resign: this.resign,
+      winFlash: hasWin && screen === 'game',
+      boardAnim: (hasWin && screen === 'game') ? 'boardWin .9s ease-in-out infinite' : 'none',
+      winBanner: s.winBy === 'resign' ? '¡VICTORIA!' : '¡CONECTA 4!',
+      winFlashColor: winnerHex,
+      victoryTitle: s.winBy === 'resign' ? '¡VICTORIA!' : '¡CONECTA 4!',
+      // victory
+      confetti: s.confetti,
+      winnerName: winnerIdx != null ? s.players[winnerIdx].name : '',
+      winnerHex, winnerWash: winnerHex + '44',
+      winnerAvatar: winnerIdx != null ? this.avatar({ colorHex: winnerHex, face: s.players[winnerIdx].face, accessory: s.players[winnerIdx].accessory, glow: this.glow() }) : null,
+      // sensors
+      sensors, lastSensor: s.lastSensor,
+      connBd: s.sensorConnected ? 'rgba(46,232,110,.5)' : 'rgba(255,59,59,.5)',
+      connDot: s.sensorConnected ? '#2ee86e' : '#ff3b3b',
+      connLabel: s.sensorConnected ? 'CONECTADO' : 'DESCONECTADO',
+      connToggleLabel: s.sensorConnected ? 'Simular desconexión' : 'Reconectar',
+      toggleConn: this.toggleConn, clearSensors: this.clearSensors,
+      // settings
+      volumeControls, speedOptions, themeOptions,
+      voicesBg: st.voices ? '#2ee86e' : 'rgba(255,255,255,.18)',
+      voicesKnob: st.voices ? '33px' : '3px',
+      toggleVoices: this.toggleVoices,
+    };
+  }
+}
+</script>
+</body>
+</html>

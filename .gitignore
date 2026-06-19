@@ -1,0 +1,16 @@
+# .NET
+bin/
+obj/
+*.user
+.vs/
+# Build artifacts
+[Dd]ebug/
+[Rr]elease/
+publish/
+# Rider/VS
+.idea/
+# OS
+Thumbs.db
+.DS_Store
+# Editor temp
+~$*
