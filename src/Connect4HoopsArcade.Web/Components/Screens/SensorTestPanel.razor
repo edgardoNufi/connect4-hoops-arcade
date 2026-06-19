@@ -1,4 +1,65 @@
-<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
-  <div class="font-display" style="font-size:32px;color:#22d3ee;">@Title</div>
+@implements IDisposable
+@inject GameSession Session
+@inject Connect4HoopsArcade.Web.Services.SensorConnectionService Sensor
+
+<div style="position:absolute;inset:0;z-index:6;display:flex;flex-direction:column;padding:20px 24px;animation:slideUp .4s ease;">
+  <div style="flex:none;display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+    <button @onclick="Back" class="pill-btn">‹ Atrás</button>
+    <div class="font-display" style="font-weight:700;font-size:clamp(20px,3vw,32px);display:flex;align-items:center;gap:10px;">⚡ PRUEBA DE SENSORES</div>
+    <div style="display:flex;align-items:center;gap:8px;padding:8px 16px;border-radius:999px;border:1.5px solid @ConnBorder;background:rgba(0,0,0,.25);">
+      <span style="width:11px;height:11px;border-radius:50%;background:@ConnDot;box-shadow:0 0 10px @ConnDot;"></span>
+      <span style="font-weight:900;font-size:13px;color:@ConnDot;letter-spacing:.5px;">@ConnLabel</span>
+    </div>
+  </div>
+
+  <div style="flex:1;min-height:0;border-radius:22px;border:2px solid rgba(34,211,238,.3);background:repeating-linear-gradient(0deg, rgba(34,211,238,.04) 0 1px, transparent 1px 22px), linear-gradient(180deg,#0c1430,#080a1c);box-shadow:inset 0 0 40px rgba(34,211,238,.08);padding:22px;display:flex;flex-direction:column;">
+    <div style="font-size:13px;font-weight:900;letter-spacing:2px;color:rgba(34,211,238,.7);margin-bottom:6px;">COLUMNAS 1–7 · TOCA PARA SIMULAR SEÑAL</div>
+    <div style="flex:1;display:flex;gap:14px;align-items:stretch;">
+      @for (int i = 0; i < 7; i++)
+      {
+          var idx = i;
+          var lit = _lit[idx];
+          <button @onclick="() => Pulse(idx)"
+                  style="cursor:pointer;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:10px;padding:14px 6px;border-radius:16px;border:2px solid @(lit ? "#22d3ee" : "rgba(34,211,238,.25)");background:@(lit ? "rgba(34,211,238,.2)" : "rgba(255,255,255,.03)");box-shadow:@(lit ? "0 0 26px rgba(34,211,238,.8), inset 0 0 20px rgba(34,211,238,.5)" : "none");transition:all .12s;">
+            <div style="flex:1;width:100%;border-radius:10px;background:@(lit ? "linear-gradient(180deg,#7df0ff,#22d3ee)" : "rgba(255,255,255,.06)");box-shadow:@(lit ? "0 0 18px rgba(34,211,238,.9)" : "none");"></div>
+            <span class="font-display" style="font-weight:700;font-size:28px;color:@(lit ? "#fff" : "rgba(255,255,255,.5)");">@(idx + 1)</span>
+          </button>
+      }
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-top:18px;gap:14px;flex-wrap:wrap;">
+      <div style="font-weight:800;font-size:16px;color:rgba(255,255,255,.8);">Último sensor detectado: <span class="font-display" style="font-weight:700;font-size:24px;color:#ffd23f;">@_last</span></div>
+      <div style="display:flex;gap:10px;">
+        <button @onclick="ToggleConn" class="square-btn">@(Sensor.Connected ? "Simular desconexión" : "Reconectar")</button>
+        <button @onclick="Clear" class="square-btn">Reiniciar</button>
+      </div>
+    </div>
+  </div>
 </div>
-@code { private const string Title = "SENSORES"; }
+
+@code {
+    private readonly bool[] _lit = new bool[7];
+    private string _last = "—";
+
+    private string ConnBorder => Sensor.Connected ? "rgba(46,232,110,.5)" : "rgba(255,59,59,.5)";
+    private string ConnDot => Sensor.Connected ? "#2ee86e" : "#ff3b3b";
+    private string ConnLabel => Sensor.Connected ? "CONECTADO" : "DESCONECTADO";
+
+    protected override void OnInitialized() => Sensor.ColumnTriggered += OnColumn;
+    public void Dispose() => Sensor.ColumnTriggered -= OnColumn;
+
+    private async void OnColumn(int col)
+    {
+        if (col < 0 || col > 6) return;
+        _lit[col] = true;
+        _last = $"Columna {col + 1}";
+        await InvokeAsync(StateHasChanged);
+        await Task.Delay(650);
+        _lit[col] = false;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private void Pulse(int i) => Sensor.Pulse(i);     // raises ColumnTriggered → OnColumn lights the bar
+    private void ToggleConn() => Sensor.SetConnected(!Sensor.Connected);
+    private void Clear() { for (int i = 0; i < 7; i++) _lit[i] = false; _last = "—"; StateHasChanged(); }
+    private void Back() => Session.CloseSensors();
+}
