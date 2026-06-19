@@ -30,6 +30,16 @@
 </div>
 
 @code {
+    [Inject] public Connect4HoopsArcade.Web.Services.Abstractions.IAudioService Audio { get; set; } = default!;
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await Audio.StopMusicAsync();
+            await Audio.PlayVoiceAsync(Connect4HoopsArcade.Web.Services.AudioKeys.ChooseCharacter);
+        }
+    }
+
     private bool IsTwoPlayer => Session.Mode == GameMode.TwoPlayer;
     private ColorWarning Warning => IsTwoPlayer
         ? PlayValidator.CheckColors(Session.Players[0].ColorId, Session.Players[1].ColorId)

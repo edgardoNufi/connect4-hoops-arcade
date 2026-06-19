@@ -1,5 +1,6 @@
 @using Connect4HoopsArcade.Core.Primitives
 @inject GameSession Session
+@inject Connect4HoopsArcade.Web.Services.Abstractions.IAudioService Audio
 
 <div @onclick="Start" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;padding:24px;z-index:5;">
   <div style="position:absolute;top:7%;left:14%;width:62px;height:62px;opacity:.9;animation:floatY 5s ease-in-out infinite;">
@@ -28,5 +29,16 @@
 </div>
 
 @code {
-    private void Start() => Session.GoMode();
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender) await Audio.PlayMusicAsync(Connect4HoopsArcade.Web.Services.AudioKeys.AttractLoop);
+    }
+
+    private async Task Start()
+    {
+        await Audio.InitAsync();
+        await Audio.PlayVoiceAsync(Connect4HoopsArcade.Web.Services.AudioKeys.Welcome);
+        await Audio.PlaySfxAsync(Connect4HoopsArcade.Web.Services.AudioKeys.ButtonClick);
+        Session.GoMode();
+    }
 }
