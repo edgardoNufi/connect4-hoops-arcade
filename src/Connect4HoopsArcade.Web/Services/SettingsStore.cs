@@ -63,6 +63,7 @@ public sealed class SettingsStore : ISettingsStore
     {
         _session.Speed = Current.Speed;
         _session.NarratorTone = Current.Tone;
+        _session.CpuLevel = Current.CpuLevel;
         _session.SetPlayMode(Current.Mode);
         _audio.VoicesEnabled = Current.VoicesEnabled;
         await _audio.SetVolumesAsync(Current.SfxVolume, Current.NarratorVolume, Current.MusicVolume);

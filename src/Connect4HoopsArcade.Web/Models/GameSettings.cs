@@ -11,4 +11,5 @@ public sealed class GameSettings
     public AnimationSpeed Speed { get; set; } = AnimationSpeed.Normal;
     public NarratorTone Tone { get; set; } = NarratorTone.Familiar;
     public PlayMode Mode { get; set; } = PlayMode.Digital;
+    public CpuDifficulty CpuLevel { get; set; } = CpuDifficulty.Amateur;
 }
