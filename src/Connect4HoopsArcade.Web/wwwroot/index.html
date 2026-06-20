@@ -17,6 +17,8 @@
         Ocurrió un error. <a href="" class="reload">Recargar</a>
         <a class="dismiss">🗙</a>
     </div>
+    <div class="build-tag" id="build-tag">__BUILD_VERSION__</div>
+    <script>(function(){var t=document.getElementById('build-tag');if(t&&t.textContent.indexOf('__BUILD')===0)t.textContent='dev';})();</script>
     <script src="_framework/blazor.webassembly.js"></script>
     <script src="js/arcade.js"></script>
 </body>

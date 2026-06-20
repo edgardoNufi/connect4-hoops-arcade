@@ -23,4 +23,11 @@ dotnet publish src/Connect4HoopsArcade.Web/Connect4HoopsArcade.Web.csproj \
   -c Release \
   -o output
 
+echo "Stamping build version…"
+# Cloudflare Pages exposes CF_PAGES_COMMIT_SHA; fall back to git, then to "local".
+VER_SHA="${CF_PAGES_COMMIT_SHA:-$(git rev-parse --short HEAD 2>/dev/null || echo local)}"
+VER="${VER_SHA:0:7} · $(date -u +'%Y-%m-%d %H:%M') UTC"
+sed -i.bak "s|__BUILD_VERSION__|${VER}|" output/wwwroot/index.html && rm -f output/wwwroot/index.html.bak
+echo "Build version: ${VER}"
+
 echo "Done. Static site is in output/wwwroot"

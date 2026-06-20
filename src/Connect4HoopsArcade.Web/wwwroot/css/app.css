@@ -58,3 +58,13 @@ body { background: #08060f; color: #fff; font-family: 'Nunito', system-ui, sans-
 
 /* Rotate hint removed — phones use the dedicated MobileGameView. The element stays hidden if present. */
 .rotate-hint { display: none !important; }
+
+/* ---- Build/version tag (injected by build.sh from CF_PAGES_COMMIT_SHA; "dev" locally) ---- */
+.build-tag {
+  position: fixed; z-index: 200;
+  right: calc(env(safe-area-inset-right) + 5px);
+  bottom: calc(env(safe-area-inset-bottom) + 4px);
+  font-family: 'Nunito', system-ui, sans-serif; font-size: 9px; font-weight: 700;
+  color: rgba(255,255,255,.32); letter-spacing: .3px;
+  pointer-events: none; user-select: none;
+}
