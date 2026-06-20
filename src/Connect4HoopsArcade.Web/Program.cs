@@ -19,6 +19,8 @@ builder.Services.AddScoped<Connect4HoopsArcade.Web.Services.KeyboardInputService
 builder.Services.AddSingleton<Connect4HoopsArcade.Web.Services.Abstractions.IAudioService,
                               Connect4HoopsArcade.Web.Services.AudioService>();
 builder.Services.AddSingleton<Connect4HoopsArcade.Web.Services.NarratorService>();
+builder.Services.AddSingleton<Connect4HoopsArcade.Web.Services.Abstractions.IViewportService,
+                              Connect4HoopsArcade.Web.Services.ViewportService>();
 builder.Services.AddSingleton<Connect4HoopsArcade.Web.Services.Abstractions.ISettingsStore,
                               Connect4HoopsArcade.Web.Services.SettingsStore>();
 // Interop services registered in later phases.
@@ -26,4 +28,5 @@ builder.Services.AddSingleton<Connect4HoopsArcade.Web.Services.Abstractions.ISet
 var host = builder.Build();
 host.Services.GetRequiredService<Connect4HoopsArcade.Web.Services.NarratorService>(); // eager: wire event subscriptions
 await host.Services.GetRequiredService<Connect4HoopsArcade.Web.Services.Abstractions.ISettingsStore>().LoadAsync();
+await host.Services.GetRequiredService<Connect4HoopsArcade.Web.Services.Abstractions.IViewportService>().InitAsync();
 await host.RunAsync();

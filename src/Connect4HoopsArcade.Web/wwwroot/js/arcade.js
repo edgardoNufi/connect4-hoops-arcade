@@ -133,3 +133,43 @@ window.ArcadeFullscreen = {
     else document.exitFullscreen?.().catch(() => {});
   },
 };
+
+// Viewport → .NET. Debounced; only notifies when the breakpoint or orientation changes.
+window.ArcadeViewport = {
+  _ref: null,
+  _timer: null,
+  _last: null,
+  _onResize: null,
+  snapshot() {
+    var w = window.innerWidth, h = window.innerHeight;
+    var isMobile = window.matchMedia('(max-width: 767px)').matches
+                || window.matchMedia('(orientation: landscape) and (max-height: 480px)').matches;
+    var bp = w < 768 ? 0 : (w < 1200 ? 1 : 2);   // 0 Mobile, 1 Tablet, 2 Desktop
+    return { width: w, height: h, isMobile: isMobile, breakpoint: bp, isLandscape: w >= h };
+  },
+  _key(s) { return s.breakpoint + '|' + s.isMobile + '|' + s.isLandscape; },
+  register(dotNetRef) {
+    if (this._onResize) window.removeEventListener('resize', this._onResize);
+    this._ref = dotNetRef;
+    this._last = this.snapshot();
+    this._onResize = () => {
+      if (this._timer) clearTimeout(this._timer);
+      this._timer = setTimeout(() => {
+        var s = this.snapshot();
+        if (this._ref && this._key(s) !== this._key(this._last)) {
+          this._last = s;
+          this._ref.invokeMethodAsync('NotifyChanged', s.width, s.height, s.isMobile, s.breakpoint, s.isLandscape);
+        } else {
+          this._last = s;
+        }
+      }, 150);
+    };
+    window.addEventListener('resize', this._onResize);
+    return this._last;
+  },
+  dispose() {
+    if (this._onResize) window.removeEventListener('resize', this._onResize);
+    if (this._timer) clearTimeout(this._timer);
+    this._onResize = null; this._timer = null; this._ref = null;
+  },
+};
