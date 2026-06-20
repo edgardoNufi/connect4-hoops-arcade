@@ -200,11 +200,19 @@ window.ArcadePerf = (function () {
     document.body.appendChild(el);
     return el;
   }
+  // Live DOM-node count: if this CLIMBS with every rematch, something is accumulating
+  // (a real leak). If it stays flat across many games, the lag is render/GC cost, not a leak.
+  function domCount() {
+    const root = document.querySelector('.arc-root');
+    return root ? root.getElementsByTagName('*').length : 0;
+  }
+  function confettiCount() { return document.querySelectorAll('[style*="confettiFall"]').length; }
   function paint() {
     const e = ensureEl();
     if (!e) return;
     const max = tasks.length ? Math.max(...tasks) : 0;
-    e.textContent = 'jank n=' + tasks.length + ' max=' + max + 'ms last=' + last + 'ms';
+    e.textContent = 'jank n=' + tasks.length + ' max=' + max + 'ms last=' + last +
+      'ms | dom=' + domCount() + ' cf=' + confettiCount();
   }
 
   // rAF-gap detector: the browser can't paint a frame while the main thread is blocked, so the
@@ -216,15 +224,20 @@ window.ArcadePerf = (function () {
   // We drop them so a locked screen / app-switch can't masquerade as a 50-second "freeze".
   const ARTIFACT_CAP = 3000;
   let prev = performance.now();
+  let lastPaint = 0;
   // Returning from background produces one huge gap; reset the baseline so it isn't counted.
   document.addEventListener('visibilitychange', () => { prev = performance.now(); });
   function tick(now) {
     const gap = now - prev;
     prev = now;
+    // Refresh the dom/cf readout ~2x/sec so you can watch the node count across rematches.
+    if (now - lastPaint > 500) { lastPaint = now; paint(); }
     if (gap >= THRESHOLD && gap < ARTIFACT_CAP && !document.hidden) {
       const ms = Math.round(gap);
       tasks.push(ms); total += gap; last = ms;
-      console.log('%c[perf] long frame ' + ms + 'ms', 'color:#ff9800', '(main thread blocked)');
+      // Attribute the freeze: what was on screen when the thread blocked?
+      console.log('%c[perf] long frame ' + ms + 'ms', 'color:#ff9800',
+        '(blocked) dom=' + domCount() + ' confetti=' + confettiCount());
       paint();
     } else if (gap >= ARTIFACT_CAP) {
       console.log('[perf] ignored ' + Math.round(gap) + 'ms gap (background/throttle, not a freeze)');
