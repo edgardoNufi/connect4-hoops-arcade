@@ -37,4 +37,26 @@ public static class AudioKeys
     public const string GetReady       = "voice/get-ready-01.mp3";
     public const string ConnectFourV   = "voice/connect-four-01.mp3";
     public const string Rematch        = "voice/rematch-01.mp3";
+
+    // ---- CPU taunts (1P) + universal idle. Arrays grow as more variants are recorded (add -02, -03 …). ----
+    public static readonly string[] CpuThreatNeutral   = { "voice/cpu-threat-neutral-01.mp3" };
+    public static readonly string[] CpuThreatLight     = { "voice/cpu-threat-light-01.mp3" };
+    public static readonly string[] CpuThreatConfident = { "voice/cpu-threat-confident-01.mp3" };
+    public static readonly string[] CpuThreatBoss      = { "voice/cpu-threat-boss-01.mp3" };
+
+    public static readonly string[] CpuIdleNeutral     = { "voice/cpu-idle-neutral-01.mp3" };
+    public static readonly string[] CpuIdleLight       = { "voice/cpu-idle-light-01.mp3" };
+    public static readonly string[] CpuIdleConfident   = { "voice/cpu-idle-confident-01.mp3" };
+    public static readonly string[] CpuIdleBoss        = { "voice/cpu-idle-boss-01.mp3" };
+
+    public static readonly string[] CpuWinLight        = { "voice/cpu-win-light-01.mp3" };
+    public static readonly string[] CpuWinConfident    = { "voice/cpu-win-confident-01.mp3" };
+    public static readonly string[] CpuWinBoss         = { "voice/cpu-win-boss-01.mp3" };
+
+    public static readonly string[] StreakBreak        = { "voice/streak-break-01.mp3" };
+    public static readonly string[] BeatCpu            = { "voice/beat-cpu-01.mp3" };
+    public static readonly string[] IdleNudge          = { "voice/idle-01.mp3" };
+
+    // Optional short SFX played (instead of the win cheer) when the CPU beats the player in 1P.
+    public const string LossSting = "game/loss-sting.mp3";
 }
