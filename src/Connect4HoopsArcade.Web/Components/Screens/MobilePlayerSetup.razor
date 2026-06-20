@@ -3,6 +3,7 @@
 @using Connect4HoopsArcade.Core.Rules
 @using Connect4HoopsArcade.Web.Components.Setup
 @inherits SessionComponentBase
+@inject Connect4HoopsArcade.Web.Services.Abstractions.ISettingsStore Store
 
 <div class="mob-setup">
   <div class="mob-setup-head">
@@ -35,6 +36,13 @@
   </div>
 
   <div class="mob-setup-foot">
+    @if (!IsTwoPlayer)
+    {
+      <div class="mob-cpu-box">
+        <span class="mob-cpu-box-label">🤖 NIVEL CPU</span>
+        <CpuLevelSelector Level="Store.Current.CpuLevel" OnChange="SetCpuLevel" />
+      </div>
+    }
     @if (Warning != ColorWarning.None)
     {
       <div class="mob-warn">⚠ @ColorWarningMessages.Message(Warning)</div>
@@ -51,4 +59,9 @@
         : ColorWarning.None;
     private bool StartDisabled => Warning != ColorWarning.None;
     private void Begin() { if (!StartDisabled) Session.BeginGame(); }
+    private async Task SetCpuLevel(Connect4HoopsArcade.Core.Primitives.CpuDifficulty lvl)
+    {
+        Store.Current.CpuLevel = lvl;
+        await Store.SaveAsync();
+    }
 }

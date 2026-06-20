@@ -78,6 +78,12 @@
   font-weight: 700; font-size: 24px; letter-spacing: 1px; }
 .mob-play:disabled { background: rgba(255,255,255,.12); box-shadow: none; color: rgba(255,255,255,.5); opacity: .6; }
 
+.mob-cpu-box { flex: none; display: flex; align-items: center; gap: 10px; width: 100%; max-width: 460px;
+  padding: 8px 12px; border-radius: 14px;
+  background: rgba(255,210,63,.12); border: 1.5px solid rgba(255,210,63,.5); }
+.mob-cpu-box-label { flex: none; font-weight: 900; font-size: 12px; color: #ffd23f; letter-spacing: .5px; }
+.mob-cpu-box .cpu-level-sel { flex: 1; margin-top: 0; }
+
 /* ---- Simple screens / modals on small viewports ---- */
 @media (max-width: 767px), (orientation: landscape) and (max-height: 480px) {
   .modal-card { max-width: 92vw !important; max-height: 88dvh !important; overflow: auto !important; }
