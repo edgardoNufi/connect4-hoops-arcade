@@ -36,6 +36,13 @@
           <button @onclick="@(() => SetSpeed(AnimationSpeed.Fast))" class="seg-btn @(S.Speed == AnimationSpeed.Fast ? "seg-btn--on" : "")">Rápida</button>
         </div></div>
 
+      <div class="set-row"><span class="set-ico">🗯️</span><span style="flex:1;font-weight:800;font-size:16px;">Tono del narrador</span>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button @onclick="@(() => SetTone(NarratorTone.Familiar))" class="seg-btn @(S.Tone == NarratorTone.Familiar ? "seg-btn--on" : "")">Familiar</button>
+          <button @onclick="@(() => SetTone(NarratorTone.Picante))" class="seg-btn @(S.Tone == NarratorTone.Picante ? "seg-btn--on" : "")">Picante</button>
+          <button @onclick="@(() => SetTone(NarratorTone.Silencioso))" class="seg-btn @(S.Tone == NarratorTone.Silencioso ? "seg-btn--on" : "")">Silencioso</button>
+        </div></div>
+
       <div class="set-row"><span class="set-ico">🎮</span><span style="flex:1;font-weight:800;font-size:16px;">Modo de juego</span>
         <div style="display:flex;align-items:center;gap:10px;">
           <span style="width:9px;height:9px;border-radius:50%;background:@(Session.SensorConnected ? "#2ee86e" : "#ff3b3b");"></span>
@@ -59,6 +66,7 @@
     private async Task SetVol(Action<GameSettings> mutate) { mutate(S); await Store.SaveAsync(); }
     private async Task ToggleVoices() { S.VoicesEnabled = !S.VoicesEnabled; await Store.SaveAsync(); }
     private async Task SetSpeed(AnimationSpeed sp) { S.Speed = sp; await Store.SaveAsync(); }
+    private async Task SetTone(NarratorTone t) { S.Tone = t; await Store.SaveAsync(); }
     private async Task SetMode(PlayMode m) { S.Mode = m; await Store.SaveAsync(); }
     private async Task TestSound() => await Audio.PlaySfxAsync(Connect4HoopsArcade.Web.Services.AudioKeys.ChipDrop);
 }

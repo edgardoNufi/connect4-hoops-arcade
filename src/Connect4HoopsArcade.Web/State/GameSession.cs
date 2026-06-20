@@ -27,6 +27,9 @@ public sealed class GameSession
     public GameMode Mode { get; private set; } = GameMode.TwoPlayer;
     public CpuDifficulty CpuLevel { get; set; } = CpuDifficulty.Sharp;
     public AnimationSpeed Speed { get; set; } = AnimationSpeed.Normal;
+    // Persistent announcer tone (pushed by SettingsStore.ApplyAsync). NOT reset between games.
+    public Connect4HoopsArcade.Web.Models.NarratorTone NarratorTone { get; set; }
+        = Connect4HoopsArcade.Web.Models.NarratorTone.Familiar;
 
     public Connect4HoopsArcade.Web.Models.PlayMode Mode2 { get; private set; } = Connect4HoopsArcade.Web.Models.PlayMode.Digital;
     public bool SensorConnected { get; private set; }
