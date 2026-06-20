@@ -44,6 +44,15 @@ Solution file is `Connect4HoopsArcade.slnx` (new XML format — `.slnx`, not `.s
   Mobile board = `BoardGrid FitContainer="true"` (square cells, `aspect-ratio:1`, fit to screen). Phones never get
   the "rotate your device" wall. Mobile layout/styles live in `wwwroot/css/mobile.css` (`100dvh` + `env(safe-area-inset-*)`).
   Mobile in-game = top tap-bar scoreboard (opens an `ActionSheet` with Reiniciar/Rendirse/Ajustes) + centered board + narrator.
+  **Landscape (phone rotated):** `MobileGameView` branches on `IViewportService.IsLandscape` (re-renders on
+  `OnViewportChanged`) — portrait is unchanged; landscape uses a `.mob-game.landscape` row layout: a **narrow left
+  column** (stacked `MobileScoreboard` + narrator + direct Reiniciar/Rendirse/Ajustes buttons, no ActionSheet) and the
+  **board maximized** on the right (height-driven, keeps 7:6). Same components/`GameSession`, no logic dup.
+- **Fullscreen button (`Components/Shared/FullscreenButton.razor`)** mounted once in `AppShell` → shows on every screen.
+  Uses `IFullscreenService` (→ `window.ArcadeFullscreen`) which calls the Fullscreen API where supported
+  (Android/desktop/iPad) and syncs the icon via `fullscreenchange`. **iPhone Safari has no Fullscreen API** — there the
+  button shows an "Agregar a inicio" hint, and the PWA metadata (`manifest.webmanifest` + apple-* meta in `index.html`,
+  `display:standalone`) makes the home-screen-installed app run without the Safari bar (real fullscreen).
 
 ## Key patterns / gotchas (learned the hard way)
 - **The board type is `GameBoard`, NOT `Board`.** A class named `Board` inside namespace `...Core.Board`
@@ -68,6 +77,15 @@ Engine: `wwwroot/js/arcade.js` → `window.ArcadeAudio`. SFX play immediately; *
 (one at a time, newest pending replaces older → no overlap, no pile-up). `playSfxAfterVoice` defers a sound
 until voices finish. A **global click listener** plays `ui/button-click.mp3` on every menu/setup `<button>`
 (excludes `.game-screen`). `NarratorService` maps `GameSession` events → sounds.
+- **Element pooling (do NOT go back to clone-per-play):** each sound reuses a small ring of `<audio>` elements
+  (`getEl`, `POOL_MAX=3` per key, round-robin) instead of `cloneNode()`-ing a fresh element every play. Cloning
+  per play accumulated elements that **iOS Safari frees poorly → multi-second main-thread freezes** that grew over a
+  session (diagnosed on device). Total elements are now bounded and reused. Tradeoff: a *same* sound fired in rapid
+  succession restarts instead of self-overlapping (fine for these SFX; bump `POOL_MAX` if needed).
+- **Stop audio on round/exit:** `GameSession` raises `AudioStopRequested` on `ResetState` (rematch/reset/begin) and
+  on `GoSplash`/`GoMode`/`ChangePlayers`; `NarratorService` → `IAudioService.StopAllAsync()` → `ArcadeAudio.stopAll()`
+  pauses+releases every live element and clears the voice queue/deferred SFX. Without this, a ~15s victory line kept
+  playing under the next game and new voices piled up behind it.
 
 Deliberate choices the user made (keep unless they say otherwise):
 - **No background music.** (`music/attract-loop.mp3` exists but is unused; the "Música" settings slider
@@ -166,9 +184,12 @@ Ordered by the user's priority. Brainstorm/design before building each (see brai
 MVP complete (tag `v0.1.0-mvp`) + post-MVP polish: leaner audio, global button click, minimax CPU,
 full-screen draw screen, random win cheers, Cloudflare auto-deploy, streak-aware CPU taunts + `NarratorTone`,
 mobile-first responsive redesign (dedicated mobile views via `IViewportService`),
-6-level CPU difficulty selector on the setup screen, **"who starts" toggle (1P), build-version corner tag**.
+6-level CPU difficulty selector on the setup screen, **"who starts" toggle (1P), build-version corner tag**,
+**phone-landscape layout (maximized board + left column), global fullscreen button + PWA (iPhone home-screen),
+and an audio perf fix (pooled `<audio>` + stop-on-round — cured the iOS multi-second freezes)**.
 All 51 Core tests green.
 **Next focus: item 2 (cast / big-screen projection) or item 4 (ESP32 sensor) — user's call.**
+Landscape view + fullscreen design/plan: [`docs/superpowers/specs/2026-06-20-landscape-view-fullscreen-design.md`](docs/superpowers/specs/2026-06-20-landscape-view-fullscreen-design.md) · [`docs/superpowers/plans/2026-06-20-landscape-view-fullscreen.md`](docs/superpowers/plans/2026-06-20-landscape-view-fullscreen.md).
 **Continuing in a new session?** Read [`docs/superpowers/2026-06-19-session-handoff.md`](docs/superpowers/2026-06-19-session-handoff.md) — what shipped, how we work, pending roadmap, loose ends.
 **Note:** CPU-taunt voice files are produced separately (spec §5.1); until they land, taunt paths are silent
 (harmless — `AudioService` swallows missing-file errors). Manual ear-verification pending the audio files.
