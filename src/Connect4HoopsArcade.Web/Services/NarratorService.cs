@@ -49,7 +49,7 @@ public sealed class NarratorService : IDisposable
         await _audio.PlayRandomVoiceAsync(AudioKeys.ColumnFullV);
     }
 
-    private async void OnThreat()
+    private async void OnThreat(int moverIndex)
     {
         // Danger SFX removed — the "almost win" voice variants carry the warning.
         await _audio.PlayRandomVoiceAsync(AudioKeys.AlmostWinV);

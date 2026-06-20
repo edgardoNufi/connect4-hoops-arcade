@@ -1,5 +1,6 @@
 using Connect4HoopsArcade.Core.Ai;
 using Connect4HoopsArcade.Core.Board;
+using Connect4HoopsArcade.Core.Narration;
 using Connect4HoopsArcade.Core.Primitives;
 using Connect4HoopsArcade.Core.Players;
 using Connect4HoopsArcade.Core.Rules;
@@ -14,10 +15,13 @@ public sealed class GameSession
     public event Action? ChipDropped;
     public event Action<int>? TurnChanged;     // arg: new current player index
     public event Action? ColumnFull;
-    public event Action? ThreatRaised;
+    public event Action<int>? ThreatRaised;    // arg: index of the player who just moved (the threat owner)
     public event Action<int>? Won;             // arg: winner index
     public event Action? Drew;
     public event Action? GameStarted;
+    public event Action? RoundStarted;          // every BeginGame/Rematch/ResetBoard — resets per-round narration
+    public event Action? IdleNudged;            // the idle nudge fired (any mode)
+    public event Action<int?, GameMode>? MatchEnded;   // winner (null = draw) + mode; raised after streak update
 
     private void Notify() => StateChanged?.Invoke();
 
@@ -57,6 +61,10 @@ public sealed class GameSession
     public GameBoard Board { get; private set; } = new();
     public int Current { get; private set; }
     public int[] Scores { get; private set; } = { 0, 0 };
+    // CPU taunt state (1P only). Persists across Rematch/ResetBoard; reset only by BeginGame (new session).
+    public int CpuWinStreak { get; private set; }
+    public bool CpuStreakJustBroken { get; private set; }
+    public int PlayerLossesAgainstCpu { get; private set; }
     public string Narrator { get; private set; } = "";
 
     public int? Winner { get; private set; }
@@ -136,8 +144,15 @@ public sealed class GameSession
         LastDrop = null; ErrorCol = -1;
         IsThinking = false; IsBusy = false; IsIdle = false;
         Confetti = new();
-        if (resetScores) Scores = new[] { 0, 0 };   // preserved across rematch/reset
+        if (resetScores)
+        {
+            Scores = new[] { 0, 0 };                 // preserved across rematch/reset
+            CpuWinStreak = 0;                         // streak + losses reset only on a brand-new session
+            PlayerLossesAgainstCpu = 0;
+        }
+        CpuStreakJustBroken = false;                  // transient: only meaningful inside a MatchEnded handler
         Narrator = narrator;
+        RoundStarted?.Invoke();
     }
 
     public void Resign()
@@ -152,6 +167,7 @@ public sealed class GameSession
         Narrator = $"🏳️ {Players[loser].Name} se rindió. ¡Gana {Players[w].Name}!";
         Notify();
         Won?.Invoke(w);
+        RecordMatchEnd(w);
         _ = TransitionToVictory();
     }
 
@@ -198,6 +214,7 @@ public sealed class GameSession
             Narrator = $"¡CONECTA 4! ¡Gana {name}! 🎉";
             Notify();
             Won?.Invoke(Current);
+            RecordMatchEnd(Current);
             await TransitionToVictory();
             return;
         }
@@ -207,6 +224,7 @@ public sealed class GameSession
             Narrator = "¡Tablero lleno! Es un empate. 🤝";
             Notify();
             Drew?.Invoke();
+            RecordMatchEnd(null);
             await Task.Delay(850);
             Screen = AppScreen.Draw;
             IsBusy = false;
@@ -219,13 +237,14 @@ public sealed class GameSession
         await Task.Delay(DropMs);
         if (Winner != null || Screen != AppScreen.Game) { IsBusy = false; return; }
 
+        int moverIndex = Current;                     // who just dropped — capture BEFORE the flip
         Current = Current == 0 ? 1 : 0;
         IsIdle = false;
         Narrator = TurnPhrase(Current);
         Notify();
         TurnChanged?.Invoke(Current);
-        if (ThreatScanner.HasImmediateThreat(Board, CellExtensions.ForPlayer(Current == 0 ? 1 : 0)))
-            ThreatRaised?.Invoke();
+        if (ThreatScanner.HasImmediateThreat(Board, CellExtensions.ForPlayer(moverIndex)))
+            ThreatRaised?.Invoke(moverIndex);
 
         if (CpuTurn)
         {
@@ -260,6 +279,23 @@ public sealed class GameSession
         Notify();
     }
 
+    // Updates the CPU streak (1P only) and announces the end of the match. Must run BEFORE any audio reads
+    // CpuWinStreak/CpuStreakJustBroken, so callers invoke it right where the win/draw is finalized.
+    private void RecordMatchEnd(int? winner)
+    {
+        if (Mode == GameMode.OnePlayer)
+        {
+            var outcome = winner is null ? MatchOutcome.Draw
+                        : Players[winner.Value].IsCpu ? MatchOutcome.CpuWin
+                        : MatchOutcome.HumanWin;
+            var s = CpuTauntPolicy.Advance(CpuWinStreak, PlayerLossesAgainstCpu, outcome);
+            CpuWinStreak = s.Streak;
+            CpuStreakJustBroken = s.JustBroken;
+            PlayerLossesAgainstCpu = s.PlayerLosses;
+        }
+        MatchEnded?.Invoke(winner, Mode);
+    }
+
     private string TurnPhrase(int p)
     {
         string name = Players[p].Name;
@@ -291,6 +327,7 @@ public sealed class GameSession
             IsIdle = true;
             Narrator = $"¿Sigues ahí, {Players[Current].Name}? ¡Es tu turno! 🏀";
             Notify();
+            IdleNudged?.Invoke();
         });
     }
 
