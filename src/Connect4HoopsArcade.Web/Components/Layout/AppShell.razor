@@ -6,6 +6,7 @@
 @inject Connect4HoopsArcade.Web.Services.KeyboardInputService Keyboard
 @inject Connect4HoopsArcade.Web.Services.SensorConnectionService Sensor
 @inject Connect4HoopsArcade.Web.Input.MoveRouter Router
+@inject Connect4HoopsArcade.Web.Services.Abstractions.IViewportService Viewport
 
 <div class="arc-root">
   <GlowBackdrop />
@@ -18,17 +19,17 @@
       <GameModeSelector />
       break;
     case AppScreen.Setup:
-      <DesktopPlayerSetup />
+      @if (Viewport.IsMobile) { <MobilePlayerSetup /> } else { <DesktopPlayerSetup /> }
       break;
     case AppScreen.Game:
-      <DesktopGameView />
+      @if (Viewport.IsMobile) { <MobileGameView /> } else { <DesktopGameView /> }
       break;
     case AppScreen.Victory:
-      <DesktopGameView />
+      @if (Viewport.IsMobile) { <MobileGameView /> } else { <DesktopGameView /> }
       <VictoryModal />
       break;
     case AppScreen.Draw:
-      <DesktopGameView />
+      @if (Viewport.IsMobile) { <MobileGameView /> } else { <DesktopGameView /> }
       <DrawModal />
       break;
     case AppScreen.Sensors:
@@ -51,6 +52,7 @@
         Session.ModeChanged += OnChanged;
         Sensor.ConnectionChanged += OnSensorConn;
         Sensor.ColumnTriggered += OnSensorColumn;
+        Viewport.OnViewportChanged += OnChanged;
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -73,6 +75,7 @@
         Session.ModeChanged -= OnChanged;
         Sensor.ConnectionChanged -= OnSensorConn;
         Sensor.ColumnTriggered -= OnSensorColumn;
+        Viewport.OnViewportChanged -= OnChanged;
     }
 
     private void OnChanged() => InvokeAsync(StateHasChanged);
