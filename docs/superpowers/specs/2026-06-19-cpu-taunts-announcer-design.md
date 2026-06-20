@@ -154,6 +154,85 @@ numerado, `.mp3` (`.m4a` también sirve). Arreglos en `AudioKeys` crecen agregan
 ### Idle genérico — cualquier modo
 **`idle-NN.mp3`** (locutor apura al lento, 2P/no-CPU): «¿Sigues ahí? El tablero espera.» · «El tiempo corre… ¡muévete!» · «¿Te dormiste? Es tu turno.» · «Menos pensar, más jugar.» · «Cualquier día de estos…»
 
+### 5.1 Tabla de producción (checklist de grabación)
+
+Lista autoritativa de archivos a producir. Todos en `wwwroot/audio/voice/`. Marca el progreso en la
+columna ☐. Las `NN` están enumeradas según las 3 variantes del menú; **puedes grabar menos** (mínimo `-01`
+por celda para arrancar) o más (solo agrega `-04`, `-05`… y se suman al arreglo).
+
+**Mid-game · `cpu-threat-*` — suena cuando el CPU acaba de armar un 3-en-línea (solo 1P).**
+
+| ☐ | Archivo | Nivel (racha) | Frase |
+|---|---|---|---|
+| ☐ | `cpu-threat-neutral-01.mp3` | Neutral (0) | La máquina ya huele sangre. |
+| ☐ | `cpu-threat-neutral-02.mp3` | Neutral (0) | Cuidado, te está cazando. |
+| ☐ | `cpu-threat-neutral-03.mp3` | Neutral (0) | Mira bien… va por la tuya. |
+| ☐ | `cpu-threat-light-01.mp3` | Light (1) | Otra vez te acorrala. |
+| ☐ | `cpu-threat-light-02.mp3` | Light (1) | ¿No aprendiste? Ahí viene. |
+| ☐ | `cpu-threat-light-03.mp3` | Light (1) | Ya te midió. |
+| ☐ | `cpu-threat-confident-01.mp3` | Confident (2) | Tres en línea. Otra vez. Qué predecible. |
+| ☐ | `cpu-threat-confident-02.mp3` | Confident (2) | Juega contigo… y tú lo permites. |
+| ☐ | `cpu-threat-confident-03.mp3` | Confident (2) | Tu error, su victoria. |
+| ☐ | `cpu-threat-boss-01.mp3` | Boss (3+) | Ni la veas, ya ganó. |
+| ☐ | `cpu-threat-boss-02.mp3` | Boss (3+) | La máquina no suda. Tú sí. |
+| ☐ | `cpu-threat-boss-03.mp3` | Boss (3+) | Acéptalo: estás para perder. |
+
+**Mid-game · `cpu-idle-*` — suena cuando el jugador se tarda en su turno (solo 1P).**
+
+| ☐ | Archivo | Nivel (racha) | Frase |
+|---|---|---|---|
+| ☐ | `cpu-idle-neutral-01.mp3` | Neutral (0) | ¿Y esa duda? La máquina ya decidió. |
+| ☐ | `cpu-idle-neutral-02.mp3` | Neutral (0) | El miedo huele feo, ¿eh? |
+| ☐ | `cpu-idle-neutral-03.mp3` | Neutral (0) | Tic-tac… no espera. |
+| ☐ | `cpu-idle-light-01.mp3` | Light (1) | Piénsalo todo lo que quieras, igual caes. |
+| ☐ | `cpu-idle-light-02.mp3` | Light (1) | ¿Buscando salida? No hay. |
+| ☐ | `cpu-idle-light-03.mp3` | Light (1) | Ya sabe qué vas a hacer. |
+| ☐ | `cpu-idle-confident-01.mp3` | Confident (2) | Tómate tu tiempo… el resultado es el mismo. |
+| ☐ | `cpu-idle-confident-02.mp3` | Confident (2) | Dudas y dudas, ya perdiste. |
+| ☐ | `cpu-idle-confident-03.mp3` | Confident (2) | La máquina bosteza. |
+| ☐ | `cpu-idle-boss-01.mp3` | Boss (3+) | ¿Para qué piensas? Ya estás muerto. |
+| ☐ | `cpu-idle-boss-02.mp3` | Boss (3+) | Ríndete y ahórrate la pena. |
+| ☐ | `cpu-idle-boss-03.mp3` | Boss (3+) | Ni te toma en serio. |
+
+**Cierre · `cpu-win-*` — suena cuando gana el CPU (solo 1P; sin "win cheer"). Sin nivel Neutral.**
+
+| ☐ | Archivo | Nivel (racha post-victoria) | Frase |
+|---|---|---|---|
+| ☐ | `cpu-win-light-01.mp3` | Light (1ª victoria) | La máquina no perdona. |
+| ☐ | `cpu-win-light-02.mp3` | Light (1ª victoria) | Demasiado fácil. |
+| ☐ | `cpu-win-light-03.mp3` | Light (1ª victoria) | ¿Eso era todo? |
+| ☐ | `cpu-win-confident-01.mp3` | Confident (2 seguidas) | Van dos. ¿Vas por la humillación completa? |
+| ☐ | `cpu-win-confident-02.mp3` | Confident (2 seguidas) | Dos seguidas, ni se esforzó. |
+| ☐ | `cpu-win-confident-03.mp3` | Confident (2 seguidas) | Otra para la colección. |
+| ☐ | `cpu-win-boss-01.mp3` | Boss (3+ seguidas) | Ni te despeines… no le ganas. |
+| ☐ | `cpu-win-boss-02.mp3` | Boss (3+ seguidas) | Ya perdí la cuenta de tus derrotas. |
+| ☐ | `cpu-win-boss-03.mp3` | Boss (3+ seguidas) | La máquina es tu dueña. |
+
+**Cierre · humano gana (solo 1P; con "win cheer").**
+
+| ☐ | Archivo | Cuándo | Frase |
+|---|---|---|---|
+| ☐ | `streak-break-01.mp3` | Rompes racha ≥2 | ¡POR FIN! Le rompiste la racha. |
+| ☐ | `streak-break-02.mp3` | Rompes racha ≥2 | ¡La humillaste de vuelta! |
+| ☐ | `streak-break-03.mp3` | Rompes racha ≥2 | ¡Milagro! La máquina mordió el polvo. |
+| ☐ | `beat-cpu-01.mp3` | Le ganas, racha <2 | ¡Le ganaste a la máquina! ¿Otra? |
+| ☐ | `beat-cpu-02.mp3` | Le ganas, racha <2 | Perdió. Disfrútalo mientras dure. |
+| ☐ | `beat-cpu-03.mp3` | Le ganas, racha <2 | La máquina quiere revancha. |
+
+**Idle genérico · `idle-*` — suena cuando alguien se tarda, en CUALQUIER modo (1P y 2P).**
+
+| ☐ | Archivo | Frase |
+|---|---|---|
+| ☐ | `idle-01.mp3` | ¿Sigues ahí? El tablero espera. |
+| ☐ | `idle-02.mp3` | El tiempo corre… ¡muévete! |
+| ☐ | `idle-03.mp3` | ¿Te dormiste? Es tu turno. |
+| ☐ | `idle-04.mp3` | Menos pensar, más jugar. |
+| ☐ | `idle-05.mp3` | Cualquier día de estos… |
+
+**Conteo:** 44 archivos con las 3 variantes del menú · 13 archivos si grabas solo `-01` por celda
+(12 mid-game + 3 cpu-win + 1 streak-break + 1 beat-cpu + 1 idle). Formato: `.mp3` o `.m4a`, voz del mismo
+locutor, mono, normalizado al nivel de las voces actuales en `wwwroot/audio/voice/`.
+
 ### Claves nuevas en `AudioKeys`
 Arreglos por celda/categoría: `CpuThreat[Neutral|Light|Confident|Boss]`, `CpuIdle[…]`,
 `CpuWin[Light|Confident|Boss]`, `StreakBreak`, `BeatCpu`, `IdleNudge`. (Nombres finales a definir en el plan;
