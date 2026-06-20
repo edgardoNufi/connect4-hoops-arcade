@@ -169,5 +169,6 @@ mobile-first responsive redesign (dedicated mobile views via `IViewportService`)
 6-level CPU difficulty selector on the setup screen, **"who starts" toggle (1P), build-version corner tag**.
 All 51 Core tests green.
 **Next focus: item 2 (cast / big-screen projection) or item 4 (ESP32 sensor) — user's call.**
+**Continuing in a new session?** Read [`docs/superpowers/2026-06-19-session-handoff.md`](docs/superpowers/2026-06-19-session-handoff.md) — what shipped, how we work, pending roadmap, loose ends.
 **Note:** CPU-taunt voice files are produced separately (spec §5.1); until they land, taunt paths are silent
 (harmless — `AudioService` swallows missing-file errors). Manual ear-verification pending the audio files.
