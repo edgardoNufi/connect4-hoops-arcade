@@ -14,7 +14,7 @@ difícil, y que la elección se **recuerde**. El default deja de ser el máximo.
 | Nivel | Comportamiento del CPU |
 |---|---|
 | **Novato** | Sin búsqueda: toma una victoria inmediata si la tiene; **bloquea solo ~50%** (al azar); el resto juega columna **aleatoria**. (= el `Chill` actual.) |
-| **Principiante** | Minimax profundidad **1**: juega con sentido por evaluación, pero **no ve la respuesta rival → no bloquea** amenazas. |
+| **Principiante** | Minimax profundidad **1**: solo evalúa su propia jugada (1 ply). El más débil con búsqueda — cae en trampas y no ve secuencias forzadas. (La heurística aún penaliza amenazas, así que no es un "nunca bloquea", pero es claramente ganable.) |
 | **Amateur** | Minimax profundidad **2**: ya **bloquea** amenazas inmediatas; ganable con jugadas a 2. |
 | **Titular** | Minimax profundidad **3**. |
 | **Estrella** | Minimax profundidad **4** (= el `Normal` actual). |
@@ -45,9 +45,9 @@ sale natural: a menor profundidad, "menos ve" (los niveles bajos no bloquean / c
   estar hard-codeada a 4/5).
 - **TDD** (`CpuStrategyTests`, actualizar al nuevo enum + agregar curva):
   - MVP/Estrella bloquean una amenaza inmediata y toman una victoria inmediata.
-  - **Amateur (prof. 2) bloquea** una amenaza inmediata.
-  - **Principiante (prof. 1) toma una victoria inmediata pero NO bloquea** una amenaza (propiedad de la curva).
+  - **Amateur (prof. 2) bloquea** una amenaza inmediata (la búsqueda ve la victoria rival).
   - Novato no rompe (devuelve columna válida; toma victoria inmediata).
+  - (No se testea "Principiante no bloquea": la heurística lo hace poco confiable; su debilidad — 1 ply, cae en trampas — se valida jugando.)
   - Tablero lleno → -1.
 
 ### Web
@@ -86,8 +86,8 @@ sale natural: a menor profundidad, "menos ve" (los niveles bajos no bloquean / c
 2. Se pueden elegir los 6 niveles con nombres temáticos (Novato→MVP).
 3. El nivel elegido es el que usa el CPU esa partida.
 4. El nivel **persiste** entre partidas/sesiones; primera vez = Amateur.
-5. Los niveles difieren de verdad: Novato es ganable/suelto; **Principiante no bloquea**; **Amateur bloquea**;
-   MVP = el más fuerte (prof. 5).
+5. Los niveles difieren de verdad: Novato es ganable/suelto; Principiante es el más débil con búsqueda;
+   **Amateur bloquea amenazas inmediatas** (prof≥2); MVP = el más fuerte (prof. 5).
 6. Desktop sin regresión; el setup mobile sigue con JUGAR fijo/visible y sin overflow.
 7. `CpuStrategyTests` cubre la curva; todos los tests verdes.
 8. 2 jugadores no se ve afectado.
