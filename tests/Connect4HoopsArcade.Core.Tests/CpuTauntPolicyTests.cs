@@ -15,33 +15,41 @@ public class CpuTauntPolicyTests
         => Assert.Equal(expected, CpuTauntPolicy.LevelFor(streak));
 
     [Fact]
-    public void Advance_cpu_win_increments_streak_and_losses()
+    public void AdvanceStreak_same_winner_extends_streak_no_break()
     {
-        var s = CpuTauntPolicy.Advance(prevStreak: 1, prevLosses: 3, MatchOutcome.CpuWin);
-        Assert.Equal(2, s.Streak);
-        Assert.Equal(4, s.PlayerLosses);
-        Assert.False(s.JustBroken);
-    }
-
-    [Theory]
-    [InlineData(0, false)]
-    [InlineData(1, false)]
-    [InlineData(2, true)]
-    [InlineData(5, true)]
-    public void Advance_human_win_resets_streak_and_flags_break_when_meaningful(int prevStreak, bool expectedBroken)
-    {
-        var s = CpuTauntPolicy.Advance(prevStreak, prevLosses: 7, MatchOutcome.HumanWin);
-        Assert.Equal(0, s.Streak);
-        Assert.Equal(7, s.PlayerLosses);   // unchanged on a human win
-        Assert.Equal(expectedBroken, s.JustBroken);
+        var s = CpuTauntPolicy.AdvanceStreak(prevHolder: 1, prevStreak: 2, winner: 1);
+        Assert.Equal(1, s.Holder);
+        Assert.Equal(3, s.Streak);
+        Assert.Equal(0, s.BrokenLength);
     }
 
     [Fact]
-    public void Advance_draw_leaves_everything_unchanged()
+    public void AdvanceStreak_first_winner_starts_streak_no_break()
     {
-        var s = CpuTauntPolicy.Advance(prevStreak: 2, prevLosses: 4, MatchOutcome.Draw);
-        Assert.Equal(2, s.Streak);
-        Assert.Equal(4, s.PlayerLosses);
-        Assert.False(s.JustBroken);
+        var s = CpuTauntPolicy.AdvanceStreak(prevHolder: -1, prevStreak: 0, winner: 0);
+        Assert.Equal(0, s.Holder);
+        Assert.Equal(1, s.Streak);
+        Assert.Equal(0, s.BrokenLength);
+    }
+
+    [Theory]
+    [InlineData(1, 1)]   // breaking a streak of 1 reports length 1
+    [InlineData(2, 2)]   // exactly the normal break threshold
+    [InlineData(5, 5)]   // a big streak broken reports its full length
+    public void AdvanceStreak_different_winner_resets_and_reports_broken_length(int prevStreak, int expectedBroken)
+    {
+        var s = CpuTauntPolicy.AdvanceStreak(prevHolder: 1, prevStreak: prevStreak, winner: 0);
+        Assert.Equal(0, s.Holder);
+        Assert.Equal(1, s.Streak);
+        Assert.Equal(expectedBroken, s.BrokenLength);
+    }
+
+    [Fact]
+    public void AdvanceStreak_draw_leaves_streak_untouched()
+    {
+        var s = CpuTauntPolicy.AdvanceStreak(prevHolder: 1, prevStreak: 3, winner: null);
+        Assert.Equal(1, s.Holder);
+        Assert.Equal(3, s.Streak);
+        Assert.Equal(0, s.BrokenLength);
     }
 }

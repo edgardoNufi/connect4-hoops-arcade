@@ -137,27 +137,35 @@ public sealed class NarratorService : IDisposable
     {
         _closingVoiceActive = true;
 
-        // 1P, CPU won → taunt, NO win cheer, optional short loss-sting.
+        // 1P, CPU won → taunt, NO win cheer, a rotated loss-sting SFX (plays even if voice is muted).
         if (mode == GameMode.OnePlayer && winner is int cpuW && _session.Players[cpuW].IsCpu)
         {
-            await _audio.PlaySfxAsync(AudioKeys.LossSting);
+            await _audio.PlaySfxAsync(AudioKeys.LossSting[Rng.Next(AudioKeys.LossSting.Length)]);
             if (VoiceOn) await Taunt("cpu-win", CpuTauntLines.CpuWin(EffectiveLevel()), interrupt: true);
             return;
         }
 
-        // Someone won (1P human, or any 2P win) → voice + win cheer (cheer plays even if voice is muted).
+        // Someone won (1P human, or any 2P win). Pick the closing line by how big a streak this win broke.
         if (winner is int)
         {
+            bool bigBreak = _session.BrokenStreakLength >= CpuTauntPolicy.BigBreakThreshold;
             if (VoiceOn)
             {
-                if (mode == GameMode.OnePlayer && _session.CpuStreakJustBroken)
-                    await Taunt("streak-break", AudioKeys.StreakBreak, interrupt: true);
+                if (bigBreak)
+                    await Taunt("streak-break-big", AudioKeys.StreakBreakBig, interrupt: true);   // any mode, +3
+                else if (mode == GameMode.OnePlayer && _session.BrokenStreakLength >= CpuTauntPolicy.BreakThreshold)
+                    await Taunt("streak-break", AudioKeys.StreakBreak, interrupt: true);            // 1P, broke a 2
                 else if (mode == GameMode.OnePlayer)
                     await Taunt("beat-cpu", AudioKeys.BeatCpu, interrupt: true);
                 else
                     await _audio.PlayRandomVoiceAsync(AudioKeys.VictoryV, interrupt: true);
             }
-            await _audio.PlayRandomSfxAfterVoiceAsync(AudioKeys.WinSfx);
+            // Closing SFX (plays even if voice is muted): big break gets the special "aleluya" after the voice;
+            // everyone else gets the usual win cheer.
+            if (bigBreak)
+                await _audio.PlaySfxAfterVoiceAsync(AudioKeys.StreakBreakBigSting);
+            else
+                await _audio.PlayRandomSfxAfterVoiceAsync(AudioKeys.WinSfx);
             return;
         }
 

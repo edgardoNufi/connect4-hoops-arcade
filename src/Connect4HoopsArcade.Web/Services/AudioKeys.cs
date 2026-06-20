@@ -38,25 +38,28 @@ public static class AudioKeys
     public const string ConnectFourV   = "voice/connect-four-01.mp3";
     public const string Rematch        = "voice/rematch-01.mp3";
 
-    // ---- CPU taunts (1P) + universal idle. Arrays grow as more variants are recorded (add -02, -03 …). ----
-    public static readonly string[] CpuThreatNeutral   = { "voice/cpu-threat-neutral-01.mp3" };
-    public static readonly string[] CpuThreatLight     = { "voice/cpu-threat-light-01.mp3" };
-    public static readonly string[] CpuThreatConfident = { "voice/cpu-threat-confident-01.mp3" };
-    public static readonly string[] CpuThreatBoss      = { "voice/cpu-threat-boss-01.mp3" };
+    // ---- CPU taunts (1P) + universal idle. Arrays rotate variants; add more files + entries to grow. ----
+    public static readonly string[] CpuThreatNeutral   = { "voice/cpu-threat-neutral-01.mp3", "voice/cpu-threat-neutral-02.mp3", "voice/cpu-threat-neutral-03.mp3" };
+    public static readonly string[] CpuThreatLight     = { "voice/cpu-threat-light-01.mp3", "voice/cpu-threat-light-02.mp3", "voice/cpu-threat-light-03.mp3" };
+    public static readonly string[] CpuThreatConfident = { "voice/cpu-threat-confident-01.mp3", "voice/cpu-threat-confident-02.mp3", "voice/cpu-threat-confident-03.mp3" };
+    public static readonly string[] CpuThreatBoss      = { "voice/cpu-threat-boss-01.mp3", "voice/cpu-threat-boss-02.mp3", "voice/cpu-threat-boss-03.mp3" };
 
-    public static readonly string[] CpuIdleNeutral     = { "voice/cpu-idle-neutral-01.mp3" };
-    public static readonly string[] CpuIdleLight       = { "voice/cpu-idle-light-01.mp3" };
-    public static readonly string[] CpuIdleConfident   = { "voice/cpu-idle-confident-01.mp3" };
-    public static readonly string[] CpuIdleBoss        = { "voice/cpu-idle-boss-01.mp3" };
+    public static readonly string[] CpuIdleNeutral     = { "voice/cpu-idle-neutral-01.mp3", "voice/cpu-idle-neutral-02.mp3", "voice/cpu-idle-neutral-03.mp3" };
+    public static readonly string[] CpuIdleLight       = { "voice/cpu-idle-light-01.mp3", "voice/cpu-idle-light-02.mp3", "voice/cpu-idle-light-03.mp3" };
+    public static readonly string[] CpuIdleConfident   = { "voice/cpu-idle-confident-01.mp3", "voice/cpu-idle-confident-02.mp3", "voice/cpu-idle-confident-03.mp3" };
+    public static readonly string[] CpuIdleBoss        = { "voice/cpu-idle-boss-01.mp3", "voice/cpu-idle-boss-02.mp3", "voice/cpu-idle-boss-03.mp3" };
 
-    public static readonly string[] CpuWinLight        = { "voice/cpu-win-light-01.mp3" };
-    public static readonly string[] CpuWinConfident    = { "voice/cpu-win-confident-01.mp3" };
-    public static readonly string[] CpuWinBoss         = { "voice/cpu-win-boss-01.mp3" };
+    public static readonly string[] CpuWinLight        = { "voice/cpu-win-light-01.mp3", "voice/cpu-win-light-02.mp3", "voice/cpu-win-light-03.mp3" };
+    public static readonly string[] CpuWinConfident    = { "voice/cpu-win-confident-01.mp3", "voice/cpu-win-confident-02.mp3", "voice/cpu-win-confident-03.mp3" };
+    public static readonly string[] CpuWinBoss         = { "voice/cpu-win-boss-01.mp3", "voice/cpu-win-boss-02.mp3", "voice/cpu-win-boss-03.mp3" };
 
-    public static readonly string[] StreakBreak        = { "voice/streak-break-01.mp3" };
-    public static readonly string[] BeatCpu            = { "voice/beat-cpu-01.mp3" };
-    public static readonly string[] IdleNudge          = { "voice/idle-01.mp3" };
+    public static readonly string[] StreakBreak        = { "voice/streak-break-01.mp3", "voice/streak-break-02.mp3", "voice/streak-break-03.mp3" };
+    public static readonly string[] StreakBreakBig     = { "voice/streak-break-big-01.mp3", "voice/streak-break-big-02.mp3", "voice/streak-break-big-03.mp3" };
+    public static readonly string[] BeatCpu            = { "voice/beat-cpu-01.mp3", "voice/beat-cpu-02.mp3", "voice/beat-cpu-03.mp3" };
+    public static readonly string[] IdleNudge          = { "voice/idle-01.mp3", "voice/idle-02.mp3", "voice/idle-03.mp3", "voice/idle-04.mp3", "voice/idle-05.mp3" };
 
-    // Optional short SFX played (instead of the win cheer) when the CPU beats the player in 1P.
-    public const string LossSting = "game/loss-sting.mp3";
+    // Short SFX rotated (instead of the win cheer) when the CPU beats the player in 1P.
+    public static readonly string[] LossSting          = { "game/loss-sting.mp3", "game/loss-sting-01.mp3" };
+    // Celebratory "aleluya" sting played AFTER the voice when a big (+3) streak is broken — replaces the win cheer.
+    public const string StreakBreakBigSting = "game/streak-break.mp3";
 }

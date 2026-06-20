@@ -71,14 +71,20 @@ Deliberate choices the user made (keep unless they say otherwise):
   (`win-01.mp3` / `win-02.m4a`) AFTER the voice finishes. `AudioKeys.WinSfx` is an **array** (add files to
   rotate). `.m4a` is fine (served as `audio/mp4`).
 - **Kept SFX:** chip-drop, turn-change, column-full. Turn voice ~40% of turns; "great move" ~1/8.
-- **CPU taunts (1P) + `NarratorTone`:** in 1-player the announcer taunts with streak-aware escalation
-  (`CpuTauntPolicy` in `Core/Narration`, levels Neutral/Light/Confident/Boss from `GameSession.CpuWinStreak`).
+- **CPU taunts + streaks + `NarratorTone`:** the announcer taunts with streak-aware escalation. `GameSession`
+  tracks a **generic** win streak for the current leader in BOTH modes (`StreakHolder`/`WinStreak`/
+  `BrokenStreakLength`); `CpuWinStreak` is derived from it and feeds the 1P taunt level (`CpuTauntPolicy` in
+  `Core/Narration`: levels Neutral/Light/Confident/Boss; `AdvanceStreak` is the pure transition, TDD'd).
   `NarratorTone` (Familiar default / Picante / Silencioso) is a persisted `SettingsStore` pref: Familiar caps
-  at Confident, Silencioso mutes all voice (SFX stay). Mid-game taunts are cooldown-gated (25s); `cpu-threat`
-  outranks `cpu-idle` (idle ≤1/round). Closing lines: CPU win → `cpu-win` (no cheer, optional `loss-sting`);
-  human win → `streak-break` (if a streak ≥2 broke) or `beat-cpu` (+ cheer). 2-player stays neutral.
-  `GameSession` raises `MatchEnded`/`IdleNudged`/`RoundStarted`; `ThreatRaised` carries the mover index;
-  `Won`/`Drew` retained but unused for audio. Voice files: spec `2026-06-19-cpu-taunts-announcer-design.md` §5.1.
+  at Confident, Silencioso mutes all voice (SFX stay). Mid-game taunts (1P) cooldown-gated (25s); `cpu-threat`
+  outranks `cpu-idle` (idle ≤1/round, never blocks a later threat). **Closing lines by broken-streak size**
+  (`OnMatchEnded`): broke ≥3 → `streak-break-big` in ANY mode + the `game/streak-break.mp3` "aleluya" sting
+  after the voice (replaces the cheer); 1P broke 2 → `streak-break`; 1P no break → `beat-cpu`; 2P no big break →
+  neutral `VictoryV`; CPU win (1P) → `cpu-win`, no cheer, rotated `loss-sting`. `GameSession` raises
+  `MatchEnded`/`IdleNudged`/`RoundStarted`; `ThreatRaised` carries the mover index; `Won`/`Drew` retained but
+  unused for audio. Voice files + addendum: spec `2026-06-19-cpu-taunts-announcer-design.md` §5.1 + §8.
+  Extra recorded-but-unwired lines (block-move, chip-placed, match-start, player-ready, tap-to-start,
+  thanks-for-playing) are deferred — each needs its own trigger.
 
 > NOTE: threat detection (`ThreatScanner.HasImmediateThreat`) is **verified correct** — it does NOT fire on
 > blocked/capped/unreachable 3-in-a-rows (regression tests prove it). Don't "fix" it.

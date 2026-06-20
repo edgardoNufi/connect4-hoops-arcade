@@ -286,3 +286,36 @@ Arreglos por celda/categoría: `CpuThreat[Neutral|Light|Confident|Boss]`, `CpuId
 - Cambiar las líneas de "turno" neutrales en 1P (oddity menor: el turno del CPU usa hoy la voz de "jugador 2").
 - Música de fondo / proyecto de pruebas de Web.
 - Eliminar `Won`/`Drew` (solo tras auditar consumidores, ver §2).
+
+## 8. Addendum v3 — rachas generalizadas + rotura grande (+3)
+
+Extiende el diseño (aprobado por el usuario) tras grabar los audios.
+
+**Rachas en ambos modos.** Se generaliza el rastreo: en vez de solo la racha del CPU, `GameSession` lleva la
+racha de victorias consecutivas del **líder actual**, en 1P **y** 2P:
+- `StreakHolder` (índice del líder, `-1` si nadie), `WinStreak` (sus victorias seguidas), `BrokenStreakLength`
+  (transitorio: la racha del rival que el ganador de esta partida acaba de romper, `0` si no rompió ninguna).
+- `CpuWinStreak` ahora es **derivado** (`Mode==1P && StreakHolder==1 ? WinStreak : 0`) y sigue alimentando el
+  nivel de burla del CPU sin cambios. Se retira `CpuStreakJustBroken`.
+- Reset: `StreakHolder`/`WinStreak`/`PlayerLossesAgainstCpu` solo en `BeginGame`; `BrokenStreakLength` cada `ResetState`.
+- Transición pura en `Core`: `CpuTauntPolicy.AdvanceStreak(prevHolder, prevStreak, winner)` → `StreakOutcome`
+  (empate = sin cambio; mismo ganador = +1; ganador distinto = reset a 1 y reporta la racha rota). TDD.
+
+**Rotura por niveles** (en `OnMatchEnded`, cuando gana un humano / cualquiera en 2P):
+- `BrokenStreakLength ≥ 3` (`BigBreakThreshold`) → **`streak-break-big`** (en **cualquier modo**, texto neutral)
+  y, al final, el sting **aleluya** `game/streak-break.mp3` *después* de la voz (reemplaza al win cheer).
+- `BrokenStreakLength == 2` (`BreakThreshold`) y 1P → `streak-break` (como antes) + win cheer.
+- Si no rompió racha: 1P → `beat-cpu`; 2P → `VictoryV` neutral. + win cheer.
+- Gana el CPU (1P) → `cpu-win` + `loss-sting` (ahora **rota** entre `loss-sting.mp3` y `loss-sting-01.mp3`); sin cheer.
+
+**Audios nuevos / cambios de `AudioKeys`:**
+- Arreglos expandidos a las 3 variantes grabadas (idle a 5).
+- `StreakBreakBig` = `voice/streak-break-big-01..03.mp3`.
+- `StreakBreakBigSting` = `game/streak-break.mp3` (SFX aleluya, post-voz, solo +3).
+- `LossSting` pasa a arreglo `{ game/loss-sting.mp3, game/loss-sting-01.mp3 }` (rota).
+
+**Frases `streak-break-big` (neutral, 1P y 2P):** «¡Se acabó el dominio!» · «¡Frenaste una rachota!» ·
+«¡Increíble, rompiste la racha!» (3 variantes grabadas).
+
+**Fuera de alcance (extras grabados, pendientes de cablear):** `block-move`, `chip-placed`, `match-start`,
+`player-ready`, `tap-to-start`, `thanks-for-playing` — cada uno necesita su propio disparador; se diseñan aparte.

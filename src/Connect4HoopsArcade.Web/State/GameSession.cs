@@ -62,10 +62,14 @@ public sealed class GameSession
     public GameBoard Board { get; private set; } = new();
     public int Current { get; private set; }
     public int[] Scores { get; private set; } = { 0, 0 };
-    // CPU taunt state (1P only). Persists across Rematch/ResetBoard; reset only by BeginGame (new session).
-    public int CpuWinStreak { get; private set; }
-    public bool CpuStreakJustBroken { get; private set; }
-    public int PlayerLossesAgainstCpu { get; private set; }
+    // Win-streak state (BOTH modes). Tracks the player currently on a consecutive-win run. Persists across
+    // Rematch/ResetBoard; reset only by BeginGame (new session).
+    public int StreakHolder { get; private set; } = -1;       // player index on a streak, or -1 if none
+    public int WinStreak { get; private set; }                // that player's consecutive wins
+    public int BrokenStreakLength { get; private set; }       // transient: opponent streak the last winner just broke
+    public int PlayerLossesAgainstCpu { get; private set; }   // 1P only; informational
+    // CPU's own current streak (feeds the 1P taunt level). Derived: only meaningful when the CPU leads in 1P.
+    public int CpuWinStreak => Mode == GameMode.OnePlayer && StreakHolder == 1 ? WinStreak : 0;
     public string Narrator { get; private set; } = "";
 
     public int? Winner { get; private set; }
@@ -148,10 +152,11 @@ public sealed class GameSession
         if (resetScores)
         {
             Scores = new[] { 0, 0 };                 // preserved across rematch/reset
-            CpuWinStreak = 0;                         // streak + losses reset only on a brand-new session
+            StreakHolder = -1;                        // streak + losses reset only on a brand-new session
+            WinStreak = 0;
             PlayerLossesAgainstCpu = 0;
         }
-        CpuStreakJustBroken = false;                  // transient: only meaningful inside a MatchEnded handler
+        BrokenStreakLength = 0;                        // transient: only meaningful inside a MatchEnded handler
         Narrator = narrator;
         RoundStarted?.Invoke();
     }
@@ -280,20 +285,16 @@ public sealed class GameSession
         Notify();
     }
 
-    // Updates the CPU streak (1P only) and announces the end of the match. Must run BEFORE any audio reads
-    // CpuWinStreak/CpuStreakJustBroken, so callers invoke it right where the win/draw is finalized.
+    // Advances the win-streak (BOTH modes) and announces the end of the match. Must run BEFORE any audio reads
+    // the streak state, so callers invoke it right where the win/draw is finalized.
     private void RecordMatchEnd(int? winner)
     {
-        if (Mode == GameMode.OnePlayer)
-        {
-            var outcome = winner is null ? MatchOutcome.Draw
-                        : Players[winner.Value].IsCpu ? MatchOutcome.CpuWin
-                        : MatchOutcome.HumanWin;
-            var s = CpuTauntPolicy.Advance(CpuWinStreak, PlayerLossesAgainstCpu, outcome);
-            CpuWinStreak = s.Streak;
-            CpuStreakJustBroken = s.JustBroken;
-            PlayerLossesAgainstCpu = s.PlayerLosses;
-        }
+        var s = CpuTauntPolicy.AdvanceStreak(StreakHolder, WinStreak, winner);
+        StreakHolder = s.Holder;
+        WinStreak = s.Streak;
+        BrokenStreakLength = s.BrokenLength;
+        if (Mode == GameMode.OnePlayer && winner is int w && Players[w].IsCpu)
+            PlayerLossesAgainstCpu++;
         MatchEnded?.Invoke(winner, Mode);
     }
 
