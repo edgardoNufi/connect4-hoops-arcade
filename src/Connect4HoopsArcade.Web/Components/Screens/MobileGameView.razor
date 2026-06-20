@@ -1,0 +1,22 @@
+@using Connect4HoopsArcade.Web.Components.Game
+@using Connect4HoopsArcade.Web.Components.Game.Mobile
+@inherits SessionComponentBase
+
+<div class="mob-game">
+  <MobileScoreboard OnTap="OpenSheet" />
+
+  <div class="mob-board-area">
+    <BoardGrid InteractionEnabled="InteractionEnabled" FitContainer="true" />
+  </div>
+
+  <div class="mob-narrator"><NarratorBubble /></div>
+
+  <ActionSheet Open="_sheetOpen" OnClose="CloseSheet" />
+</div>
+
+@code {
+    private bool _sheetOpen;
+    private void OpenSheet() { _sheetOpen = true; StateHasChanged(); }
+    private void CloseSheet() { _sheetOpen = false; StateHasChanged(); }
+    private bool InteractionEnabled => Session.Mode2 == Connect4HoopsArcade.Web.Models.PlayMode.Digital;
+}
