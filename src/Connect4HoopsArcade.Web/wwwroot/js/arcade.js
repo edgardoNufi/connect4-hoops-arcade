@@ -168,13 +168,6 @@ window.ArcadeKeyboard = {
   },
 };
 
-window.ArcadeFullscreen = {
-  toggle() {
-    if (!document.fullscreenElement) document.documentElement.requestFullscreen?.().catch(() => {});
-    else document.exitFullscreen?.().catch(() => {});
-  },
-};
-
 // Viewport → .NET. Debounced; only notifies when the breakpoint or orientation changes.
 window.ArcadeViewport = {
   _ref: null,
