@@ -1,22 +1,55 @@
 @using Connect4HoopsArcade.Web.Components.Game
 @using Connect4HoopsArcade.Web.Components.Game.Mobile
 @inherits SessionComponentBase
+@inject Connect4HoopsArcade.Web.Services.Abstractions.IViewportService Viewport
 
-<div class="mob-game">
-  <MobileScoreboard OnTap="OpenSheet" />
-
-  <div class="mob-board-area">
-    <BoardGrid InteractionEnabled="InteractionEnabled" FitContainer="true" />
+@if (Viewport.IsLandscape)
+{
+  <div class="mob-game landscape">
+    <div class="mob-side">
+      <MobileScoreboard />
+      <div class="mob-side-narrator"><NarratorBubble /></div>
+      <div class="mob-side-actions">
+        <button class="mob-side-btn" @onclick="() => Session.ResetBoard()" disabled="@Session.IsBusy">🔄 Reiniciar</button>
+        <button class="mob-side-btn" @onclick="() => Session.Resign()" disabled="@Session.IsBusy">🏳️ Rendirse</button>
+        <button class="mob-side-btn" @onclick="() => Session.OpenSettings()">⚙ Ajustes</button>
+      </div>
+    </div>
+    <div class="mob-board-area">
+      <BoardGrid InteractionEnabled="InteractionEnabled" FitContainer="true" />
+    </div>
   </div>
-
-  <div class="mob-narrator"><NarratorBubble /></div>
-
-  <ActionSheet Open="_sheetOpen" OnClose="CloseSheet" />
-</div>
+}
+else
+{
+  <div class="mob-game">
+    <MobileScoreboard OnTap="OpenSheet" />
+    <div class="mob-board-area">
+      <BoardGrid InteractionEnabled="InteractionEnabled" FitContainer="true" />
+    </div>
+    <div class="mob-narrator"><NarratorBubble /></div>
+    <ActionSheet Open="_sheetOpen" OnClose="CloseSheet" />
+  </div>
+}
 
 @code {
     private bool _sheetOpen;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();                       // SessionComponentBase subscribes StateChanged
+        Viewport.OnViewportChanged += OnViewport;   // re-render on rotate (portrait <-> landscape)
+    }
+
+    private void OnViewport() => InvokeAsync(StateHasChanged);
+
     private void OpenSheet() { _sheetOpen = true; StateHasChanged(); }
     private void CloseSheet() { _sheetOpen = false; StateHasChanged(); }
     private bool InteractionEnabled => Session.Mode2 == Connect4HoopsArcade.Web.Models.PlayMode.Digital;
+
+    public override void Dispose()
+    {
+        Viewport.OnViewportChanged -= OnViewport;
+        base.Dispose();                             // unsubscribe StateChanged
+    }
 }
