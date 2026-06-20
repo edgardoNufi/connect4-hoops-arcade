@@ -30,7 +30,7 @@ public sealed class GameSession
     private AppScreen _prevScreen = AppScreen.Mode;
 
     public GameMode Mode { get; private set; } = GameMode.TwoPlayer;
-    public CpuDifficulty CpuLevel { get; set; } = CpuDifficulty.Sharp;
+    public CpuDifficulty CpuLevel { get; set; } = CpuDifficulty.Amateur;
     public AnimationSpeed Speed { get; set; } = AnimationSpeed.Normal;
     // Persistent announcer tone (pushed by SettingsStore.ApplyAsync). NOT reset between games.
     public Connect4HoopsArcade.Web.Models.NarratorTone NarratorTone { get; set; }

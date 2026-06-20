@@ -5,9 +5,9 @@ using Connect4HoopsArcade.Core.Rules;
 namespace Connect4HoopsArcade.Core.Ai;
 
 /// <summary>
-/// CPU is always Player2. Normal/Sharp use a minimax search with alpha-beta pruning and a
-/// window-based evaluation (4-in-a-row potential + centre control). Chill stays deliberately weak
-/// so it's beatable for casual/younger players.
+/// CPU is always Player2. Difficulty is a 6-level ladder (Novato..MVP). Novato plays loosely
+/// (beatable on purpose); the rest run minimax with alpha-beta pruning + a window-based evaluation
+/// (4-in-a-row potential + centre control) to depth 1..5 — deeper sees further and plays stronger.
 /// </summary>
 public static class CpuStrategy
 {
@@ -28,17 +28,17 @@ public static class CpuStrategy
         int win = ImmediateWin(board, Cell.Player2);
         if (win >= 0) return win;
 
-        if (difficulty == CpuDifficulty.Chill)
+        int depth = DepthFor(difficulty);
+        if (depth == 0)
         {
-            // Easy mode: only block half the time, otherwise play loosely — beatable on purpose.
+            // Novato: only block half the time, otherwise play loosely — beatable on purpose.
             int threat = ImmediateWin(board, Cell.Player1);
             if (threat >= 0 && rng.Next(2) == 0) return threat;
             return available[rng.Next(available.Count)];
         }
 
-        // Normal / Sharp: search ahead. Depth tuned to stay snappy in WebAssembly while still
-        // blocking threats and 2-move traps (a big step up from the old centre-stacking CPU).
-        int depth = difficulty == CpuDifficulty.Sharp ? 5 : 4;
+        // Levels 1-5: minimax to the level's depth (deeper sees further → stronger). Depth stays ≤ 5
+        // to remain snappy in WebAssembly.
 
         int bestCol = available[0], bestScore = int.MinValue, alpha = int.MinValue;
         foreach (int c in available) // already centre-first
@@ -56,6 +56,17 @@ public static class CpuStrategy
         }
         return bestCol;
     }
+
+    /// <summary>Search depth per level. 0 = Novato (no search, loose play); 1..5 = minimax depth.</summary>
+    private static int DepthFor(CpuDifficulty d) => d switch
+    {
+        CpuDifficulty.Novato => 0,
+        CpuDifficulty.Principiante => 1,
+        CpuDifficulty.Amateur => 2,
+        CpuDifficulty.Titular => 3,
+        CpuDifficulty.Estrella => 4,
+        _ => 5, // MVP
+    };
 
     /// <summary>Minimax (alpha-beta) score from the CPU's (Player2) perspective.</summary>
     private static int Minimax(GameBoard board, int depth, int alpha, int beta, Cell toMove)
