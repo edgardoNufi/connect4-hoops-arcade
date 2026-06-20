@@ -16,6 +16,7 @@ public sealed class GameSession
     public event Action<int>? TurnChanged;     // arg: new current player index
     public event Action? ColumnFull;
     public event Action<int>? ThreatRaised;    // arg: index of the player who just moved (the threat owner)
+    // Retained intentionally: superseded by MatchEnded for closing audio (no current subscribers). See spec §2/§7.
     public event Action<int>? Won;             // arg: winner index
     public event Action? Drew;
     public event Action? GameStarted;

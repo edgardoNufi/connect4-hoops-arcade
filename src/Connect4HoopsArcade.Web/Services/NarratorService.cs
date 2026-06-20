@@ -20,7 +20,7 @@ public sealed class NarratorService : IDisposable
     private DateTime _lastMidTaunt = DateTime.MinValue;   // last threat/idle taunt; spacing base
     private bool _idleTauntUsedThisRound;                 // cpu-idle is filler: max one per round
     private bool _closingVoiceActive;                     // a closing line is in flight — don't talk over it
-    private readonly Dictionary<string, int> _lastIndex = new();   // last variant per category (no repeats)
+    private readonly Dictionary<string, int> _lastIndex = new();   // last variant per category (no repeats; kept across rounds on purpose)
 
     public NarratorService(GameSession session, IAudioService audio)
     {
@@ -124,8 +124,8 @@ public sealed class NarratorService : IDisposable
         }
         else
         {
-            // Generic nudge, any non-CPU context; cooldown-spaced.
-            if (DateTime.UtcNow - _lastMidTaunt < MidTauntCooldown) return;
+            // Generic nudge, any non-CPU context; same readiness guard as the 1P path.
+            if (!MidTauntReady()) return;
             _lastMidTaunt = DateTime.UtcNow;
             await Taunt("idle", AudioKeys.IdleNudge);
         }
