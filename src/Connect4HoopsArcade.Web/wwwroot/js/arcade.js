@@ -13,11 +13,24 @@ window.ArcadeAudio = (function () {
   let nextVoice = null;
   let afterVoiceSfx = null;   // an SFX to fire once the voice queue fully drains (e.g. win cheer)
 
+  // TEMPORARY perf probe: count cloned <audio> elements. iOS frees these poorly; if `live` climbs
+  // and never drops while big freezes appear, audio-element accumulation is the lag source.
+  let audCreated = 0, audLive = 0;
+  function track(a) {
+    audCreated++; audLive++;
+    const done = () => {
+      audLive = Math.max(0, audLive - 1);
+      a.removeEventListener('ended', done); a.removeEventListener('error', done); a.removeEventListener('pause', done);
+    };
+    a.addEventListener('ended', done); a.addEventListener('error', done); a.addEventListener('pause', done);
+    return a;
+  }
+
   // `key` is the path under wwwroot/audio/, INCLUDING subdir, e.g. "game/chip-drop.mp3".
   function url(key) { return 'audio/' + key; }
 
   function sfxNow(key) {
-    try { const a = load(key).cloneNode(); a.volume = sfxVol; a.play().catch(() => {}); }
+    try { const a = track(load(key).cloneNode()); a.volume = sfxVol; a.play().catch(() => {}); }
     catch (e) { console.warn('[ArcadeAudio] sfx failed', key, e); }
   }
 
@@ -32,7 +45,7 @@ window.ArcadeAudio = (function () {
 
   function startVoice(key) {
     try {
-      voiceEl = load(key).cloneNode();
+      voiceEl = track(load(key).cloneNode());
       voiceEl.volume = voiceVol;
       const advance = () => {
         voiceEl = null;
@@ -96,6 +109,7 @@ window.ArcadeAudio = (function () {
     setVolumes(s, v, m) { sfxVol = s; voiceVol = v; musicVol = m; if (music) music.volume = m; if (voiceEl) voiceEl.volume = v; },
     mute() { muted = true; this.stopMusic(); stopVoice(); },
     unmute() { muted = false; },
+    stats() { return { created: audCreated, live: audLive }; },   // TEMPORARY perf probe
   };
 })();
 
@@ -207,12 +221,18 @@ window.ArcadePerf = (function () {
     return root ? root.getElementsByTagName('*').length : 0;
   }
   function confettiCount() { return document.querySelectorAll('[style*="confettiFall"]').length; }
+  function audStats() {
+    try { return window.ArcadeAudio && window.ArcadeAudio.stats ? window.ArcadeAudio.stats() : null; }
+    catch { return null; }
+  }
   function paint() {
     const e = ensureEl();
     if (!e) return;
     const max = tasks.length ? Math.max(...tasks) : 0;
+    const a = audStats();
     e.textContent = 'jank n=' + tasks.length + ' max=' + max + 'ms last=' + last +
-      'ms | dom=' + domCount() + ' cf=' + confettiCount();
+      'ms | dom=' + domCount() + ' cf=' + confettiCount() +
+      (a ? ' aud=' + a.live + '/' + a.created : '');
   }
 
   // rAF-gap detector: the browser can't paint a frame while the main thread is blocked, so the
