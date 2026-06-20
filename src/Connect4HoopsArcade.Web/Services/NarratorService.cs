@@ -1,81 +1,178 @@
+using Connect4HoopsArcade.Core.Narration;
+using Connect4HoopsArcade.Core.Primitives;
+using Connect4HoopsArcade.Web.Models;
 using Connect4HoopsArcade.Web.Services.Abstractions;
 using Connect4HoopsArcade.Web.State;
 
 namespace Connect4HoopsArcade.Web.Services;
 
 /// <summary>
-/// Maps game events to SFX + (sparingly) voice lines. Voice is reserved for key moments; ordinary moves
-/// use SFX only. Cooldowns prevent physical double-triggers from spamming sound.
+/// Maps game events to SFX + voice. Single owner of the serial voice queue. In 1-player mode it adds
+/// streak-aware taunts (see CpuTauntPolicy); in 2-player it stays neutral. NarratorTone gates/scales voice.
 /// </summary>
 public sealed class NarratorService : IDisposable
 {
     private readonly GameSession _session;
     private readonly IAudioService _audio;
     private static readonly Random Rng = new();
+    private static readonly TimeSpan MidTauntCooldown = TimeSpan.FromSeconds(25);
+
+    private DateTime _lastMidTaunt = DateTime.MinValue;   // last threat/idle taunt; spacing base
+    private bool _idleTauntUsedThisRound;                 // cpu-idle is filler: max one per round
+    private bool _closingVoiceActive;                     // a closing line is in flight — don't talk over it
+    private readonly Dictionary<string, int> _lastIndex = new();   // last variant per category (no repeats)
 
     public NarratorService(GameSession session, IAudioService audio)
     {
         _session = session;
         _audio = audio;
         _session.GameStarted += OnGameStarted;
+        _session.RoundStarted += OnRoundStarted;
         _session.ChipDropped += OnChipDropped;
         _session.TurnChanged += OnTurnChanged;
         _session.ColumnFull  += OnColumnFull;
         _session.ThreatRaised += OnThreat;
-        _session.Won += OnWon;
-        _session.Drew += OnDrew;
+        _session.IdleNudged  += OnIdle;
+        _session.MatchEnded  += OnMatchEnded;
     }
 
-    private async void OnGameStarted() => await _audio.PlayVoiceAsync(AudioKeys.GetReady);
+    private bool VoiceOn => _session.NarratorTone != NarratorTone.Silencioso;
+    private bool TauntsOn => _session.Mode == GameMode.OnePlayer && VoiceOn;
+    private int CpuIndex =>
+        _session.Players.Length > 1 && _session.Players[1].IsCpu ? 1 :
+        _session.Players.Length > 0 && _session.Players[0].IsCpu ? 0 : -1;
+
+    // Familiar caps escalation at Confident (no Boss lines); Picante uses the raw level.
+    private CpuTauntLevel EffectiveLevel()
+    {
+        var raw = CpuTauntPolicy.LevelFor(_session.CpuWinStreak);
+        return _session.NarratorTone == NarratorTone.Familiar && raw == CpuTauntLevel.BossMode
+            ? CpuTauntLevel.ConfidentCpu
+            : raw;
+    }
+
+    private Task Taunt(string category, IReadOnlyList<string> keys, bool interrupt = false)
+    {
+        if (keys.Count == 0) return Task.CompletedTask;
+        int last = _lastIndex.TryGetValue(category, out var v) ? v : -1;
+        int idx = VoicePicker.Pick(keys.Count, last, Rng.Next(100_000));
+        _lastIndex[category] = idx;
+        return _audio.PlayVoiceAsync(keys[idx], interrupt);
+    }
+
+    private bool MidTauntReady() =>
+        _session.Winner == null && !_closingVoiceActive
+        && DateTime.UtcNow - _lastMidTaunt >= MidTauntCooldown;
+
+    private void OnRoundStarted()
+    {
+        _idleTauntUsedThisRound = false;
+        _closingVoiceActive = false;
+        _lastMidTaunt = DateTime.MinValue;
+    }
+
+    private async void OnGameStarted()
+    {
+        if (VoiceOn) await _audio.PlayVoiceAsync(AudioKeys.GetReady);
+    }
 
     private async void OnChipDropped()
     {
         await _audio.PlaySfxAsync(AudioKeys.ChipDrop);
-        // Occasional praise (~1 in 8). The voice queue serializes it after any current line.
-        if (Rng.Next(8) == 0) await _audio.PlayRandomVoiceAsync(AudioKeys.GreatMove);
+        // Occasional praise (~1 in 8). Serialized after any current line.
+        if (VoiceOn && Rng.Next(8) == 0) await _audio.PlayRandomVoiceAsync(AudioKeys.GreatMove);
     }
 
     private async void OnTurnChanged(int current)
     {
         await _audio.PlaySfxAsync(AudioKeys.TurnChange, cooldownMs: 300);
-        // Announce the turn only sometimes (~40%) so it doesn't narrate every single move.
-        if (Rng.Next(10) < 4)
+        if (VoiceOn && Rng.Next(10) < 4)
             await _audio.PlayRandomVoiceAsync(current == 0 ? AudioKeys.PlayerOneTurn : AudioKeys.PlayerTwoTurn);
     }
 
     private async void OnColumnFull()
     {
         await _audio.PlaySfxAsync(AudioKeys.ColumnFull, cooldownMs: 800);
-        await _audio.PlayRandomVoiceAsync(AudioKeys.ColumnFullV);
+        if (VoiceOn) await _audio.PlayRandomVoiceAsync(AudioKeys.ColumnFullV);
     }
 
     private async void OnThreat(int moverIndex)
     {
-        // Danger SFX removed — the "almost win" voice variants carry the warning.
-        await _audio.PlayRandomVoiceAsync(AudioKeys.AlmostWinV);
+        // High priority: taunt only when the CPU is the one threatening (1P). Cooldown-gated, no per-round cap.
+        if (TauntsOn && CpuIndex >= 0 && moverIndex == CpuIndex)
+        {
+            if (!MidTauntReady()) return;
+            _lastMidTaunt = DateTime.UtcNow;
+            await Taunt("cpu-threat", CpuTauntLines.Threat(EffectiveLevel()));
+        }
+        else if (VoiceOn)
+        {
+            await _audio.PlayRandomVoiceAsync(AudioKeys.AlmostWinV);   // neutral warning (2P, or human threatening)
+        }
     }
 
-    private async void OnWon(int winner)
+    private async void OnIdle()
     {
-        // One victory/winner line (no "¡Conecta 4!" voice), then a random win cheer once it finishes.
-        await _audio.PlayRandomVoiceAsync(AudioKeys.VictoryV, interrupt: true);
-        await _audio.PlayRandomSfxAfterVoiceAsync(AudioKeys.WinSfx);
+        if (!VoiceOn) return;
+        if (_session.Mode == GameMode.OnePlayer)
+        {
+            // Filler: at most once per round, and only if no recent taunt (so it never steals a threat's slot).
+            if (_idleTauntUsedThisRound || !MidTauntReady()) return;
+            _idleTauntUsedThisRound = true;
+            _lastMidTaunt = DateTime.UtcNow;
+            await Taunt("cpu-idle", CpuTauntLines.Idle(EffectiveLevel()));
+        }
+        else
+        {
+            // Generic nudge, any non-CPU context; cooldown-spaced.
+            if (DateTime.UtcNow - _lastMidTaunt < MidTauntCooldown) return;
+            _lastMidTaunt = DateTime.UtcNow;
+            await Taunt("idle", AudioKeys.IdleNudge);
+        }
     }
 
-    private async void OnDrew()
+    private async void OnMatchEnded(int? winner, GameMode mode)
     {
+        _closingVoiceActive = true;
+
+        // 1P, CPU won → taunt, NO win cheer, optional short loss-sting.
+        if (mode == GameMode.OnePlayer && winner is int cpuW && _session.Players[cpuW].IsCpu)
+        {
+            await _audio.PlaySfxAsync(AudioKeys.LossSting);
+            if (VoiceOn) await Taunt("cpu-win", CpuTauntLines.CpuWin(EffectiveLevel()), interrupt: true);
+            return;
+        }
+
+        // Someone won (1P human, or any 2P win) → voice + win cheer (cheer plays even if voice is muted).
+        if (winner is int)
+        {
+            if (VoiceOn)
+            {
+                if (mode == GameMode.OnePlayer && _session.CpuStreakJustBroken)
+                    await Taunt("streak-break", AudioKeys.StreakBreak, interrupt: true);
+                else if (mode == GameMode.OnePlayer)
+                    await Taunt("beat-cpu", AudioKeys.BeatCpu, interrupt: true);
+                else
+                    await _audio.PlayRandomVoiceAsync(AudioKeys.VictoryV, interrupt: true);
+            }
+            await _audio.PlayRandomSfxAfterVoiceAsync(AudioKeys.WinSfx);
+            return;
+        }
+
+        // Draw (either mode).
         await _audio.PlaySfxAsync(AudioKeys.DrawSfx);
-        await _audio.PlayRandomVoiceAsync(AudioKeys.DrawV, interrupt: true);
+        if (VoiceOn) await _audio.PlayRandomVoiceAsync(AudioKeys.DrawV, interrupt: true);
     }
 
     public void Dispose()
     {
         _session.GameStarted -= OnGameStarted;
+        _session.RoundStarted -= OnRoundStarted;
         _session.ChipDropped -= OnChipDropped;
         _session.TurnChanged -= OnTurnChanged;
         _session.ColumnFull  -= OnColumnFull;
         _session.ThreatRaised -= OnThreat;
-        _session.Won -= OnWon;
-        _session.Drew -= OnDrew;
+        _session.IdleNudged  -= OnIdle;
+        _session.MatchEnded  -= OnMatchEnded;
     }
 }
