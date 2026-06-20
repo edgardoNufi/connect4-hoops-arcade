@@ -71,6 +71,14 @@ Deliberate choices the user made (keep unless they say otherwise):
   (`win-01.mp3` / `win-02.m4a`) AFTER the voice finishes. `AudioKeys.WinSfx` is an **array** (add files to
   rotate). `.m4a` is fine (served as `audio/mp4`).
 - **Kept SFX:** chip-drop, turn-change, column-full. Turn voice ~40% of turns; "great move" ~1/8.
+- **CPU taunts (1P) + `NarratorTone`:** in 1-player the announcer taunts with streak-aware escalation
+  (`CpuTauntPolicy` in `Core/Narration`, levels Neutral/Light/Confident/Boss from `GameSession.CpuWinStreak`).
+  `NarratorTone` (Familiar default / Picante / Silencioso) is a persisted `SettingsStore` pref: Familiar caps
+  at Confident, Silencioso mutes all voice (SFX stay). Mid-game taunts are cooldown-gated (25s); `cpu-threat`
+  outranks `cpu-idle` (idle ≤1/round). Closing lines: CPU win → `cpu-win` (no cheer, optional `loss-sting`);
+  human win → `streak-break` (if a streak ≥2 broke) or `beat-cpu` (+ cheer). 2-player stays neutral.
+  `GameSession` raises `MatchEnded`/`IdleNudged`/`RoundStarted`; `ThreatRaised` carries the mover index;
+  `Won`/`Drew` retained but unused for audio. Voice files: spec `2026-06-19-cpu-taunts-announcer-design.md` §5.1.
 
 > NOTE: threat detection (`ThreatScanner.HasImmediateThreat`) is **verified correct** — it does NOT fire on
 > blocked/capped/unreachable 3-in-a-rows (regression tests prove it). Don't "fix" it.
@@ -130,5 +138,8 @@ Ordered by the user's priority. Brainstorm/design before building each (see brai
 
 ## Status (update as you go)
 MVP complete (tag `v0.1.0-mvp`) + post-MVP polish: leaner audio, global button click, minimax CPU,
-full-screen draw screen, random win cheers, Cloudflare auto-deploy. All 36 Core tests green.
+full-screen draw screen, random win cheers, Cloudflare auto-deploy, streak-aware CPU taunts + `NarratorTone`.
+All 51 Core tests green.
 **Next focus: item 1 (mobile-first responsive redesign).**
+**Note:** CPU-taunt voice files are produced separately (spec §5.1); until they land, taunt paths are silent
+(harmless — `AudioService` swallows missing-file errors). Manual ear-verification pending the audio files.
