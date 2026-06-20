@@ -182,12 +182,7 @@ public sealed class GameSession
             IsThinking = false; IsBusy = false; Notify();
             return;
         }
-        // TEMPORARY perf probe (remove after diagnosing mobile lag): the minimax runs SYNCHRONOUSLY
-        // on the single WASM UI thread, so this duration is exactly how long the UI is frozen.
-        var __sw = System.Diagnostics.Stopwatch.StartNew();
         int cpuCol = CpuStrategy.ChooseColumn(Board, CpuLevel);
-        __sw.Stop();
-        Console.WriteLine($"[perf] minimax level={CpuLevel} took {__sw.ElapsedMilliseconds}ms (UI frozen)");
         IsThinking = false; IsBusy = false;
         if (cpuCol >= 0) await Place(cpuCol);
     }
