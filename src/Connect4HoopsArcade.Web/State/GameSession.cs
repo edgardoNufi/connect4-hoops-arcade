@@ -23,6 +23,7 @@ public sealed class GameSession
     public event Action? RoundStarted;          // every BeginGame/Rematch/ResetBoard — resets per-round narration
     public event Action? IdleNudged;            // the idle nudge fired (any mode)
     public event Action<int?, GameMode>? MatchEnded;   // winner (null = draw) + mode; raised after streak update
+    public event Action? AudioStopRequested;           // new round / leaving game → cut any lingering audio so it can't bleed into the next screen
 
     private void Notify() => StateChanged?.Invoke();
 
@@ -91,8 +92,8 @@ public sealed class GameSession
     private static readonly Random Rng = new();
 
     // ---- navigation ----
-    public void GoSplash() { CancelIdle(); Screen = AppScreen.Splash; Notify(); }
-    public void GoMode() { CancelIdle(); Screen = AppScreen.Mode; Notify(); }
+    public void GoSplash() { CancelIdle(); AudioStopRequested?.Invoke(); Screen = AppScreen.Splash; Notify(); }
+    public void GoMode() { CancelIdle(); AudioStopRequested?.Invoke(); Screen = AppScreen.Mode; Notify(); }
     public void ChooseOnePlayer()
     {
         Mode = GameMode.OnePlayer;
@@ -138,11 +139,12 @@ public sealed class GameSession
         StartTurnFlow();
     }
 
-    public void ChangePlayers() { CancelIdle(); Winner = null; Screen = AppScreen.Setup; Notify(); }
+    public void ChangePlayers() { CancelIdle(); AudioStopRequested?.Invoke(); Winner = null; Screen = AppScreen.Setup; Notify(); }
 
     private void ResetState(string narrator, bool resetScores)
     {
         CancelIdle();
+        AudioStopRequested?.Invoke();   // cut any lingering victory/closing audio before the new round (no bleed-through / pile-up)
         Board = new GameBoard();
         Current = Mode == GameMode.OnePlayer && CpuStarts ? 1 : 0;   // CPU (index 1) may take the first move
         Winner = null; WinBy = "";

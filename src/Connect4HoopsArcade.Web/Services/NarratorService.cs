@@ -35,7 +35,12 @@ public sealed class NarratorService : IDisposable
         _session.ThreatRaised += OnThreat;
         _session.IdleNudged  += OnIdle;
         _session.MatchEnded  += OnMatchEnded;
+        _session.AudioStopRequested += OnAudioStopRequested;
     }
+
+    // New round or leaving the game: kill any lingering audio (a 15s victory line would otherwise keep
+    // playing under the next game and make new voices queue up behind it).
+    private void OnAudioStopRequested() => _ = _audio.StopAllAsync();
 
     private bool VoiceOn => _session.NarratorTone != NarratorTone.Silencioso;
     private bool TauntsOn => _session.Mode == GameMode.OnePlayer && VoiceOn;
@@ -185,5 +190,6 @@ public sealed class NarratorService : IDisposable
         _session.ThreatRaised -= OnThreat;
         _session.IdleNudged  -= OnIdle;
         _session.MatchEnded  -= OnMatchEnded;
+        _session.AudioStopRequested -= OnAudioStopRequested;
     }
 }

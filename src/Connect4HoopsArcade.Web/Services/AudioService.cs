@@ -41,6 +41,7 @@ public sealed class AudioService : IAudioService
 
     public Task PlayMusicAsync(string key, bool loop = true) => Safe("ArcadeAudio.playMusic", key, loop);
     public Task StopMusicAsync() => Safe("ArcadeAudio.stopMusic");
+    public Task StopAllAsync() => Safe("ArcadeAudio.stopAll");
     public Task SetVolumesAsync(int sfx, int voice, int music) =>
         Safe("ArcadeAudio.setVolumes", sfx / 100.0, voice / 100.0, music / 100.0);
     public Task MuteAsync() => Safe("ArcadeAudio.mute");

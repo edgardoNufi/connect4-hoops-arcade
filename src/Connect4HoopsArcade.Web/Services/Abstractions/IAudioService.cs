@@ -10,6 +10,8 @@ public interface IAudioService
     Task PlayRandomVoiceAsync(IReadOnlyList<string> keys, bool interrupt = false);
     Task PlayMusicAsync(string key, bool loop = true);
     Task StopMusicAsync();
+    /// <summary>Hard-stops every playing/queued sound (voices, deferred SFX, lingering cheers, music).</summary>
+    Task StopAllAsync();
     Task SetVolumesAsync(int sfx, int voice, int music);
     Task MuteAsync();
     Task UnmuteAsync();

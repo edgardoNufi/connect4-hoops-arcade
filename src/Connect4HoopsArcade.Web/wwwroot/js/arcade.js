@@ -13,17 +13,27 @@ window.ArcadeAudio = (function () {
   let nextVoice = null;
   let afterVoiceSfx = null;   // an SFX to fire once the voice queue fully drains (e.g. win cheer)
 
-  // TEMPORARY perf probe: count cloned <audio> elements. iOS frees these poorly; if `live` climbs
-  // and never drops while big freezes appear, audio-element accumulation is the lag source.
-  let audCreated = 0, audLive = 0;
+  // Every play clones an <audio>; iOS frees these poorly, so we keep the live ones in a set and
+  // can stop+release them all on a round change (otherwise a 15s victory line keeps playing under
+  // the next game and new voices pile up behind it). `audCreated` is a cumulative counter for the probe.
+  let audCreated = 0;
+  const liveAudio = new Set();
   function track(a) {
-    audCreated++; audLive++;
+    audCreated++; liveAudio.add(a);
     const done = () => {
-      audLive = Math.max(0, audLive - 1);
+      liveAudio.delete(a);
       a.removeEventListener('ended', done); a.removeEventListener('error', done); a.removeEventListener('pause', done);
     };
     a.addEventListener('ended', done); a.addEventListener('error', done); a.addEventListener('pause', done);
     return a;
+  }
+  // Hard-stop ALL audio (voices, queued voices, deferred SFX, lingering cheers, music) and release
+  // the elements. Called when a new round starts or the player leaves the game.
+  function stopAllAudio() {
+    [...liveAudio].forEach(a => { try { a.pause(); a.currentTime = 0; } catch {} });
+    liveAudio.clear();
+    voiceEl = null; nextVoice = null; afterVoiceSfx = null;
+    if (music) { try { music.pause(); } catch {} music = null; }
   }
 
   // `key` is the path under wwwroot/audio/, INCLUDING subdir, e.g. "game/chip-drop.mp3".
@@ -109,7 +119,8 @@ window.ArcadeAudio = (function () {
     setVolumes(s, v, m) { sfxVol = s; voiceVol = v; musicVol = m; if (music) music.volume = m; if (voiceEl) voiceEl.volume = v; },
     mute() { muted = true; this.stopMusic(); stopVoice(); },
     unmute() { muted = false; },
-    stats() { return { created: audCreated, live: audLive }; },   // TEMPORARY perf probe
+    stopAll() { stopAllAudio(); },
+    stats() { return { created: audCreated, live: liveAudio.size }; },   // TEMPORARY perf probe
   };
 })();
 
