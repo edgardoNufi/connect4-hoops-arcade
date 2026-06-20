@@ -13,35 +13,45 @@ window.ArcadeAudio = (function () {
   let nextVoice = null;
   let afterVoiceSfx = null;   // an SFX to fire once the voice queue fully drains (e.g. win cheer)
 
-  // Every play clones an <audio>; iOS frees these poorly, so we keep the live ones in a set and
-  // can stop+release them all on a round change (otherwise a 15s victory line keeps playing under
-  // the next game and new voices pile up behind it). `audCreated` is a cumulative counter for the probe.
-  let audCreated = 0;
-  const liveAudio = new Set();
-  function track(a) {
-    audCreated++; liveAudio.add(a);
-    const done = () => {
-      liveAudio.delete(a);
-      a.removeEventListener('ended', done); a.removeEventListener('error', done); a.removeEventListener('pause', done);
-    };
-    a.addEventListener('ended', done); a.addEventListener('error', done); a.addEventListener('pause', done);
-    return a;
+  // `key` is the path under wwwroot/audio/, INCLUDING subdir, e.g. "game/chip-drop.mp3".
+  function url(key) { return 'audio/' + key; }
+
+  // POOL, not clone-per-play. Cloning a fresh <audio> on every sound let elements accumulate and
+  // iOS frees them poorly → growing jank/freezes over a session. Instead each key keeps a small
+  // ring of reusable elements; we round-robin through them. Total elements are bounded (≈ keys ×
+  // POOL_MAX) and reused forever, so `audCreated` levels off instead of climbing without limit.
+  const POOL_MAX = 3;
+  const pool = {};       // key -> [HTMLAudioElement]
+  const poolNext = {};   // key -> next index to reuse
+  let audCreated = 0;    // probe: total elements ever created (now caps out)
+  function getEl(key) {
+    let arr = pool[key];
+    if (!arr) { arr = pool[key] = []; poolNext[key] = 0; }
+    if (arr.length < POOL_MAX) {
+      const el = arr.length === 0 ? load(key) : new Audio(url(key));  // first reuses the cached/preloaded one
+      audCreated++; arr.push(el);
+      return el;
+    }
+    const el = arr[poolNext[key]];
+    poolNext[key] = (poolNext[key] + 1) % arr.length;
+    return el;
   }
-  // Hard-stop ALL audio (voices, queued voices, deferred SFX, lingering cheers, music) and release
-  // the elements. Called when a new round starts or the player leaves the game.
+
+  // Hard-stop ALL audio (voices, queued voices, deferred SFX, lingering cheers, music). Called when
+  // a new round starts or the player leaves the game, so nothing bleeds into the next screen.
   function stopAllAudio() {
-    [...liveAudio].forEach(a => { try { a.pause(); a.currentTime = 0; } catch {} });
-    liveAudio.clear();
+    for (const key in pool) for (const a of pool[key]) { try { a.pause(); a.currentTime = 0; } catch {} }
     voiceEl = null; nextVoice = null; afterVoiceSfx = null;
     if (music) { try { music.pause(); } catch {} music = null; }
   }
 
-  // `key` is the path under wwwroot/audio/, INCLUDING subdir, e.g. "game/chip-drop.mp3".
-  function url(key) { return 'audio/' + key; }
-
   function sfxNow(key) {
-    try { const a = track(load(key).cloneNode()); a.volume = sfxVol; a.play().catch(() => {}); }
-    catch (e) { console.warn('[ArcadeAudio] sfx failed', key, e); }
+    try {
+      const a = getEl(key);
+      try { a.pause(); a.currentTime = 0; } catch {}
+      a.volume = sfxVol;
+      a.play().catch(() => {});
+    } catch (e) { console.warn('[ArcadeAudio] sfx failed', key, e); }
   }
 
   function load(key) {
@@ -55,7 +65,8 @@ window.ArcadeAudio = (function () {
 
   function startVoice(key) {
     try {
-      voiceEl = track(load(key).cloneNode());
+      voiceEl = getEl(key);
+      try { voiceEl.pause(); voiceEl.currentTime = 0; } catch {}
       voiceEl.volume = voiceVol;
       const advance = () => {
         voiceEl = null;
@@ -63,8 +74,9 @@ window.ArcadeAudio = (function () {
         if (n) { startVoice(n); }
         else if (afterVoiceSfx) { const k = afterVoiceSfx; afterVoiceSfx = null; sfxNow(k); }
       };
-      voiceEl.addEventListener('ended', advance);
-      voiceEl.addEventListener('error', advance);
+      // Property assignment (not addEventListener) so reusing a pooled element never stacks handlers.
+      voiceEl.onended = advance;
+      voiceEl.onerror = advance;
       voiceEl.play().catch(advance);
     } catch (e) { console.warn('[ArcadeAudio] voice failed', key, e); voiceEl = null; }
   }
@@ -120,7 +132,11 @@ window.ArcadeAudio = (function () {
     mute() { muted = true; this.stopMusic(); stopVoice(); },
     unmute() { muted = false; },
     stopAll() { stopAllAudio(); },
-    stats() { return { created: audCreated, live: liveAudio.size }; },   // TEMPORARY perf probe
+    stats() {   // TEMPORARY perf probe
+      let live = 0;
+      for (const key in pool) for (const a of pool[key]) if (!a.paused && !a.ended) live++;
+      return { created: audCreated, live };
+    },
   };
 })();
 
