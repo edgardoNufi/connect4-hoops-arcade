@@ -29,10 +29,13 @@
 .mob-sb-grip { color: rgba(255,255,255,.4); font-size: 11px; }
 
 .mob-board-area { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; }
-/* Board fits the smaller of available width and (available height → keeps 7:6, square cells). */
+/* Board keeps a fixed 7:6 ratio (deterministic height) so the flex:1 cells fill exactly and never
+   overflow; width/height both fit the available area; max-height is the safety net. */
 .mob-board-area > * {
   width: min(100%, calc((100dvh - 200px) * 7 / 6));
   max-width: 100%;
+  aspect-ratio: 7 / 6;
+  max-height: 100%;
 }
 
 .mob-narrator { flex: none; display: flex; justify-content: center; }

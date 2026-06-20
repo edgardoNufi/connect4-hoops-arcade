@@ -1,7 +1,7 @@
 @inherits SessionComponentBase
 
 <div style="position:relative;padding:@(FitContainer ? "2.5%" : "clamp(10px,1.8vh,20px)");border-radius:26px;background:var(--board);--wf:@WinFlashColor;box-shadow:0 0 0 4px #16259e, 0 16px 0 #0f1a78, 0 24px 44px rgba(0,0,0,.5), inset 0 0 30px rgba(255,255,255,.12);@BoardAnim">
-  <div style="display:flex;gap:@(FitContainer ? "2.5%" : "clamp(5px,1.1vw,14px)");@(FitContainer ? "align-items:stretch;" : "")">
+  <div style="display:flex;gap:@(FitContainer ? "3px" : "clamp(5px,1.1vw,14px)");@(FitContainer ? "align-items:stretch;height:100%;" : "")">
     @for (int col = 0; col < 7; col++)
     {
         <GameColumn Col="col" InteractionEnabled="InteractionEnabled" FitContainer="FitContainer" />
