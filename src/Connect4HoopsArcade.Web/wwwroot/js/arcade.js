@@ -211,20 +211,28 @@ window.ArcadePerf = (function () {
   // gap between two animation frames ≈ how long the thread was stuck. Works in EVERY browser
   // (incl. iOS Safari, where the Long Tasks API does not exist). Threshold 50ms = visible jank.
   const THRESHOLD = 50;
+  // Gaps longer than this are almost certainly the page being backgrounded/throttled (rAF pauses
+  // when hidden), NOT a real freeze — no Connect 4 interaction blocks the thread for seconds.
+  // We drop them so a locked screen / app-switch can't masquerade as a 50-second "freeze".
+  const ARTIFACT_CAP = 3000;
   let prev = performance.now();
+  // Returning from background produces one huge gap; reset the baseline so it isn't counted.
+  document.addEventListener('visibilitychange', () => { prev = performance.now(); });
   function tick(now) {
     const gap = now - prev;
     prev = now;
-    if (gap >= THRESHOLD) {
+    if (gap >= THRESHOLD && gap < ARTIFACT_CAP && !document.hidden) {
       const ms = Math.round(gap);
       tasks.push(ms); total += gap; last = ms;
       console.log('%c[perf] long frame ' + ms + 'ms', 'color:#ff9800', '(main thread blocked)');
       paint();
+    } else if (gap >= ARTIFACT_CAP) {
+      console.log('[perf] ignored ' + Math.round(gap) + 'ms gap (background/throttle, not a freeze)');
     }
     requestAnimationFrame(tick);
   }
   requestAnimationFrame(tick);
-  console.log('[perf] long-frame monitor ON (flags main-thread blocks >=' + THRESHOLD + 'ms)');
+  console.log('[perf] long-frame monitor ON (flags ' + THRESHOLD + '..' + ARTIFACT_CAP + 'ms blocks; ignores background)');
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', paint);
   else paint();
   return {
