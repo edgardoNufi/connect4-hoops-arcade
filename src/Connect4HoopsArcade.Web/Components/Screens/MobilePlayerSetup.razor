@@ -1,0 +1,54 @@
+@using Connect4HoopsArcade.Core.Primitives
+@using Connect4HoopsArcade.Core.Players
+@using Connect4HoopsArcade.Core.Rules
+@using Connect4HoopsArcade.Web.Components.Setup
+@inject GameSession Session
+
+<div class="mob-setup">
+  <div class="mob-setup-head">
+    <button @onclick="Session.GoMode" class="pill-btn">‹ Atrás</button>
+    <div class="font-display mob-setup-title">PERSONALIZA</div>
+    <div style="width:64px;"></div>
+  </div>
+
+  @if (IsTwoPlayer)
+  {
+    <div class="mob-tabs">
+      <button class="mob-tab @(_tab == 0 ? "on" : "")" @onclick="@(() => _tab = 0)">🔵 @Session.Players[0].Name</button>
+      <button class="mob-tab @(_tab == 1 ? "on" : "")" @onclick="@(() => _tab = 1)">🔴 @Session.Players[1].Name</button>
+    </div>
+  }
+
+  <div class="mob-setup-body">
+    @if (_tab == 0 || !IsTwoPlayer)
+    {
+      <PlayerSetupCard Player="Session.Players[0]" Index="0"
+                       TakenColorId="@(IsTwoPlayer ? Session.Players[1].ColorId : null)"
+                       OnChange="@(p => Session.SetPlayer(0, p))" />
+    }
+    else
+    {
+      <PlayerSetupCard Player="Session.Players[1]" Index="1"
+                       TakenColorId="@Session.Players[0].ColorId"
+                       OnChange="@(p => Session.SetPlayer(1, p))" />
+    }
+  </div>
+
+  <div class="mob-setup-foot">
+    @if (Warning != ColorWarning.None)
+    {
+      <div class="mob-warn">⚠ @ColorWarningMessages.Message(Warning)</div>
+    }
+    <button @onclick="Begin" disabled="@StartDisabled" class="font-display mob-play">¡JUGAR! ▶</button>
+  </div>
+</div>
+
+@code {
+    private int _tab;
+    private bool IsTwoPlayer => Session.Mode == GameMode.TwoPlayer;
+    private ColorWarning Warning => IsTwoPlayer
+        ? PlayValidator.CheckColors(Session.Players[0].ColorId, Session.Players[1].ColorId)
+        : ColorWarning.None;
+    private bool StartDisabled => Warning != ColorWarning.None;
+    private void Begin() { if (!StartDisabled) Session.BeginGame(); }
+}
