@@ -1,0 +1,10 @@
+<div class="starter-toggle">
+  <span class="starter-label">EMPIEZA</span>
+  <button type="button" class="seg-btn @(!CpuStarts ? "seg-btn--on" : "")" @onclick="@(() => OnChange.InvokeAsync(false))">Tú</button>
+  <button type="button" class="seg-btn @(CpuStarts ? "seg-btn--on" : "")" @onclick="@(() => OnChange.InvokeAsync(true))">CPU</button>
+</div>
+
+@code {
+    [Parameter] public bool CpuStarts { get; set; }
+    [Parameter] public EventCallback<bool> OnChange { get; set; }
+}

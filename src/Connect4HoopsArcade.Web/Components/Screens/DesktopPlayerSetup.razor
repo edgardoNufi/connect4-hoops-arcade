@@ -15,11 +15,13 @@
     <PlayerSetupCard Player="Session.Players[0]" Index="0"
                      TakenColorId="@(IsTwoPlayer ? Session.Players[1].ColorId : null)"
                      OnChange="@(p => Session.SetPlayer(0, p))"
-                     CpuLevel="Store.Current.CpuLevel" OnCpuLevelChange="SetCpuLevel" />
+                     CpuLevel="Store.Current.CpuLevel" OnCpuLevelChange="SetCpuLevel"
+                     CpuStarts="Store.Current.CpuStarts" OnCpuStartsChange="SetCpuStarts" />
     <PlayerSetupCard Player="Session.Players[1]" Index="1"
                      TakenColorId="@(IsTwoPlayer ? Session.Players[0].ColorId : null)"
                      OnChange="@(p => Session.SetPlayer(1, p))"
-                     CpuLevel="Store.Current.CpuLevel" OnCpuLevelChange="SetCpuLevel" />
+                     CpuLevel="Store.Current.CpuLevel" OnCpuLevelChange="SetCpuLevel"
+                     CpuStarts="Store.Current.CpuStarts" OnCpuStartsChange="SetCpuStarts" />
   </div>
 
   <div style="flex:none;display:flex;flex-direction:column;align-items:center;gap:10px;padding:6px 24px 22px;">
@@ -48,6 +50,12 @@
     private async Task SetCpuLevel(Connect4HoopsArcade.Core.Primitives.CpuDifficulty lvl)
     {
         Store.Current.CpuLevel = lvl;
+        await Store.SaveAsync();
+    }
+
+    private async Task SetCpuStarts(bool cpuStarts)
+    {
+        Store.Current.CpuStarts = cpuStarts;
         await Store.SaveAsync();
     }
 }

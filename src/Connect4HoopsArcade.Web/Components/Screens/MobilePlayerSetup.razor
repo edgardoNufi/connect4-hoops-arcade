@@ -39,8 +39,11 @@
     @if (!IsTwoPlayer)
     {
       <div class="mob-cpu-box">
-        <span class="mob-cpu-box-label">🤖 NIVEL CPU</span>
-        <CpuLevelSelector Level="Store.Current.CpuLevel" OnChange="SetCpuLevel" />
+        <div class="mob-cpu-row">
+          <span class="mob-cpu-box-label">🤖 NIVEL CPU</span>
+          <CpuLevelSelector Level="Store.Current.CpuLevel" OnChange="SetCpuLevel" />
+        </div>
+        <StarterToggle CpuStarts="Store.Current.CpuStarts" OnChange="SetCpuStarts" />
       </div>
     }
     @if (Warning != ColorWarning.None)
@@ -62,6 +65,12 @@
     private async Task SetCpuLevel(Connect4HoopsArcade.Core.Primitives.CpuDifficulty lvl)
     {
         Store.Current.CpuLevel = lvl;
+        await Store.SaveAsync();
+    }
+
+    private async Task SetCpuStarts(bool cpuStarts)
+    {
+        Store.Current.CpuStarts = cpuStarts;
         await Store.SaveAsync();
     }
 }

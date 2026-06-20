@@ -31,6 +31,7 @@ public sealed class GameSession
 
     public GameMode Mode { get; private set; } = GameMode.TwoPlayer;
     public CpuDifficulty CpuLevel { get; set; } = CpuDifficulty.Amateur;
+    public bool CpuStarts { get; set; }   // 1P: when true the CPU plays the first move. Persisted setting.
     public AnimationSpeed Speed { get; set; } = AnimationSpeed.Normal;
     // Persistent announcer tone (pushed by SettingsStore.ApplyAsync). NOT reset between games.
     public Connect4HoopsArcade.Web.Models.NarratorTone NarratorTone { get; set; }
@@ -119,7 +120,7 @@ public sealed class GameSession
         Screen = AppScreen.Game;
         Notify();
         GameStarted?.Invoke();
-        ArmIdle();
+        StartTurnFlow();
     }
 
     public void Rematch()
@@ -127,14 +128,14 @@ public sealed class GameSession
         ResetState($"¡Revancha! Turno de {Players[0].Name}", resetScores: false);
         Screen = AppScreen.Game;
         Notify();
-        ArmIdle();
+        StartTurnFlow();
     }
 
     public void ResetBoard()
     {
         ResetState($"Tablero reiniciado. Turno de {Players[0].Name}", resetScores: false);
         Notify();
-        ArmIdle();
+        StartTurnFlow();
     }
 
     public void ChangePlayers() { CancelIdle(); Winner = null; Screen = AppScreen.Setup; Notify(); }
@@ -143,7 +144,7 @@ public sealed class GameSession
     {
         CancelIdle();
         Board = new GameBoard();
-        Current = 0;
+        Current = Mode == GameMode.OnePlayer && CpuStarts ? 1 : 0;   // CPU (index 1) may take the first move
         Winner = null; WinBy = "";
         WinningCells = new();
         LastDrop = null; ErrorCol = -1;
@@ -159,6 +160,29 @@ public sealed class GameSession
         BrokenStreakLength = 0;                        // transient: only meaningful inside a MatchEnded handler
         Narrator = narrator;
         RoundStarted?.Invoke();
+    }
+
+    // Starts the round's turn flow: if the CPU moves first, run its turn; otherwise arm the idle nudge.
+    private void StartTurnFlow()
+    {
+        if (CpuTurn) _ = RunCpuTurn();
+        else ArmIdle();
+    }
+
+    // Runs the CPU's turn (think delay → choose → drop). Used after a human move and when the CPU starts.
+    private async Task RunCpuTurn()
+    {
+        IsBusy = true; IsThinking = true; Notify();
+        await Task.Delay(750);
+        // Bail if the player reset/resigned/navigated (or it's no longer the CPU's turn) during the delay.
+        if (Winner != null || Screen != AppScreen.Game || !CpuTurn)
+        {
+            IsThinking = false; IsBusy = false; Notify();
+            return;
+        }
+        int cpuCol = CpuStrategy.ChooseColumn(Board, CpuLevel);
+        IsThinking = false; IsBusy = false;
+        if (cpuCol >= 0) await Place(cpuCol);
     }
 
     public void Resign()
@@ -254,18 +278,7 @@ public sealed class GameSession
 
         if (CpuTurn)
         {
-            IsThinking = true; Notify();
-            await Task.Delay(750);
-            // Bail if the player reset/resigned/navigated during the think delay, so this
-            // stale continuation can't drop a CPU chip onto a fresh or abandoned board.
-            if (Winner != null || Screen != AppScreen.Game)
-            {
-                IsThinking = false; IsBusy = false; Notify();
-                return;
-            }
-            int cpuCol = CpuStrategy.ChooseColumn(Board, CpuLevel);
-            IsThinking = false; IsBusy = false;
-            if (cpuCol >= 0) await Place(cpuCol);
+            await RunCpuTurn();
         }
         else
         {

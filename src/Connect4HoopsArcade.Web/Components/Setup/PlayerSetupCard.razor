@@ -12,6 +12,7 @@
       @if (Player.IsCpu && CpuLevel is not null)
       {
           <CpuLevelSelector Level="CpuLevel.Value" OnChange="OnCpuLevelChange" />
+          <StarterToggle CpuStarts="CpuStarts" OnChange="OnCpuStartsChange" />
       }
       else
       {
@@ -33,6 +34,8 @@
     [Parameter] public EventCallback<PlayerConfig> OnChange { get; set; }
     [Parameter] public CpuDifficulty? CpuLevel { get; set; }
     [Parameter] public EventCallback<CpuDifficulty> OnCpuLevelChange { get; set; }
+    [Parameter] public bool CpuStarts { get; set; }
+    [Parameter] public EventCallback<bool> OnCpuStartsChange { get; set; }
 
     private string Hex => ColorCatalog.HexOf(Player.ColorId);
     private string Tag => Player.IsCpu ? "CPU" : $"JUGADOR {Index + 1}";
