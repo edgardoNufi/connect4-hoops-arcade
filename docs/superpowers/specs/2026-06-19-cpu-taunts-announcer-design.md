@@ -39,8 +39,10 @@ colateral de revancha/reinicio.
 ### 1.1 Ajuste de usuario — `NarratorTone`
 
 `enum NarratorTone { Familiar, Picante, Silencioso }`, **default `Familiar`**. Vive en `GameSession` (como
-`Speed`/`CpuLevel`), se persiste vía `SettingsStore` y se expone en `SettingsPanel` (control segmentado,
-estilo `seg-btn`). Efecto en `NarratorService`:
+`Speed`/`CpuLevel`), se expone en `SettingsPanel` (control segmentado, estilo `seg-btn`). Es una
+**preferencia persistente** (ajuste 2): se guarda/lee del `SettingsStore` y **NO** se reinicia con
+`BeginGame`/`Rematch`/`ResetBoard` (a diferencia de la racha, que sí se resetea en `BeginGame`). Efecto en
+`NarratorService`:
 
 - **Silencioso:** el locutor no reproduce **ninguna** voz (ni burlas ni narración neutral). Los SFX
   (chip-drop, turn-change, column-full, win cheer, button-click) siguen sonando.
@@ -138,8 +140,10 @@ Para que **no crezca como clase gigante**, delega en piezas chicas y conserva ha
    El cooldown de `column-full` es **independiente** y puede seguir corto (~800 ms).
 4. **No repetir** la misma frase dos veces seguidas (por categoría).
 5. **Prioridad `cpu-threat` > `cpu-idle`** (ajuste 7). La amenaza es un evento de juego importante; el idle es relleno.
-   - `cpu-threat`: puede sonar cada vez que el CPU arma un tres-en-línea, sujeto **solo** al cooldown de 25 s.
-     **No** tiene tope por partida y **nunca** queda bloqueada por un idle previo.
+   - `cpu-threat`: puede sonar cada vez que el CPU arma un tres-en-línea, sujeto al cooldown de 25 s.
+     **No** tiene tope por partida y **nunca** queda bloqueada por un idle previo. Pero **sí** se inhibe si
+     (ajuste 3) la partida ya terminó (`Winner != null`) o hay una voz de **cierre** en cola
+     (cpu-win / victoria / empate / streak-break / beat-cpu): nunca debe pisar el desenlace.
    - `cpu-idle`: suena **máx. 1 vez por partida** y se **suprime** si hubo una `cpu-threat` reciente
      (dentro del cooldown). El idle **no consume** la posibilidad de que suene una amenaza después.
 6. Las líneas de **cierre** (CPU gana, romper racha, ganarle al CPU) están exentas de cooldown/tope
@@ -226,7 +230,7 @@ menos** (mínimo `-01` por celda para arrancar) o más (solo agrega `-04`, `-05`
 
 | ☐ | Archivo | Cuándo | Frase |
 |---|---|---|---|
-| ☐ | `streak-break-01.mp3` | Rompes racha ≥2 | ¡POR FIN! Le rompiste la racha a la máquina. |
+| ☐ | `streak-break-01.mp3` | Rompes racha ≥2 | ¡Eso! Le rompiste la racha a la máquina. |
 | ☐ | `streak-break-02.mp3` | Rompes racha ≥2 | ¡Ahí está! Le quitaste el invicto. |
 | ☐ | `streak-break-03.mp3` | Rompes racha ≥2 | ¡Frenaste a la máquina! Bien jugado. |
 | ☐ | `beat-cpu-01.mp3` | Le ganas, racha <2 | ¡Le ganaste a la máquina! ¿Otra? |
@@ -260,6 +264,10 @@ Arreglos por celda/categoría: `CpuThreat[Neutral|Light|Confident|Boss]`, `CpuId
 (Nombres finales a definir en el plan; el mapeo nivel→arreglo vive en la tabla `CpuTauntLines`.)
 
 ## 6. Pruebas y verificación
+
+**Orden de implementación (ajuste 5):** primero los tests de `Core` —`CpuTauntPolicyTests` y
+`VoicePickerTests`— (escribir, ver fallar, implementar), y **después** cablear `GameSession` y
+`NarratorService`.
 
 - **Core (TDD):** `CpuTauntPolicyTests` cubre la sección 3 (escribir primero, ver fallar, implementar).
 - **`VoicePicker`:** test puro de no-repetición (último índice nunca se repite cuando `count > 1`).
