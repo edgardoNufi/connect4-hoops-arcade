@@ -37,6 +37,13 @@ Solution file is `Connect4HoopsArcade.slnx` (new XML format — `.slnx`, not `.s
 - **One move pipeline:** every input (click, keyboard, sensor) goes `IMoveSource → MoveRouter → GameSession.TryDrop`.
   Never call `GameSession.TryDrop` directly from a component — go through `MoveRouter` (it gates by screen,
   play-mode, and debounce).
+- **Responsive: dedicated mobile views.** `IViewportService` (JS interop in `Services/`, `window.ArcadeViewport`)
+  exposes size/breakpoint/orientation + `OnViewportChanged`. `AppShell` renders `MobileGameView`/
+  `MobilePlayerSetup` on phones (`IsMobile`) and `DesktopGameView`/`DesktopPlayerSetup` otherwise — **same
+  `GameSession`/`MoveRouter`/`Core`, no duplicated game logic** (mobile tap-to-drop reuses `GameColumn`→`MoveRouter`).
+  Mobile board = `BoardGrid FitContainer="true"` (square cells, `aspect-ratio:1`, fit to screen). Phones never get
+  the "rotate your device" wall. Mobile layout/styles live in `wwwroot/css/mobile.css` (`100dvh` + `env(safe-area-inset-*)`).
+  Mobile in-game = top tap-bar scoreboard (opens an `ActionSheet` with Reiniciar/Rendirse/Ajustes) + centered board + narrator.
 
 ## Key patterns / gotchas (learned the hard way)
 - **The board type is `GameBoard`, NOT `Board`.** A class named `Board` inside namespace `...Core.Board`
@@ -144,8 +151,9 @@ Ordered by the user's priority. Brainstorm/design before building each (see brai
 
 ## Status (update as you go)
 MVP complete (tag `v0.1.0-mvp`) + post-MVP polish: leaner audio, global button click, minimax CPU,
-full-screen draw screen, random win cheers, Cloudflare auto-deploy, streak-aware CPU taunts + `NarratorTone`.
+full-screen draw screen, random win cheers, Cloudflare auto-deploy, streak-aware CPU taunts + `NarratorTone`,
+**mobile-first responsive redesign (dedicated mobile views via `IViewportService`)**.
 All 51 Core tests green.
-**Next focus: item 1 (mobile-first responsive redesign).**
+**Next focus: item 2 (cast / big-screen projection — companion model reusing `IMoveSource`).**
 **Note:** CPU-taunt voice files are produced separately (spec §5.1); until they land, taunt paths are silent
 (harmless — `AudioService` swallows missing-file errors). Manual ear-verification pending the audio files.
