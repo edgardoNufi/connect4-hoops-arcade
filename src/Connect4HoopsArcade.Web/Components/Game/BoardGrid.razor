@@ -1,10 +1,10 @@
 @inherits SessionComponentBase
 
-<div style="position:relative;padding:clamp(10px,1.8vh,20px);border-radius:26px;background:var(--board);--wf:@WinFlashColor;box-shadow:0 0 0 4px #16259e, 0 16px 0 #0f1a78, 0 24px 44px rgba(0,0,0,.5), inset 0 0 30px rgba(255,255,255,.12);@BoardAnim">
-  <div style="display:flex;gap:clamp(5px,1.1vw,14px);">
+<div style="position:relative;padding:@(FitContainer ? "2.5%" : "clamp(10px,1.8vh,20px)");border-radius:26px;background:var(--board);--wf:@WinFlashColor;box-shadow:0 0 0 4px #16259e, 0 16px 0 #0f1a78, 0 24px 44px rgba(0,0,0,.5), inset 0 0 30px rgba(255,255,255,.12);@BoardAnim">
+  <div style="display:flex;gap:@(FitContainer ? "2.5%" : "clamp(5px,1.1vw,14px)");@(FitContainer ? "align-items:stretch;" : "")">
     @for (int col = 0; col < 7; col++)
     {
-        <GameColumn Col="col" InteractionEnabled="InteractionEnabled" />
+        <GameColumn Col="col" InteractionEnabled="InteractionEnabled" FitContainer="FitContainer" />
     }
   </div>
   @if (Session.Winner != null && Session.Screen == Connect4HoopsArcade.Web.State.AppScreen.Game)
@@ -16,6 +16,7 @@
 
 @code {
     [Parameter] public bool InteractionEnabled { get; set; } = true;
+    [Parameter] public bool FitContainer { get; set; }
     private string WinFlashColor => Session.Winner is int w
         ? Connect4HoopsArcade.Core.Catalog.ColorCatalog.HexOf(Session.Players[w].ColorId)
         : "#ffd23f";

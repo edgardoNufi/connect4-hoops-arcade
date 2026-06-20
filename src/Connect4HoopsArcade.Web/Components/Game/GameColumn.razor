@@ -4,12 +4,13 @@
 @inject Connect4HoopsArcade.Web.Input.MoveRouter Router
 
 <div @onclick="Drop"
-     style="display:flex;flex-direction:column;gap:clamp(5px,1.1vw,14px);border-radius:14px;padding:2px;cursor:@Cursor;background:@ColBg;box-shadow:@ColGlow;@ShakeStyle">
+     style="display:flex;flex-direction:column;gap:@(FitContainer ? "2.5%" : "clamp(5px,1.1vw,14px)");border-radius:14px;padding:2px;cursor:@Cursor;background:@ColBg;box-shadow:@ColGlow;@(FitContainer ? "flex:1;min-width:0;" + ShakeStyle : ShakeStyle)">
   @for (int row = 5; row >= 0; row--)
   {
       var r = row;
       var occ = OccupantAt(r);
       <GameCell Occupant="occ"
+                FitContainer="FitContainer"
                 IsWinning="Session.WinningCells.Contains(new BoardPosition(Col, r))"
                 DimmedByWin="@(Session.Winner != null && !Session.WinningCells.Contains(new BoardPosition(Col, r)))"
                 JustDropped="@(Session.LastDrop is { } d && d.Col == Col && d.Row == r && Session.Winner == null)"
@@ -20,6 +21,7 @@
 @code {
     [Parameter] public int Col { get; set; }
     [Parameter] public bool InteractionEnabled { get; set; } = true;
+    [Parameter] public bool FitContainer { get; set; }
 
     private bool Full => Session.Board.IsColumnFull(Col);
     private bool Playable => InteractionEnabled && Session.Winner == null && !Session.CpuTurn && !Full;
