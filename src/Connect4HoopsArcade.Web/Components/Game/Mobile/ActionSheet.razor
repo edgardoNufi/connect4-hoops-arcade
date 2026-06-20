@@ -1,0 +1,23 @@
+@inherits SessionComponentBase
+
+@if (Open)
+{
+  <div class="mob-scrim" @onclick="Close"></div>
+  <div class="mob-sheet" @onclick:stopPropagation="true">
+    <div class="mob-sheet-grip"></div>
+    <button class="mob-sheet-item" @onclick="Reset" disabled="@Session.IsBusy">🔄 Reiniciar</button>
+    <button class="mob-sheet-item" @onclick="Resign" disabled="@Session.IsBusy">🏳️ Rendirse</button>
+    <button class="mob-sheet-item" @onclick="Settings">⚙ Ajustes</button>
+    <button class="mob-sheet-item cancel" @onclick="Close">Cancelar</button>
+  </div>
+}
+
+@code {
+    [Parameter] public bool Open { get; set; }
+    [Parameter] public EventCallback OnClose { get; set; }
+
+    private Task Close() => OnClose.InvokeAsync();
+    private async Task Reset() { Session.ResetBoard(); await Close(); }
+    private async Task Resign() { Session.Resign(); await Close(); }
+    private async Task Settings() { Session.OpenSettings(); await Close(); }
+}

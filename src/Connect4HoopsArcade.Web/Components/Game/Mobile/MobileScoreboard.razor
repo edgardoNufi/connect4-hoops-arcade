@@ -1,0 +1,24 @@
+@using Connect4HoopsArcade.Core.Catalog
+@inherits SessionComponentBase
+
+<button @onclick="OnTap" class="mob-scoreboard" aria-label="Abrir opciones">
+  <div class="mob-sb-side @(Active(0) ? "on" : "")">
+    <div class="mob-sb-ava"><AvatarSvg ColorId="@P(0).ColorId" Face="P(0).Face" Accessory="P(0).Accessory" Glow="@Active(0)" /></div>
+    <div class="mob-sb-meta"><span class="mob-sb-name" style="color:@Hex(0)">@P(0).Name</span><span class="mob-sb-score">@Session.Scores[0]</span></div>
+  </div>
+  <div class="mob-sb-mid">@TurnText <span class="mob-sb-grip">⋯</span></div>
+  <div class="mob-sb-side right @(Active(1) ? "on" : "")">
+    <div class="mob-sb-meta right"><span class="mob-sb-name" style="color:@Hex(1)">@P(1).Name</span><span class="mob-sb-score">@Session.Scores[1]</span></div>
+    <div class="mob-sb-ava"><AvatarSvg ColorId="@P(1).ColorId" Face="P(1).Face" Accessory="P(1).Accessory" Glow="@Active(1)" /></div>
+  </div>
+</button>
+
+@code {
+    [Parameter] public EventCallback OnTap { get; set; }
+    private Connect4HoopsArcade.Core.Players.PlayerConfig P(int i) => Session.Players[i];
+    private string Hex(int i) => ColorCatalog.HexOf(P(i).ColorId);
+    private bool Active(int i) => Session.Current == i && Session.Winner == null;
+    private string TurnText => Session.Winner != null ? "🏆"
+        : Session.CpuTurn ? "⏳"
+        : "● TU TURNO";
+}
