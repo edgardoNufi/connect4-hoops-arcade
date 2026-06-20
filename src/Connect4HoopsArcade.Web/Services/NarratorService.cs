@@ -137,11 +137,12 @@ public sealed class NarratorService : IDisposable
     {
         _closingVoiceActive = true;
 
-        // 1P, CPU won → taunt, NO win cheer, a rotated loss-sting SFX (plays even if voice is muted).
+        // 1P, CPU won → taunt voice FIRST, then a rotated loss-sting AFTER the voice (no win cheer).
+        // (Sin voz / Silencioso → PlayRandomSfxAfterVoiceAsync plays the sting immediately.)
         if (mode == GameMode.OnePlayer && winner is int cpuW && _session.Players[cpuW].IsCpu)
         {
-            await _audio.PlaySfxAsync(AudioKeys.LossSting[Rng.Next(AudioKeys.LossSting.Length)]);
             if (VoiceOn) await Taunt("cpu-win", CpuTauntLines.CpuWin(EffectiveLevel()), interrupt: true);
+            await _audio.PlayRandomSfxAfterVoiceAsync(AudioKeys.LossSting);
             return;
         }
 
@@ -169,9 +170,9 @@ public sealed class NarratorService : IDisposable
             return;
         }
 
-        // Draw (either mode).
-        await _audio.PlaySfxAsync(AudioKeys.DrawSfx);
+        // Draw (either mode): voice FIRST, then the draw sting AFTER it finishes.
         if (VoiceOn) await _audio.PlayRandomVoiceAsync(AudioKeys.DrawV, interrupt: true);
+        await _audio.PlaySfxAfterVoiceAsync(AudioKeys.DrawSfx);
     }
 
     public void Dispose()
