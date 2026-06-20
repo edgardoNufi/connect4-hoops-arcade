@@ -98,9 +98,14 @@ Deliberate choices the user made (keep unless they say otherwise):
 
 ## CPU AI
 `Core/Ai/CpuStrategy.cs` — **minimax + alpha-beta** with a window-based evaluation (4-in-a-row potential +
-centre control). Depth: **Sharp 5, Normal 4** (Sharp is the default `GameSession.CpuLevel`); **Chill** is
-deliberately weak (beatable). Always takes an immediate win; the search blocks threats and never hands a
-free win. There is no in-UI difficulty selector yet (possible future add).
+centre control). Difficulty is a **6-level ladder** `CpuDifficulty { Novato, Principiante, Amateur, Titular,
+Estrella, MVP }` mapped to search depth via `DepthFor` (Novato = 0 = loose: takes obvious wins, blocks ~50%,
+else random; 1..5 = minimax depth). Always takes an immediate win at every level. The level is a **persisted
+setting** (`GameSettings.CpuLevel`, default **Amateur**) pushed to `GameSession.CpuLevel` by
+`SettingsStore.ApplyAsync`, chosen on the **setup screen** via the shared `CpuLevelSelector` stepper
+(desktop: inside the CPU card at the name slot; mobile: a yellow box above PLAY; **1P only**). Not in Settings.
+Note: the eval already penalises the opponent's open-3s, so even depth-1 tends to block obvious threats —
+the low levels are weak by *shallow lookahead* (miss traps/forced lines), not by ignoring blocks.
 
 ## Conventions
 - PascalCase types/methods, `I`-prefixed interfaces, file name == type name. English code identifiers;
@@ -152,8 +157,9 @@ Ordered by the user's priority. Brainstorm/design before building each (see brai
 ## Status (update as you go)
 MVP complete (tag `v0.1.0-mvp`) + post-MVP polish: leaner audio, global button click, minimax CPU,
 full-screen draw screen, random win cheers, Cloudflare auto-deploy, streak-aware CPU taunts + `NarratorTone`,
-**mobile-first responsive redesign (dedicated mobile views via `IViewportService`)**.
+mobile-first responsive redesign (dedicated mobile views via `IViewportService`),
+**6-level CPU difficulty selector on the setup screen**.
 All 51 Core tests green.
-**Next focus: item 2 (cast / big-screen projection — companion model reusing `IMoveSource`).**
+**Next focus: item 2 (cast / big-screen projection) or item 4 (ESP32 sensor) — user's call.**
 **Note:** CPU-taunt voice files are produced separately (spec §5.1); until they land, taunt paths are silent
 (harmless — `AudioService` swallows missing-file errors). Manual ear-verification pending the audio files.
