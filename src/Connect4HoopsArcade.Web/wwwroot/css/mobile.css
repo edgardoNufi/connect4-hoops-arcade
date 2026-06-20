@@ -108,3 +108,38 @@
   padding: 10px 12px; color: #fff; font-size: 13px; font-weight: 700; line-height: 1.35;
   box-shadow: 0 10px 24px rgba(0,0,0,.5); cursor: pointer;
 }
+
+/* ---- In-game: landscape (phone rotated) ---- */
+.mob-game.landscape { flex-direction: row; align-items: stretch; gap: 10px; }
+
+/* Narrow left column: as small as legibility allows so the board gets the rest. */
+.mob-game.landscape .mob-side {
+  flex: 0 0 auto; width: clamp(122px, 26vw, 190px);
+  display: flex; flex-direction: column; gap: 8px; min-height: 0;
+}
+
+/* Compact, vertically-stacked scoreboard in the column. */
+.mob-game.landscape .mob-scoreboard { flex: none; flex-direction: column; gap: 6px; padding: 8px; }
+.mob-game.landscape .mob-sb-side,
+.mob-game.landscape .mob-sb-side.right { justify-content: center; opacity: 1; }
+.mob-game.landscape .mob-sb-meta,
+.mob-game.landscape .mob-sb-meta.right { align-items: center; }
+.mob-game.landscape .mob-sb-name { max-width: none; }
+
+.mob-game.landscape .mob-side-narrator { flex: 1; min-height: 0; display: flex; align-items: center; }
+.mob-game.landscape .mob-side-narrator > * { margin-top: 0 !important; }
+.mob-game.landscape .mob-side-narrator :where(span) { white-space: normal !important; }
+
+.mob-game.landscape .mob-side-actions { flex: none; display: flex; flex-direction: column; gap: 6px; }
+.mob-side-btn {
+  cursor: pointer; text-align: center; font-weight: 800; font-size: 13px; color: #fff;
+  background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12);
+  border-radius: 10px; padding: 9px 8px;
+}
+.mob-side-btn:disabled { opacity: .4; }
+
+/* Board fills all remaining width; height-driven so it stays as big as possible at 7:6. */
+.mob-game.landscape .mob-board-area { flex: 1; min-width: 0; }
+.mob-game.landscape .mob-board-area > * {
+  height: 100%; width: auto; max-width: 100%; aspect-ratio: 7 / 6;
+}
