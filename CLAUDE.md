@@ -101,6 +101,34 @@ often lands before hydration (stays on splash). Re-click after it's loaded. A hu
 hydrates in ~2–3s and is fine. The console line "Debugging hotkey: Shift+Alt+D" is normal; Chrome-extension
 "message channel closed" errors are noise, not app errors.
 
+## Roadmap / agreed pending work
+Ordered by the user's priority. Brainstorm/design before building each (see brainstorming skill).
+
+1. **Mobile-first responsive redesign (TOP PRIORITY).** The phone IS the primary device — the app must be
+   fully playable and good-looking on phones. Tested on an **iPhone 17 Pro Max: not adaptive** — the board
+   doesn't fit, top/bottom get cut off, and the current `.rotate-hint` just forces landscape instead of
+   adapting. Desktop browser is great; phone is not. Rework the layout so it adapts to phone viewports
+   (portrait-playable, not a "rotate your device" wall). This also makes screen-mirroring to a TV look right.
+
+2. **Cast / big-screen projection.** Goal: open on the phone and have the GAME fill a TV like a video app
+   (phone as controller), not just mirror the small portrait phone screen.
+   **Honest constraint:** iOS Safari AirPlay can only send `<video>/<audio>` elements to AirPlay — there is
+   **no web API to AirPlay an arbitrary app UI** as an independent display. So today AirPlay just mirrors the
+   phone. Realistic paths to evaluate:
+   - (a) **Excellent responsive layout + Fullscreen API + orientation handling** so the mirrored view looks
+     good on the TV (cheapest; depends on item 1).
+   - (b) **Google Cast / Presentation API** (Chrome + Chromecast) for a true second screen — not AirPlay/Safari.
+   - (c) **Companion model:** the TV browser runs the game *display*; the phone is a *controller* that sends
+     moves over WebSocket. This **reuses the existing `IMoveSource`/sensor abstraction** — a phone controller
+     is just another move source, like the ESP32 would be. Likely the most robust route for the user's vision.
+   Decide the approach in a dedicated brainstorming session before building.
+
+3. **Difficulty selector UI** (Chill / Normal / Sharp) in Settings — the AI already supports all three.
+4. **Physical sensor (ESP32 / WebSocket) integration** — `IMoveSource`/`SensorConnectionService` are ready;
+   only the real transport is stubbed.
+5. (Optional) background-music toggle / re-enable, and theme switching — both deferred earlier on purpose.
+
 ## Status (update as you go)
 MVP complete (tag `v0.1.0-mvp`) + post-MVP polish: leaner audio, global button click, minimax CPU,
 full-screen draw screen, random win cheers, Cloudflare auto-deploy. All 36 Core tests green.
+**Next focus: item 1 (mobile-first responsive redesign).**
