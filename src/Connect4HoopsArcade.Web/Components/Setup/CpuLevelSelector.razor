@@ -1,0 +1,19 @@
+@using Connect4HoopsArcade.Core.Primitives
+@using Connect4HoopsArcade.Web.Services
+
+<div class="cpu-level-sel">
+  <button type="button" class="cpu-level-arrow" @onclick="Prev" disabled="@IsMin" aria-label="Nivel más fácil">◀</button>
+  <div class="cpu-level-name">@CpuLevelLabels.Name(Level)</div>
+  <button type="button" class="cpu-level-arrow" @onclick="Next" disabled="@IsMax" aria-label="Nivel más difícil">▶</button>
+</div>
+
+@code {
+    [Parameter] public CpuDifficulty Level { get; set; }
+    [Parameter] public EventCallback<CpuDifficulty> OnChange { get; set; }
+
+    private bool IsMin => Level == CpuDifficulty.Novato;
+    private bool IsMax => Level == CpuDifficulty.MVP;
+
+    private Task Prev() => IsMin ? Task.CompletedTask : OnChange.InvokeAsync(Level - 1);
+    private Task Next() => IsMax ? Task.CompletedTask : OnChange.InvokeAsync(Level + 1);
+}
