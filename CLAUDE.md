@@ -106,6 +106,10 @@ setting** (`GameSettings.CpuLevel`, default **Amateur**) pushed to `GameSession.
 (desktop: inside the CPU card at the name slot; mobile: a yellow box above PLAY; **1P only**). Not in Settings.
 Note: the eval already penalises the opponent's open-3s, so even depth-1 tends to block obvious threats —
 the low levels are weak by *shallow lookahead* (miss traps/forced lines), not by ignoring blocks.
+**Who starts (1P):** persisted `GameSettings.CpuStarts` (default = you) → `GameSession.CpuStarts`; `ResetState`
+sets `Current = CpuStarts ? 1 : 0`, and `StartTurnFlow()` (called from BeginGame/Rematch/ResetBoard) runs the
+CPU's first move via the extracted `RunCpuTurn()` when the CPU leads. UI: a `StarterToggle` (Tú/CPU) next to
+the level selector (same desktop/mobile spots), 1P only.
 
 ## Conventions
 - PascalCase types/methods, `I`-prefixed interfaces, file name == type name. English code identifiers;
@@ -120,6 +124,10 @@ the low levels are weak by *shallow lookahead* (miss traps/forced lines), not by
 `build.sh` (repo root, executable, LF) installs the .NET 10 SDK then `dotnet publish -o output`.
 Cloudflare settings: Framework preset **None**, Build command **`./build.sh`**, Output dir **`output/wwwroot`**,
 Root **`/`**, no env vars needed. If `.m4a` doesn't play in prod, add a `_headers` to force `audio/mp4`.
+**Build version tag:** `build.sh` stamps `__BUILD_VERSION__` in the published `index.html` with
+`${CF_PAGES_COMMIT_SHA:0:7} · <UTC date>` (fallback git short SHA / `local`); shown by the dim fixed-corner
+`.build-tag` (a tiny inline script shows `dev` locally). Reload the live site and check the corner tag to tell
+when a deploy finished / which build is live.
 
 ## Testing in a browser (heads-up)
 Driving the app via the automation browser, **WASM hydration can take >6–7s** and the first scripted click
@@ -158,7 +166,7 @@ Ordered by the user's priority. Brainstorm/design before building each (see brai
 MVP complete (tag `v0.1.0-mvp`) + post-MVP polish: leaner audio, global button click, minimax CPU,
 full-screen draw screen, random win cheers, Cloudflare auto-deploy, streak-aware CPU taunts + `NarratorTone`,
 mobile-first responsive redesign (dedicated mobile views via `IViewportService`),
-**6-level CPU difficulty selector on the setup screen**.
+6-level CPU difficulty selector on the setup screen, **"who starts" toggle (1P), build-version corner tag**.
 All 51 Core tests green.
 **Next focus: item 2 (cast / big-screen projection) or item 4 (ESP32 sensor) — user's call.**
 **Note:** CPU-taunt voice files are produced separately (spec §5.1); until they land, taunt paths are silent
