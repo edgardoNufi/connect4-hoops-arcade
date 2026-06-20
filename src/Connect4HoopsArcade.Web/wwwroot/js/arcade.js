@@ -308,3 +308,31 @@ window.ArcadePerf = (function () {
     reset() { tasks.length = 0; total = 0; last = 0; paint(); console.log('[perf] counters reset'); },
   };
 })();
+
+// Fullscreen control. The Fullscreen API works on Android Chrome, desktop, and iPad Safari, but NOT
+// iPhone Safari — there the only real fullscreen is "Add to Home Screen" (PWA standalone, see index.html).
+window.ArcadeFullscreen = {
+  _ref: null,
+  isApiSupported() { return !!(document.fullscreenEnabled || document.webkitFullscreenEnabled); },
+  isActive() { return !!(document.fullscreenElement || document.webkitFullscreenElement); },
+  isIOSPhone() { return /iPhone|iPod/.test(navigator.userAgent || '') && !this.isApiSupported(); },
+  async toggle() {
+    try {
+      if (this.isActive()) {
+        if (document.exitFullscreen) await document.exitFullscreen();
+        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+      } else {
+        const el = document.documentElement;
+        if (el.requestFullscreen) await el.requestFullscreen();
+        else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+      }
+    } catch (e) { /* user-gesture / unsupported: ignore, state reported below */ }
+    return this.isActive();
+  },
+  register(dotNetRef) {
+    this._ref = dotNetRef;
+    const notify = () => { if (this._ref) this._ref.invokeMethodAsync('OnFullscreenChanged', this.isActive()); };
+    document.addEventListener('fullscreenchange', notify);
+    document.addEventListener('webkitfullscreenchange', notify);
+  },
+};
