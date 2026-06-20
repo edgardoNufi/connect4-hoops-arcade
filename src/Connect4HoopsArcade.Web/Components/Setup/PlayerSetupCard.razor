@@ -9,9 +9,16 @@
     </div>
     <div style="flex:1;min-width:0;">
       <div style="font-size:13px;font-weight:900;color:@Hex;letter-spacing:1px;">@Tag</div>
-      <input value="@Player.Name" @onchange="OnNameChange" disabled="@Player.IsCpu" maxlength="12" placeholder="Nombre"
-             class="font-display"
-             style="width:100%;margin-top:4px;background:rgba(0,0,0,.25);border:2px solid rgba(255,255,255,.12);border-radius:12px;padding:10px 12px;color:#fff;font-weight:600;font-size:22px;outline:none;opacity:@(Player.IsCpu ? "0.6" : "1");" />
+      @if (Player.IsCpu && CpuLevel is not null)
+      {
+          <CpuLevelSelector Level="CpuLevel.Value" OnChange="OnCpuLevelChange" />
+      }
+      else
+      {
+          <input value="@Player.Name" @onchange="OnNameChange" disabled="@Player.IsCpu" maxlength="12" placeholder="Nombre"
+                 class="font-display"
+                 style="width:100%;margin-top:4px;background:rgba(0,0,0,.25);border:2px solid rgba(255,255,255,.12);border-radius:12px;padding:10px 12px;color:#fff;font-weight:600;font-size:22px;outline:none;opacity:@(Player.IsCpu ? "0.6" : "1");" />
+      }
     </div>
   </div>
   <ColorPicker SelectedId="@Player.ColorId" TakenColorId="@TakenColorId" OnPick="PickColor" />
@@ -24,6 +31,8 @@
     [Parameter] public int Index { get; set; }
     [Parameter] public string? TakenColorId { get; set; }
     [Parameter] public EventCallback<PlayerConfig> OnChange { get; set; }
+    [Parameter] public CpuDifficulty? CpuLevel { get; set; }
+    [Parameter] public EventCallback<CpuDifficulty> OnCpuLevelChange { get; set; }
 
     private string Hex => ColorCatalog.HexOf(Player.ColorId);
     private string Tag => Player.IsCpu ? "CPU" : $"JUGADOR {Index + 1}";

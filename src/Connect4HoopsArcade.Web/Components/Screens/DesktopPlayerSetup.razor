@@ -2,6 +2,7 @@
 @using Connect4HoopsArcade.Core.Players
 @using Connect4HoopsArcade.Core.Rules
 @inject GameSession Session
+@inject Connect4HoopsArcade.Web.Services.Abstractions.ISettingsStore Store
 
 <div style="position:absolute;inset:0;display:flex;flex-direction:column;z-index:5;animation:slideUp .4s ease;">
   <div style="flex:none;display:flex;align-items:center;justify-content:space-between;padding:18px 24px;">
@@ -13,10 +14,12 @@
   <div style="flex:1;min-height:0;overflow:auto;display:flex;gap:20px;padding:6px 24px 18px;justify-content:center;align-items:stretch;flex-wrap:wrap;">
     <PlayerSetupCard Player="Session.Players[0]" Index="0"
                      TakenColorId="@(IsTwoPlayer ? Session.Players[1].ColorId : null)"
-                     OnChange="@(p => Session.SetPlayer(0, p))" />
+                     OnChange="@(p => Session.SetPlayer(0, p))"
+                     CpuLevel="Store.Current.CpuLevel" OnCpuLevelChange="SetCpuLevel" />
     <PlayerSetupCard Player="Session.Players[1]" Index="1"
                      TakenColorId="@(IsTwoPlayer ? Session.Players[0].ColorId : null)"
-                     OnChange="@(p => Session.SetPlayer(1, p))" />
+                     OnChange="@(p => Session.SetPlayer(1, p))"
+                     CpuLevel="Store.Current.CpuLevel" OnCpuLevelChange="SetCpuLevel" />
   </div>
 
   <div style="flex:none;display:flex;flex-direction:column;align-items:center;gap:10px;padding:6px 24px 22px;">
@@ -40,5 +43,11 @@
     {
         if (StartDisabled) return;
         Session.BeginGame();
+    }
+
+    private async Task SetCpuLevel(Connect4HoopsArcade.Core.Primitives.CpuDifficulty lvl)
+    {
+        Store.Current.CpuLevel = lvl;
+        await Store.SaveAsync();
     }
 }
