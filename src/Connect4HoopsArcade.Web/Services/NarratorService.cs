@@ -17,9 +17,10 @@ public sealed class NarratorService : IDisposable
     private static readonly Random Rng = new();
     private static readonly TimeSpan MidTauntCooldown = TimeSpan.FromSeconds(25);
 
-    private DateTime _lastMidTaunt = DateTime.MinValue;   // last threat/idle taunt; spacing base
-    private bool _idleTauntUsedThisRound;                 // cpu-idle is filler: max one per round
-    private bool _closingVoiceActive;                     // a closing line is in flight — don't talk over it
+    private DateTime _lastThreatTaunt = DateTime.MinValue;   // threat-to-threat spacing; ALSO gates idle (priority)
+    private DateTime _lastIdleNudge = DateTime.MinValue;     // generic (2P) idle-to-idle spacing
+    private bool _idleTauntUsedThisRound;                    // cpu-idle is filler: max one per round
+    private bool _closingVoiceActive;                        // a closing line is in flight — don't talk over it
     private readonly Dictionary<string, int> _lastIndex = new();   // last variant per category (no repeats; kept across rounds on purpose)
 
     public NarratorService(GameSession session, IAudioService audio)
@@ -60,15 +61,15 @@ public sealed class NarratorService : IDisposable
         return _audio.PlayVoiceAsync(keys[idx], interrupt);
     }
 
-    private bool MidTauntReady() =>
-        _session.Winner == null && !_closingVoiceActive
-        && DateTime.UtcNow - _lastMidTaunt >= MidTauntCooldown;
+    private bool ClosingOrOver => _session.Winner != null || _closingVoiceActive;
+    private bool ThreatCooldownPassed => DateTime.UtcNow - _lastThreatTaunt >= MidTauntCooldown;
 
     private void OnRoundStarted()
     {
         _idleTauntUsedThisRound = false;
         _closingVoiceActive = false;
-        _lastMidTaunt = DateTime.MinValue;
+        _lastThreatTaunt = DateTime.MinValue;
+        _lastIdleNudge = DateTime.MinValue;
     }
 
     private async void OnGameStarted()
@@ -98,11 +99,12 @@ public sealed class NarratorService : IDisposable
 
     private async void OnThreat(int moverIndex)
     {
-        // High priority: taunt only when the CPU is the one threatening (1P). Cooldown-gated, no per-round cap.
+        // High priority: taunt whenever the CPU threatens (1P). Gated only by its own threat-to-threat
+        // cooldown + match-over/closing guards — NEVER blocked by a prior idle nudge.
         if (TauntsOn && CpuIndex >= 0 && moverIndex == CpuIndex)
         {
-            if (!MidTauntReady()) return;
-            _lastMidTaunt = DateTime.UtcNow;
+            if (ClosingOrOver || !ThreatCooldownPassed) return;
+            _lastThreatTaunt = DateTime.UtcNow;
             await Taunt("cpu-threat", CpuTauntLines.Threat(EffectiveLevel()));
         }
         else if (VoiceOn)
@@ -113,20 +115,20 @@ public sealed class NarratorService : IDisposable
 
     private async void OnIdle()
     {
-        if (!VoiceOn) return;
+        if (!VoiceOn || ClosingOrOver) return;
         if (_session.Mode == GameMode.OnePlayer)
         {
-            // Filler: at most once per round, and only if no recent taunt (so it never steals a threat's slot).
-            if (_idleTauntUsedThisRound || !MidTauntReady()) return;
+            // cpu-idle is filler: at most once per round, and it yields to a RECENT threat. It deliberately
+            // does NOT stamp the threat timestamp, so it can never block a threat that comes after it.
+            if (_idleTauntUsedThisRound || !ThreatCooldownPassed) return;
             _idleTauntUsedThisRound = true;
-            _lastMidTaunt = DateTime.UtcNow;
             await Taunt("cpu-idle", CpuTauntLines.Idle(EffectiveLevel()));
         }
         else
         {
-            // Generic nudge, any non-CPU context; same readiness guard as the 1P path.
-            if (!MidTauntReady()) return;
-            _lastMidTaunt = DateTime.UtcNow;
+            // Generic nudge (2P / non-CPU); spaced by its own idle-to-idle cooldown.
+            if (DateTime.UtcNow - _lastIdleNudge < MidTauntCooldown) return;
+            _lastIdleNudge = DateTime.UtcNow;
             await Taunt("idle", AudioKeys.IdleNudge);
         }
     }
