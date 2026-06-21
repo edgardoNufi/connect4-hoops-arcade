@@ -143,3 +143,21 @@
 .mob-game.landscape .mob-board-area > * {
   height: 100%; width: auto; max-width: 100%; aspect-ratio: 7 / 6;
 }
+
+/* ---- Result modals (victory / draw) ---- */
+/* The content column scrolls inside the overlay so the buttons are always reachable, even when the
+   content is taller than the viewport (e.g. phone landscape). Applies in every orientation. */
+.result-body { max-height: 100%; overflow-y: auto; }
+
+/* Landscape phone (short height): compact the big victory/draw content so it fits without scrolling. */
+@media (orientation: landscape) and (max-height: 600px) {
+  .result-modal { padding: 8px !important; }
+  .result-title { font-size: clamp(20px, 7vh, 40px) !important; -webkit-text-stroke-width: 2px !important; }
+  .result-ava { width: min(110px, 24vh) !important; height: min(110px, 24vh) !important; margin: 6px 0 !important; }
+  .result-ava-row { margin: 6px 0 !important; }
+  .result-name { font-size: clamp(16px, 5vh, 28px) !important; }
+  .result-vs { font-size: clamp(18px, 5vh, 32px) !important; }
+  .result-score { font-size: 14px !important; margin-top: 2px !important; }
+  .result-actions { margin-top: 12px !important; gap: 8px !important; }
+  .result-actions > button { padding: 9px 18px !important; font-size: 15px !important; box-shadow: none !important; }
+}
