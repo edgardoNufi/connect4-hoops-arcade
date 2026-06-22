@@ -13,4 +13,5 @@ public sealed class GameSettings
     public PlayMode Mode { get; set; } = PlayMode.Digital;
     public CpuDifficulty CpuLevel { get; set; } = CpuDifficulty.Amateur;
     public bool CpuStarts { get; set; }   // 1P: CPU plays first when true (default: you start)
+    public bool PracticeIntroSeen { get; set; }
 }
