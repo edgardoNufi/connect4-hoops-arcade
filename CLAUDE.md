@@ -142,10 +142,31 @@ the level selector (same desktop/mobile spots), 1P only.
 `build.sh` (repo root, executable, LF) installs the .NET 10 SDK then `dotnet publish -o output`.
 Cloudflare settings: Framework preset **None**, Build command **`./build.sh`**, Output dir **`output/wwwroot`**,
 Root **`/`**, no env vars needed. If `.m4a` doesn't play in prod, add a `_headers` to force `audio/mp4`.
-**Build version tag:** `build.sh` stamps `__BUILD_VERSION__` in the published `index.html` with
-`${CF_PAGES_COMMIT_SHA:0:7} · <UTC date>` (fallback git short SHA / `local`); shown by the dim fixed-corner
-`.build-tag` (a tiny inline script shows `dev` locally). Reload the live site and check the corner tag to tell
-when a deploy finished / which build is live.
+**Build version tag:** `build.sh` stamps `__BUILD_VERSION__` (→ `${CF_PAGES_COMMIT_SHA:0:7} · <UTC date>`,
+fallback git short SHA / `local`) into a JS global in `index.html` (`window.__build` + `window.getBuild()`).
+Shown **only on the splash screen**, dim (`AttractMode` reads `getBuild` via interop; `dev` locally). It used
+to be an always-on fixed-corner `.build-tag` but that overlapped every screen — moved to splash-only on the
+user's request. Check the splash corner to tell which build is live.
+**MUST stamp BEFORE publish** (see Offline below) — it edits `index.html`, which is integrity-checked by the SW.
+
+### Offline support (installable PWA — works with no internet after a one-time wifi load)
+Blazor's built-in service worker: `wwwroot/service-worker.js` (dev no-op) + `service-worker.published.js`
+(precache-all, cache-first). `.csproj` has `<ServiceWorkerAssetsManifest>` + `<ServiceWorker .../>`. Registered
+in `index.html` with toasts (`✓ Listo para jugar sin conexión` on first install; update toast otherwise — the
+green one only shows on a truly first install, so a device that already cached it won't see it again). Hard-won
+gotchas (do NOT regress):
+- **Stamp `index.html` BEFORE `dotnet publish`** (build.sh edits the SOURCE, not the published copy). The SW
+  precaches `index.html` with an integrity hash generated at publish; stamping the published file afterwards
+  invalidates that hash → `cache.addAll` rejects → SW install fails silently in prod (no offline, no toast).
+- **Precache audio + fonts:** `offlineAssetsInclude` is extended with `.mp3`, `.m4a`, `.woff2` (the template
+  omits them → game would open offline with no sound and broken fonts).
+- **Clean redirected responses:** Cloudflare rewrites `/index.html → /`, so the SW caches a `redirected:true`
+  response; serving it to a navigation throws "a redirected response was used for a request whose redirect mode
+  is not follow" → **whole site ERR_FAILED** once the SW controls the page. `onFetch` rebuilds any redirected
+  cached response as a clean `Response` (`cleanIfRedirected`).
+- `onInstall`/`onActivate` call `skipWaiting()`/`clients.claim()` so a fixed worker can replace a broken one.
+- Recover a broken SW: hard-reload ×2, or unregister in DevTools / clear site data (desktop) / delete the
+  home-screen app + clear Safari data (iPhone).
 
 ## Testing in a browser (heads-up)
 Driving the app via the automation browser, **WASM hydration can take >6–7s** and the first scripted click
@@ -184,11 +205,13 @@ Ordered by the user's priority. Brainstorm/design before building each (see brai
 MVP complete (tag `v0.1.0-mvp`) + post-MVP polish: leaner audio, global button click, minimax CPU,
 full-screen draw screen, random win cheers, Cloudflare auto-deploy, streak-aware CPU taunts + `NarratorTone`,
 mobile-first responsive redesign (dedicated mobile views via `IViewportService`),
-6-level CPU difficulty selector on the setup screen, **"who starts" toggle (1P), build-version corner tag**,
-**phone-landscape layout (maximized board + left column), global fullscreen button + PWA (iPhone home-screen),
-and an audio perf fix (pooled `<audio>` + stop-on-round — cured the iOS multi-second freezes)**.
-All 51 Core tests green.
-**Next focus: item 2 (cast / big-screen projection) or item 4 (ESP32 sensor) — user's call.**
+6-level CPU difficulty selector on the setup screen, **"who starts" toggle (1P)**,
+**phone-landscape layout (maximized board + left column), audio perf fix (pooled `<audio>` + stop-on-round —
+cured the iOS multi-second freezes), installable PWA that works fully offline (verified on device), fullscreen
+in Settings, version-on-splash, and a UX cleanup batch (click sfx, mobile 1P CPU customization, in-game Inicio
+button)**. All 51 Core tests green.
+**Next focus: item 2 (cast / big-screen projection), item 4 (ESP32 sensor), or the agreed TUTORIAL / learn mode
+(in-app guided play with a step-back/undo to experiment with the AI — undo is tutorial-only, NOT the main game).**
 Landscape view + fullscreen design/plan: [`docs/superpowers/specs/2026-06-20-landscape-view-fullscreen-design.md`](docs/superpowers/specs/2026-06-20-landscape-view-fullscreen-design.md) · [`docs/superpowers/plans/2026-06-20-landscape-view-fullscreen.md`](docs/superpowers/plans/2026-06-20-landscape-view-fullscreen.md).
 **Continuing in a new session?** Read [`docs/superpowers/2026-06-19-session-handoff.md`](docs/superpowers/2026-06-19-session-handoff.md) — what shipped, how we work, pending roadmap, loose ends.
 **Note:** CPU-taunt voice files are produced separately (spec §5.1); until they land, taunt paths are silent
