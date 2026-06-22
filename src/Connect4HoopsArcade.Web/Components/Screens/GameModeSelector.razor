@@ -19,6 +19,13 @@
       <div class="font-display" style="font-weight:700;font-size:34px;">2 JUGADORES</div>
       <div style="font-size:16px;font-weight:700;color:rgba(255,255,255,.6);margin-top:4px;">Local · 1 vs 1</div>
     </button>
+    <button @onclick="Session.ChoosePractice" class="mode-card mode-card--cyan">
+      <div style="width:96px;height:96px;margin:0 auto 16px;">
+        <AvatarSvg ColorId="green" Face="FaceId.Happy" Accessory="AccessoryId.Glasses" />
+      </div>
+      <div class="font-display" style="font-weight:700;font-size:34px;">🎓 PRÁCTICA</div>
+      <div style="font-size:16px;font-weight:700;color:rgba(255,255,255,.6);margin-top:4px;">Experimenta · deshaz jugadas</div>
+    </button>
   </div>
   <div style="display:flex;gap:16px;margin-top:40px;">
     <button @onclick="Session.OpenSensors" class="pill-btn">⚡ Prueba de sensores</button>
