@@ -208,10 +208,18 @@ mobile-first responsive redesign (dedicated mobile views via `IViewportService`)
 6-level CPU difficulty selector on the setup screen, **"who starts" toggle (1P)**,
 **phone-landscape layout (maximized board + left column), audio perf fix (pooled `<audio>` + stop-on-round —
 cured the iOS multi-second freezes), installable PWA that works fully offline (verified on device), fullscreen
-in Settings, version-on-splash, and a UX cleanup batch (click sfx, mobile 1P CPU customization, in-game Inicio
-button)**. All 51 Core tests green.
-**Next focus: item 2 (cast / big-screen projection), item 4 (ESP32 sensor), or the agreed TUTORIAL / learn mode
-(in-app guided play with a step-back/undo to experiment with the AI — undo is tutorial-only, NOT the main game).**
+in Settings, version-on-splash, a UX cleanup batch (click sfx, mobile 1P CPU customization, in-game Inicio
+button), and the PRACTICE / tutorial sandbox**. All 59 Core tests green (51 + 8 for practice).
+**Practice/tutorial mode:** entered from the mode screen (🎓 Práctica) → 1P-vs-CPU sandbox with full-turn
+**undo/redo to the empty board** (undo is practice-ONLY, never the normal game), live CPU-level selector, **soft
+win** (banner, no scores, no Victory screen — undo still works), a one-time intro card, and an optional Hints
+toggle (highlights your immediate win + a CPU block). Pure `Core` helpers carry the logic, TDD'd:
+`Core/Practice/BoardReplay.FromColumns` (board from a column list) + `Core/Practice/MoveLog` (undo-turn/redo
+bookkeeping) + `Rules/ThreatScanner.FindWinningColumn` (hints). `GameSession` has a `Practice` flag + `MoveLog`;
+practice runs on `AppScreen.Game` with `Practice==true`, routed by `AppShell` to `PracticeView`. Spec/plan:
+[`docs/superpowers/specs/2026-06-22-practice-tutorial-design.md`](docs/superpowers/specs/2026-06-22-practice-tutorial-design.md) ·
+[`docs/superpowers/plans/2026-06-22-practice-tutorial.md`](docs/superpowers/plans/2026-06-22-practice-tutorial.md).
+**Next focus: item 2 (cast / big-screen projection) or item 4 (ESP32 sensor) — user's call.**
 Landscape view + fullscreen design/plan: [`docs/superpowers/specs/2026-06-20-landscape-view-fullscreen-design.md`](docs/superpowers/specs/2026-06-20-landscape-view-fullscreen-design.md) · [`docs/superpowers/plans/2026-06-20-landscape-view-fullscreen.md`](docs/superpowers/plans/2026-06-20-landscape-view-fullscreen.md).
 **Continuing in a new session?** Read [`docs/superpowers/2026-06-19-session-handoff.md`](docs/superpowers/2026-06-19-session-handoff.md) — what shipped, how we work, pending roadmap, loose ends.
 **Note:** CPU-taunt voice files are produced separately (spec §5.1); until they land, taunt paths are silent
