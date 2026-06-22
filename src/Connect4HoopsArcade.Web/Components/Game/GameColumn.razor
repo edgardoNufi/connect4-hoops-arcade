@@ -4,6 +4,7 @@
 @inject Connect4HoopsArcade.Web.Input.MoveRouter Router
 
 <div @onclick="Drop"
+     class="@(Session.HintColumns.Contains(Col) ? "practice-hint" : null)"
      style="display:flex;flex-direction:column;gap:@(FitContainer ? "3px" : "clamp(5px,1.1vw,14px)");border-radius:14px;padding:2px;cursor:@Cursor;background:@ColBg;box-shadow:@ColGlow;@(FitContainer ? "flex:1;min-width:0;min-height:0;height:100%;" + ShakeStyle : ShakeStyle)">
   @for (int row = 5; row >= 0; row--)
   {
