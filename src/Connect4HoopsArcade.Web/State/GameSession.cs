@@ -1,6 +1,7 @@
 using Connect4HoopsArcade.Core.Ai;
 using Connect4HoopsArcade.Core.Board;
 using Connect4HoopsArcade.Core.Narration;
+using Connect4HoopsArcade.Core.Practice;
 using Connect4HoopsArcade.Core.Primitives;
 using Connect4HoopsArcade.Core.Players;
 using Connect4HoopsArcade.Core.Rules;
@@ -91,9 +92,18 @@ public sealed class GameSession
     private CancellationTokenSource? _idleCts;
     private static readonly Random Rng = new();
 
+    // ---- practice / tutorial ----
+    public bool Practice { get; private set; }
+    public bool PracticeHints { get; private set; }
+    private readonly MoveLog _log = new();
+    public bool CanUndo => Practice && !IsBusy && _log.CanUndo;
+    public bool CanRedo => Practice && !IsBusy && _log.CanRedo;
+    /// <summary>Columns to highlight as hints (your immediate win, and a CPU win to block). Empty unless Practice + hints on + your turn.</summary>
+    public IReadOnlyCollection<int> HintColumns { get; private set; } = System.Array.Empty<int>();
+
     // ---- navigation ----
-    public void GoSplash() { CancelIdle(); AudioStopRequested?.Invoke(); Screen = AppScreen.Splash; Notify(); }
-    public void GoMode() { CancelIdle(); AudioStopRequested?.Invoke(); Screen = AppScreen.Mode; Notify(); }
+    public void GoSplash() { CancelIdle(); AudioStopRequested?.Invoke(); Practice = false; PracticeHints = false; _log.Clear(); HintColumns = System.Array.Empty<int>(); Screen = AppScreen.Splash; Notify(); }
+    public void GoMode() { CancelIdle(); AudioStopRequested?.Invoke(); Practice = false; PracticeHints = false; _log.Clear(); HintColumns = System.Array.Empty<int>(); Screen = AppScreen.Mode; Notify(); }
     public void ChooseOnePlayer()
     {
         Mode = GameMode.OnePlayer;
@@ -106,6 +116,22 @@ public sealed class GameSession
         Players = new[] { PlayerConfig.DefaultP1, PlayerConfig.DefaultP2 };
         Screen = AppScreen.Setup; Notify();
     }
+    public void ChoosePractice()
+    {
+        Practice = true;
+        Mode = GameMode.OnePlayer;
+        Players = new[] { Players[0] with { IsCpu = false }, PlayerConfig.DefaultCpu };
+        _log.Clear();
+        ResetState($"Práctica · tu turno", resetScores: true);   // you = P1, you start
+        Current = 0;
+        Screen = AppScreen.Game;
+        RecomputeHints();
+        Notify();
+        StartTurnFlow();
+    }
+
+    public void ToggleHints() { PracticeHints = !PracticeHints; RecomputeHints(); Notify(); }
+
     public void OpenSettings() { _prevScreen = Screen; Screen = AppScreen.Settings; Notify(); }
     public void CloseSettings() { Screen = _prevScreen; Notify(); }
     public void OpenSensors() { _prevScreen = Screen; Screen = AppScreen.Sensors; Notify(); }
@@ -139,7 +165,7 @@ public sealed class GameSession
         StartTurnFlow();
     }
 
-    public void ChangePlayers() { CancelIdle(); AudioStopRequested?.Invoke(); Winner = null; Screen = AppScreen.Setup; Notify(); }
+    public void ChangePlayers() { CancelIdle(); AudioStopRequested?.Invoke(); Practice = false; PracticeHints = false; _log.Clear(); HintColumns = System.Array.Empty<int>(); Winner = null; Screen = AppScreen.Setup; Notify(); }
 
     private void ResetState(string narrator, bool resetScores)
     {
@@ -232,6 +258,7 @@ public sealed class GameSession
         var cell = CellExtensions.ForPlayer(Current);
         Board.Drop(col, cell);
         LastDrop = new BoardPosition(col, r);
+        if (Practice) _log.Play(col);
         var line = WinDetector.FindWinningLine(Board, col, r, cell);
         string name = Players[Current].Name;
         ChipDropped?.Invoke();
@@ -241,6 +268,13 @@ public sealed class GameSession
         {
             WinningCells = line.ToHashSet();
             Winner = Current; WinBy = "connect";
+            if (Practice)
+            {
+                Narrator = "¡Conecta 4! Deshaz para seguir probando. 🏀";
+                IsBusy = false; RecomputeHints(); Notify();
+                Won?.Invoke(Current);
+                return;
+            }
             Scores[Current]++;
             IsIdle = false;
             Narrator = $"¡CONECTA 4! ¡Gana {name}! 🎉";
@@ -253,6 +287,12 @@ public sealed class GameSession
 
         if (Board.IsBoardFull())
         {
+            if (Practice)
+            {
+                Narrator = "¡Tablero lleno! Deshaz o reinicia. 🤝";
+                IsBusy = false; RecomputeHints(); Notify();
+                return;
+            }
             Narrator = "¡Tablero lleno! Es un empate. 🤝";
             Notify();
             Drew?.Invoke();
@@ -284,7 +324,9 @@ public sealed class GameSession
         }
         else
         {
-            IsBusy = false; Notify();
+            IsBusy = false;
+            RecomputeHints();
+            Notify();
             ArmIdle();
         }
     }
@@ -298,6 +340,71 @@ public sealed class GameSession
         Screen = AppScreen.Victory;
         IsBusy = false;
         Notify();
+    }
+
+    // ---- practice undo / redo / restart ----
+    public void UndoTurn()
+    {
+        if (!CanUndo) return;
+        CancelIdle();
+        _log.UndoTurn();
+        RebuildPracticeBoard();
+    }
+
+    public void Redo()
+    {
+        if (!CanRedo) return;
+        CancelIdle();
+        _log.Redo();
+        RebuildPracticeBoard();
+    }
+
+    public void RestartPractice()
+    {
+        if (!Practice) return;
+        CancelIdle();
+        _log.Clear();
+        ResetState("Práctica · tu turno", resetScores: true);
+        Current = 0;
+        RecomputeHints();
+        Notify();
+    }
+
+    // Recreate the board from the move log and recompute winner/turn (used after undo/redo).
+    private void RebuildPracticeBoard()
+    {
+        Board = BoardReplay.FromColumns(_log.Played, Cell.Player1);
+        Winner = null; WinBy = ""; WinningCells = new(); LastDrop = null;
+        IsBusy = false; IsThinking = false; IsIdle = false;
+        int n = _log.Played.Count;
+        if (n > 0)
+        {
+            int lastCol = _log.Played[n - 1];
+            int lastRow = Board.LowestRow(lastCol) - 1;          // top filled cell of that column
+            Cell lastCell = CellExtensions.ForPlayer((n - 1) % 2 == 0 ? 0 : 1);
+            LastDrop = new BoardPosition(lastCol, lastRow);
+            var line = WinDetector.FindWinningLine(Board, lastCol, lastRow, lastCell);
+            if (line != null) { Winner = (n - 1) % 2 == 0 ? 0 : 1; WinBy = "connect"; WinningCells = line.ToHashSet(); }
+        }
+        Current = n % 2 == 0 ? 0 : 1;                            // even count → your turn
+        Narrator = Winner != null ? "¡Conecta 4! Deshaz para seguir probando. 🏀" : "Práctica · tu turno";
+        RecomputeHints();
+        Notify();
+    }
+
+    private void RecomputeHints()
+    {
+        if (!Practice || !PracticeHints || Winner != null || Current != 0)
+        {
+            HintColumns = System.Array.Empty<int>();
+            return;
+        }
+        var cols = new List<int>();
+        int win = ThreatScanner.FindWinningColumn(Board, Cell.Player1);   // you can win here
+        if (win >= 0) cols.Add(win);
+        int block = ThreatScanner.FindWinningColumn(Board, Cell.Player2); // CPU would win here → block
+        if (block >= 0 && block != win) cols.Add(block);
+        HintColumns = cols;
     }
 
     // Advances the win-streak (BOTH modes) and announces the end of the match. Must run BEFORE any audio reads
