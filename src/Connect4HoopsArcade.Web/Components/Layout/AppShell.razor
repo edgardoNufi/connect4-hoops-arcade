@@ -22,7 +22,8 @@
       @if (Viewport.IsMobile) { <MobilePlayerSetup /> } else { <DesktopPlayerSetup /> }
       break;
     case AppScreen.Game:
-      @if (Viewport.IsMobile) { <MobileGameView /> } else { <DesktopGameView /> }
+      @if (Session.Practice) { <Connect4HoopsArcade.Web.Components.Screens.PracticeView /> }
+      else if (Viewport.IsMobile) { <MobileGameView /> } else { <DesktopGameView /> }
       break;
     case AppScreen.Victory:
       @if (Viewport.IsMobile) { <MobileGameView /> } else { <DesktopGameView /> }
