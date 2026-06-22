@@ -43,16 +43,18 @@
           document.body.appendChild(t);
           if (!isUpdate) setTimeout(function () { t.remove(); }, 4000);
         }
-        navigator.serviceWorker.register('service-worker.js').then(function (reg) {
-          reg.addEventListener('updatefound', function () {
-            var sw = reg.installing;
-            if (!sw) return;
-            sw.addEventListener('statechange', function () {
-              if (sw.state !== 'installed') return;
-              if (navigator.serviceWorker.controller) toast('Hay una actualización — toca para recargar', true);
-              else toast('✓ Listo para jugar sin conexión', false);
-            });
+        function track(sw) {
+          if (!sw || sw.__c4tracked) return;   // dedupe: installing-check and updatefound can both reference it
+          sw.__c4tracked = true;
+          sw.addEventListener('statechange', function () {
+            if (sw.state !== 'installed') return;
+            if (navigator.serviceWorker.controller) toast('Hay una actualización — toca para recargar', true);
+            else toast('✓ Listo para jugar sin conexión', false);
           });
+        }
+        navigator.serviceWorker.register('service-worker.js').then(function (reg) {
+          track(reg.installing);   // already installing when register() resolved (updatefound may fire before this handler)
+          reg.addEventListener('updatefound', function () { track(reg.installing); });
         }).catch(function () { /* registration failed: the app still works online */ });
       })();
     </script>

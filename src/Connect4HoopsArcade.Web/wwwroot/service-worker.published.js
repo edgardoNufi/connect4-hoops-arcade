@@ -1,6 +1,7 @@
 // Production offline service worker. Precaches every published asset listed in the generated
 // service-worker-assets.js (hashed wasm/dll names included), then serves cache-first.
 // See https://aka.ms/blazor-offline-considerations
+// rev: 2 — bytes bumped so browsers that fetched the earlier (broken-install) worker re-install.
 self.importScripts('./service-worker-assets.js');
 self.addEventListener('install', event => event.waitUntil(onInstall(event)));
 self.addEventListener('activate', event => event.waitUntil(onActivate(event)));

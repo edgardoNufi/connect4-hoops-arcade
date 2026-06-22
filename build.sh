@@ -18,16 +18,21 @@ export PATH="$HOME/.dotnet:$PATH"
 
 echo ".NET version: $(dotnet --version)"
 
+# Stamp the build version BEFORE publish, into the SOURCE index.html. The service worker precaches
+# index.html with an integrity hash generated during publish; if we stamped the PUBLISHED copy
+# afterwards (as we used to), its bytes would no longer match that hash and the SW install would fail
+# (cache.addAll rejects atomically) — no offline, no "ready" toast. Stamping first keeps them in sync.
+echo "Stamping build version (pre-publish)…"
+# Cloudflare Pages exposes CF_PAGES_COMMIT_SHA; fall back to git, then to "local".
+VER_SHA="${CF_PAGES_COMMIT_SHA:-$(git rev-parse --short HEAD 2>/dev/null || echo local)}"
+VER="${VER_SHA:0:7} · $(date -u +'%Y-%m-%d %H:%M') UTC"
+SRC_INDEX="src/Connect4HoopsArcade.Web/wwwroot/index.html"
+sed -i.bak "s|__BUILD_VERSION__|${VER}|" "$SRC_INDEX" && rm -f "${SRC_INDEX}.bak"
+echo "Build version: ${VER}"
+
 echo "Publishing Blazor WebAssembly app…"
 dotnet publish src/Connect4HoopsArcade.Web/Connect4HoopsArcade.Web.csproj \
   -c Release \
   -o output
-
-echo "Stamping build version…"
-# Cloudflare Pages exposes CF_PAGES_COMMIT_SHA; fall back to git, then to "local".
-VER_SHA="${CF_PAGES_COMMIT_SHA:-$(git rev-parse --short HEAD 2>/dev/null || echo local)}"
-VER="${VER_SHA:0:7} · $(date -u +'%Y-%m-%d %H:%M') UTC"
-sed -i.bak "s|__BUILD_VERSION__|${VER}|" output/wwwroot/index.html && rm -f output/wwwroot/index.html.bak
-echo "Build version: ${VER}"
 
 echo "Done. Static site is in output/wwwroot"
