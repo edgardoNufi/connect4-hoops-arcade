@@ -91,24 +91,6 @@
   .modal-card { max-width: 92vw !important; max-height: 88dvh !important; overflow: auto !important; }
 }
 
-/* ---- Global fullscreen button ---- */
-.fs-btn {
-  position: fixed; z-index: 60;
-  top: calc(env(safe-area-inset-top) + 6px);
-  right: calc(env(safe-area-inset-right) + 6px);
-  width: 34px; height: 34px; display: flex; align-items: center; justify-content: center;
-  border-radius: 10px; border: 1px solid rgba(255,255,255,.18);
-  background: rgba(0,0,0,.35); color: #fff; opacity: .45; cursor: pointer; transition: opacity .15s;
-}
-.fs-btn:hover, .fs-btn:active { opacity: 1; }
-.fs-hint {
-  position: fixed; z-index: 61;
-  top: calc(env(safe-area-inset-top) + 46px); right: 6px; max-width: 250px;
-  background: #161031; border: 1px solid rgba(255,255,255,.2); border-radius: 12px;
-  padding: 10px 12px; color: #fff; font-size: 13px; font-weight: 700; line-height: 1.35;
-  box-shadow: 0 10px 24px rgba(0,0,0,.5); cursor: pointer;
-}
-
 /* ---- In-game: landscape (phone rotated) ---- */
 .mob-game.landscape { flex-direction: row; align-items: stretch; gap: 10px; }
 

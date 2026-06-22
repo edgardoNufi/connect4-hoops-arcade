@@ -39,7 +39,10 @@ window.ArcadeAudio = (function () {
   // Hard-stop ALL audio (voices, queued voices, deferred SFX, lingering cheers, music). Called when
   // a new round starts or the player leaves the game, so nothing bleeds into the next screen.
   function stopAllAudio() {
-    for (const key in pool) for (const a of pool[key]) { try { a.pause(); a.currentTime = 0; } catch {} }
+    for (const key in pool) {
+      if (key === 'ui/button-click.mp3') continue;   // never cut the just-played UI click (navigation buttons call stopAll)
+      for (const a of pool[key]) { try { a.pause(); a.currentTime = 0; } catch {} }
+    }
     voiceEl = null; nextVoice = null; afterVoiceSfx = null;
     if (music) { try { music.pause(); } catch {} music = null; }
   }

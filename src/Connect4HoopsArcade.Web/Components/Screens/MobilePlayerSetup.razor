@@ -12,19 +12,16 @@
     <div style="width:64px;"></div>
   </div>
 
-  @if (IsTwoPlayer)
-  {
-    <div class="mob-tabs">
-      <button class="mob-tab @(_tab == 0 ? "on" : "")" @onclick="@(() => _tab = 0)">🔵 @Session.Players[0].Name</button>
-      <button class="mob-tab @(_tab == 1 ? "on" : "")" @onclick="@(() => _tab = 1)">🔴 @Session.Players[1].Name</button>
-    </div>
-  }
+  <div class="mob-tabs">
+    <button class="mob-tab @(_tab == 0 ? "on" : "")" @onclick="@(() => _tab = 0)">@Tab0Label</button>
+    <button class="mob-tab @(_tab == 1 ? "on" : "")" @onclick="@(() => _tab = 1)">@Tab1Label</button>
+  </div>
 
   <div class="mob-setup-body">
-    @if (_tab == 0 || !IsTwoPlayer)
+    @if (_tab == 0)
     {
       <PlayerSetupCard Player="Session.Players[0]" Index="0"
-                       TakenColorId="@(IsTwoPlayer ? Session.Players[1].ColorId : null)"
+                       TakenColorId="@Session.Players[1].ColorId"
                        OnChange="@(p => Session.SetPlayer(0, p))" />
     }
     else
@@ -57,6 +54,8 @@
 @code {
     private int _tab;
     private bool IsTwoPlayer => Session.Mode == GameMode.TwoPlayer;
+    private string Tab0Label => (IsTwoPlayer ? "🔵 " : "🙂 ") + Session.Players[0].Name;
+    private string Tab1Label => IsTwoPlayer ? "🔴 " + Session.Players[1].Name : "🤖 CPU";
     private ColorWarning Warning => IsTwoPlayer
         ? PlayValidator.CheckColors(Session.Players[0].ColorId, Session.Players[1].ColorId)
         : ColorWarning.None;

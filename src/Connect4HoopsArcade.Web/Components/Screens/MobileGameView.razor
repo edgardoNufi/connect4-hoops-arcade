@@ -13,6 +13,7 @@
         <button class="mob-side-btn" @onclick="() => Session.ResetBoard()" disabled="@Session.IsBusy">🔄 Reiniciar</button>
         <button class="mob-side-btn" @onclick="() => Session.Resign()" disabled="@Session.IsBusy">🏳️ Rendirse</button>
         <button class="mob-side-btn" @onclick="() => Session.OpenSettings()">⚙ Ajustes</button>
+        <button class="mob-side-btn" @onclick="() => Session.GoSplash()">🏠 Inicio</button>
       </div>
     </div>
     <div class="mob-board-area">

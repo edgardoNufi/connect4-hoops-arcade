@@ -8,6 +8,7 @@
     <button class="mob-sheet-item" @onclick="Reset" disabled="@Session.IsBusy">🔄 Reiniciar</button>
     <button class="mob-sheet-item" @onclick="Resign" disabled="@Session.IsBusy">🏳️ Rendirse</button>
     <button class="mob-sheet-item" @onclick="Settings">⚙ Ajustes</button>
+    <button class="mob-sheet-item" @onclick="Home">🏠 Inicio</button>
     <button class="mob-sheet-item cancel" @onclick="Close">Cancelar</button>
   </div>
 }
@@ -20,4 +21,5 @@
     private async Task Reset() { Session.ResetBoard(); await Close(); }
     private async Task Resign() { Session.Resign(); await Close(); }
     private async Task Settings() { Session.OpenSettings(); await Close(); }
+    private async Task Home() { Session.GoSplash(); await Close(); }
 }

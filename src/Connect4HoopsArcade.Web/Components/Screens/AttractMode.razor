@@ -1,6 +1,7 @@
 @using Connect4HoopsArcade.Core.Primitives
 @inject GameSession Session
 @inject Connect4HoopsArcade.Web.Services.Abstractions.IAudioService Audio
+@inject Microsoft.JSInterop.IJSRuntime JS
 
 <div @onclick="Start" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;padding:24px;z-index:5;">
   <div style="position:absolute;top:7%;left:14%;width:62px;height:62px;opacity:.9;animation:floatY 5s ease-in-out infinite;">
@@ -25,10 +26,22 @@
   <div style="margin-top:30px;display:flex;align-items:center;gap:14px;padding:16px 34px;border-radius:999px;background:rgba(255,255,255,.06);border:2px solid rgba(34,211,238,.55);box-shadow:0 0 26px rgba(34,211,238,.35);animation:blink 1.6s ease-in-out infinite;">
     <span class="font-display" style="font-weight:600;font-size:clamp(18px,2.6vw,28px);color:#22d3ee;letter-spacing:.5px;">TOCA PARA COMENZAR</span>
   </div>
-  <div style="position:absolute;bottom:22px;font-size:13px;color:rgba(255,255,255,.4);letter-spacing:2px;font-weight:700;">ARCADE&nbsp;EDITION · 7×6 · 2 JUGADORES</div>
+  @if (!string.IsNullOrEmpty(_build))
+  {
+    <div style="position:absolute;bottom:12px;font-size:11px;color:rgba(255,255,255,.28);letter-spacing:1px;font-weight:700;">@_build</div>
+  }
 </div>
 
 @code {
+    private string? _build;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+        _build = await JS.InvokeAsync<string>("getBuild");   // stamped by build.sh; "dev" locally
+        StateHasChanged();
+    }
+
     private async Task Start()
     {
         await Audio.InitAsync();

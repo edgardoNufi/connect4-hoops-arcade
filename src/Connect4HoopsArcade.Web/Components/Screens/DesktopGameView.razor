@@ -7,6 +7,7 @@
       <button @onclick="Session.OpenSettings" disabled="@Session.IsBusy" class="top-btn">⚙ Ajustes</button>
       <button @onclick="Session.ResetBoard" disabled="@Session.IsBusy" class="top-btn top-btn--yellow">🔄 Reiniciar</button>
       <button @onclick="Session.Resign" disabled="@Session.IsBusy" class="top-btn">🏳️ Rendirse</button>
+      <button @onclick="Session.GoSplash" class="top-btn">🏠 Inicio</button>
     </div>
 
     <PlayerPanel Index="0" />

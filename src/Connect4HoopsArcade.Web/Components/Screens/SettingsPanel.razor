@@ -3,6 +3,7 @@
 @inject GameSession Session
 @inject Connect4HoopsArcade.Web.Services.Abstractions.ISettingsStore Store
 @inject Connect4HoopsArcade.Web.Services.Abstractions.IAudioService Audio
+@inject Connect4HoopsArcade.Web.Services.Abstractions.IFullscreenService Fs
 
 <div style="position:absolute;inset:0;z-index:6;display:flex;flex-direction:column;padding:20px 24px;animation:slideUp .4s ease;">
   <div style="flex:none;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
@@ -50,6 +51,17 @@
           <button @onclick="@(() => SetMode(PlayMode.Physical))" class="seg-btn @(S.Mode == PlayMode.Physical ? "seg-btn--on" : "")">Físico</button>
         </div></div>
 
+      <div class="set-row"><span class="set-ico">⛶</span><span style="flex:1;font-weight:800;font-size:16px;">Pantalla completa</span>
+        @if (Fs.IsApiSupported)
+        {
+          <button @onclick="ToggleFs" class="seg-btn @(Fs.IsActive ? "seg-btn--on" : "")">@(Fs.IsActive ? "Salir" : "Activar")</button>
+        }
+        else
+        {
+          <span style="font-size:13px;font-weight:700;color:rgba(255,255,255,.55);max-width:220px;text-align:right;line-height:1.3;">En iPhone: Compartir → “Agregar a inicio”</span>
+        }
+      </div>
+
       <div style="display:flex;gap:12px;margin-top:8px;flex-wrap:wrap;">
         <button @onclick="TestSound" class="square-btn">🔈 Probar sonido</button>
         <button @onclick="Session.OpenSensors" class="square-btn">⚡ Prueba de sensores →</button>
@@ -69,4 +81,5 @@
     private async Task SetTone(NarratorTone t) { S.Tone = t; await Store.SaveAsync(); }
     private async Task SetMode(PlayMode m) { S.Mode = m; await Store.SaveAsync(); }
     private async Task TestSound() => await Audio.PlaySfxAsync(Connect4HoopsArcade.Web.Services.AudioKeys.ChipDrop);
+    private async Task ToggleFs() { await Fs.ToggleAsync(); StateHasChanged(); }
 }
