@@ -28,5 +28,33 @@
     <script>(function(){var t=document.getElementById('build-tag');if(t&&t.textContent.indexOf('__BUILD')===0)t.textContent='dev';})();</script>
     <script src="_framework/blazor.webassembly.js"></script>
     <script src="js/arcade.js"></script>
+    <script>
+      (function () {
+        if (!('serviceWorker' in navigator)) return;
+        function toast(msg, isUpdate) {
+          var t = document.createElement('div');
+          t.textContent = msg;
+          t.style.cssText = 'position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 16px);'
+            + 'transform:translateX(-50%);z-index:9999;max-width:90vw;background:#161031;color:#fff;'
+            + 'border:1.5px solid ' + (isUpdate ? '#ffd23f' : '#2ee86e') + ';border-radius:999px;'
+            + 'padding:11px 18px;font:700 14px/1.2 system-ui,sans-serif;box-shadow:0 8px 24px rgba(0,0,0,.5);'
+            + 'text-align:center;' + (isUpdate ? 'cursor:pointer;' : '');
+          if (isUpdate) t.addEventListener('click', function () { location.reload(); });
+          document.body.appendChild(t);
+          if (!isUpdate) setTimeout(function () { t.remove(); }, 4000);
+        }
+        navigator.serviceWorker.register('service-worker.js').then(function (reg) {
+          reg.addEventListener('updatefound', function () {
+            var sw = reg.installing;
+            if (!sw) return;
+            sw.addEventListener('statechange', function () {
+              if (sw.state !== 'installed') return;
+              if (navigator.serviceWorker.controller) toast('Hay una actualización — toca para recargar', true);
+              else toast('✓ Listo para jugar sin conexión', false);
+            });
+          });
+        }).catch(function () { /* registration failed: the app still works online */ });
+      })();
+    </script>
 </body>
 </html>
