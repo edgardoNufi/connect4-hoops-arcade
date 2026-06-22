@@ -1,0 +1,58 @@
+@using Connect4HoopsArcade.Web.Components.Game
+@using Connect4HoopsArcade.Web.Components.Setup
+@inherits SessionComponentBase
+@inject Connect4HoopsArcade.Web.Services.Abstractions.ISettingsStore Store
+
+<div class="practice-view">
+  <div class="practice-bar">
+    <button class="practice-btn" @onclick="Session.UndoTurn" disabled="@(!Session.CanUndo)">↶ Deshacer</button>
+    <button class="practice-btn" @onclick="Session.Redo" disabled="@(!Session.CanRedo)">↷ Rehacer</button>
+    <button class="practice-btn" @onclick="Session.RestartPractice">🔄 Reiniciar</button>
+    <div class="practice-level"><span>🤖</span><CpuLevelSelector Level="Store.Current.CpuLevel" OnChange="SetLevel" /></div>
+    <button class="practice-btn @(Session.PracticeHints ? "on" : "")" @onclick="Session.ToggleHints">💡 Pistas</button>
+    <button class="practice-btn" @onclick="ShowIntro">❔</button>
+    <button class="practice-btn" @onclick="Session.GoSplash">🏠 Inicio</button>
+  </div>
+
+  <div class="practice-board"><BoardGrid InteractionEnabled="true" FitContainer="true" /></div>
+
+  <div class="practice-status">@Session.Narrator</div>
+
+  @if (_showIntro)
+  {
+    <div class="practice-scrim" @onclick="DismissIntro"></div>
+    <div class="practice-intro" @onclick:stopPropagation="true">
+      <div class="font-display" style="font-size:22px;color:#ffd23f;">🎓 Modo práctica</div>
+      <ul style="text-align:left;line-height:1.5;margin:10px 0;font-weight:700;">
+        <li>Toca una columna para soltar tu ficha.</li>
+        <li>Conecta 4 (horizontal, vertical o diagonal) para ganar.</li>
+        <li>Usa <b>↶ Deshacer</b> para probar otra jugada y ver cómo responde la CPU.</li>
+      </ul>
+      <button class="practice-btn" @onclick="DismissIntro">¡Entendido!</button>
+    </div>
+  }
+</div>
+
+@code {
+    private bool _showIntro;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        if (!Store.Current.PracticeIntroSeen) _showIntro = true;
+    }
+
+    private void ShowIntro() { _showIntro = true; StateHasChanged(); }
+    private async Task DismissIntro()
+    {
+        _showIntro = false;
+        if (!Store.Current.PracticeIntroSeen) { Store.Current.PracticeIntroSeen = true; await Store.SaveAsync(); }
+        StateHasChanged();
+    }
+
+    private async Task SetLevel(Connect4HoopsArcade.Core.Primitives.CpuDifficulty lvl)
+    {
+        Store.Current.CpuLevel = lvl;
+        await Store.ApplyAsync();   // pushes CpuLevel into GameSession (same path the setup screen uses)
+    }
+}
