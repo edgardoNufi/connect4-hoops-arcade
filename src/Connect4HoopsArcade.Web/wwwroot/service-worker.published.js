@@ -1,7 +1,9 @@
 // Production offline service worker. Precaches every published asset listed in the generated
 // service-worker-assets.js (hashed wasm/dll names included), then serves cache-first.
 // See https://aka.ms/blazor-offline-considerations
-// rev: 2 — bytes bumped so browsers that fetched the earlier (broken-install) worker re-install.
+// rev: 3 — clean redirected responses (Cloudflare rewrites /index.html → / ; a cached redirected
+//          response can't be served to a navigation → ERR_FAILED). Plus skipWaiting/clients.claim
+//          so the fixed worker takes over immediately and recovers users stuck on the broken one.
 self.importScripts('./service-worker-assets.js');
 self.addEventListener('install', event => event.waitUntil(onInstall(event)));
 self.addEventListener('activate', event => event.waitUntil(onActivate(event)));
@@ -25,6 +27,7 @@ async function onInstall(event) {
         .filter(asset => !offlineAssetsExclude.some(pattern => pattern.test(asset.url)))
         .map(asset => new Request(asset.url, { integrity: asset.hash, cache: 'no-cache' }));
     await caches.open(cacheName).then(cache => cache.addAll(assetsRequests));
+    await self.skipWaiting();   // don't wait for old tabs to close — needed to replace the broken worker
 }
 
 async function onActivate(event) {
@@ -33,17 +36,25 @@ async function onActivate(event) {
     await Promise.all(cacheKeys
         .filter(key => key.startsWith(cacheNamePrefix) && key !== cacheName)
         .map(key => caches.delete(key)));
+    await self.clients.claim();   // take over already-open pages immediately
+}
+
+// A response cached after following a redirect (Cloudflare rewrites /index.html → /) has
+// `redirected: true`, which the browser refuses to return for a navigation. Rebuild it clean.
+async function cleanIfRedirected(response) {
+    if (!response || !response.redirected) return response;
+    const body = await response.blob();
+    return new Response(body, { status: response.status, statusText: response.statusText, headers: response.headers });
 }
 
 async function onFetch(event) {
-    let cachedResponse = null;
-    if (event.request.method === 'GET') {
-        // For navigation requests, serve cached index.html (unless the URL is itself a cached asset).
-        const shouldServeIndexHtml = event.request.mode === 'navigate'
-            && !manifestUrlList.some(url => url === event.request.url);
-        const request = shouldServeIndexHtml ? 'index.html' : event.request;
-        const cache = await caches.open(cacheName);
-        cachedResponse = await cache.match(request);
-    }
-    return cachedResponse || fetch(event.request);
+    if (event.request.method !== 'GET') return fetch(event.request);
+    // For navigation requests, serve cached index.html (unless the URL is itself a cached asset).
+    const shouldServeIndexHtml = event.request.mode === 'navigate'
+        && !manifestUrlList.some(url => url === event.request.url);
+    const request = shouldServeIndexHtml ? 'index.html' : event.request;
+    const cache = await caches.open(cacheName);
+    const cachedResponse = await cache.match(request);
+    if (cachedResponse) return cleanIfRedirected(cachedResponse);
+    return fetch(event.request);
 }
